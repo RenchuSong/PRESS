@@ -1,0 +1,1 @@
+gcc -O3 MMTC-Frequency.c file.c define2.c -o MMTC-Frequency

@@ -1,0 +1,1 @@
+gcc -O3 processing.c file.c define2.c -o processing

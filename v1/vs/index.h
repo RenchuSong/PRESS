@@ -1,0 +1,10 @@
+extern void createGirdIndex();
+extern void getRelateEdgeSet(int, int[], int*);
+extern int inWhichGrid(double, double);
+extern void gridGetBound(int, double*, double*, double*, double*);
+extern int LATNUM;
+extern int LONGNUM;
+extern double GRIDLAT;
+extern double GRIDLONG;
+extern int cellSize;
+extern void resetCellSize();

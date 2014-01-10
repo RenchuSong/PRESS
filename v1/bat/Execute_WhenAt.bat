@@ -1,0 +1,1 @@
+When_At ./ ./MapMatchedTrajectory/DBTrajectory_SpatialWithDist_001.txt ./TemporalTrajectory/DBTrajectory_Temporal_001.txt ./WhenAt/1.txt 2684117 ./when_at_time.txt

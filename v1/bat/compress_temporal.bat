@@ -1,0 +1,1 @@
+MMTC-Temporal ./ ./MapMatchedTrajectory/DBTrajectory_Spatial_001.txt  ./TemporalTrajectory/DBTrajectory_Temporal_001.txt ./input1/ ./output1/

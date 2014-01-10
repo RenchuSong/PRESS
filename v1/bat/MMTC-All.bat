@@ -1,0 +1,1 @@
+gcc -O3 MMTC-All.c file.c define2.c -o MMTC-All
