@@ -1,20 +1,21 @@
 Sample Data
 =====
+According to the license of Singapore taxi trajectory dataset, we are NOT allowed to publish the original dataset. So we only publish the spatial and temporal representation of trajectories in road networks as the basic data. 
+Due to space limitation of github, we share the data in [Baidu Cloud Netdisk](http://pan.baidu.com/s/1bnaNyhT). 
+We select the trajectories of the first day and the second day as an example. The trajectories of the first day serves as training dataset of the FST Compression stage in HSC. The data included is as following:
 
+### Singapore road network
+Please refer to the [ACM SIGSPATIAL Cup 2012 data format](https://github.com/RenchuSong/PRESS/tree/master/map%20matcher).
+WA_EdgeGeometry.txt: The road geometry information.
+WA_Edges.txt: The two ends of each road.
+WA_Nodes.txt: The coordinate of each intersection.
 
-PRESS is a novel framework of trajectory compression in road networks. We submitted a regular paper to VLDB 2014 and is already accepted.
+### Spatial Component
+The spatial component of each day is named as Spatial_X.txt. This is a binary file. The file format is:
+[Trajectory Number: tNumber, an Integer] followed by tNumber groups of data where each group describes a trajectory.
+Each group: [Point Number: pNumber, an Integer] followed by pNumber integers [Edge ID, the road that the trajectory follows].
 
-### Authors
-* [Renchu Song](http://www.songrenchu.com)
-* [Prof. Weiwei Sun](http://homepage.fudan.edu.cn/wwsun/)
-* [Prof. Baihua Zheng](http://www.mysmu.edu/faculty/bhzheng/)
-* [Dr. Yu Zheng](http://research.microsoft.com/en-us/people/yuzheng/)
-
-## Map matcher
-This is a conponent we used in our approach. Please refer to [Map matcher](https://github.com/RenchuSong/PRESS/tree/master/map%20matcher)
-
-## Version 1
-This is exactly the original code we write for the experiments. However, the code is not well organized because of time limit before our submission. Please refer to [PRESS v1](https://github.com/RenchuSong/PRESS/tree/master/v1)
-
-## Version 2
-We are planning to rewrite the whole project and release a well organized version in the future. Please refer to [PRESS v2](https://github.com/RenchuSong/PRESS/tree/master/v2)
+### Temporal Component
+The temporal component of each day is named as Temporal_X.txt. This is a binary file. The file format is:
+[Trajectory Number: tNumber, an Integer] followed by tNumber groups of data where each group describes a trajectory.
+Each group: [Point Number: pNumber, an Integer] followed by pNumber tuple integers [Distance: Integer, the distance from the start point of the trajectory; Time: Integer, the time that the object is at that position].
