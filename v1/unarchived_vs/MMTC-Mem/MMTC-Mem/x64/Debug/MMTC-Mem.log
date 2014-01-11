@@ -1,0 +1,19 @@
+﻿生成启动时间为 2013/5/30 21:44:04。
+     1>项目“E:\TC\MMTC-Mem\MMTC-Mem\MMTC-Mem.vcxproj”在节点 2 上(Build 个目标)。
+     1>ClCompile:
+         C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\bin\x86_amd64\CL.exe /c /Zi /nologo /W3 /WX- /Od /D WIN32 /D _DEBUG /D _CONSOLE /D _UNICODE /D UNICODE /Gm /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Fo"x64\Debug\\" /Fd"x64\Debug\vc110.pdb" /Gd /TP /errorReport:prompt "..\..\MMTC-Mem.cpp"
+         MMTC-Mem.cpp
+     1>..\..\MMTC-Mem.cpp : warning C4819: 该文件包含不能在当前代码页(936)中表示的字符。请将该文件保存为 Unicode 格式以防止数据丢失
+     1>..\..\MMTC-Mem.cpp(95): warning C4996: 'fopen': This function or variable may be unsafe. Consider using fopen_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+                 C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\include\stdio.h(218) : 参见“fopen”的声明
+     1>..\..\MMTC-Mem.cpp(170): warning C4101: “file”: 未引用的局部变量
+       Link:
+         C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\bin\x86_amd64\link.exe /ERRORREPORT:PROMPT /OUT:"E:\TC\MMTC-Mem\x64\Debug\MMTC-Mem.exe" /INCREMENTAL /NOLOGO kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /DEBUG /PDB:"E:\TC\MMTC-Mem\x64\Debug\MMTC-Mem.pdb" /SUBSYSTEM:CONSOLE /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"E:\TC\MMTC-Mem\x64\Debug\MMTC-Mem.lib" /MACHINE:X64 x64\Debug\define2.obj
+         x64\Debug\file.obj
+         "x64\Debug\MMTC-Mem.obj"
+         MMTC-Mem.vcxproj -> E:\TC\MMTC-Mem\x64\Debug\MMTC-Mem.exe
+     1>已完成生成项目“E:\TC\MMTC-Mem\MMTC-Mem\MMTC-Mem.vcxproj”(Build 个目标)的操作。
+
+生成成功。
+
+已用时间 00:00:00.74
