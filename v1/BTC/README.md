@@ -2,7 +2,7 @@ BTC
 ====
 Error Bounded Temporal Compression (BTC) is a temporal compression process. We use Before Opening Window (BOPW) to reduce the d-t tuples we need to keep and conduct angular-range improvement to reduce the time complexity.
 
-### BTC.cpp
+### BTC.c
 Conduct temporal compression. Please FIRST put the road network data (3 files) under the same folder of the executable code.
 
 The program takes six arguments to execute. Please follow this command line:
