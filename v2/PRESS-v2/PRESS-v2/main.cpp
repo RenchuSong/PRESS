@@ -7,12 +7,27 @@
 //
 
 #include <iostream>
+#include "file_processor.h"
+
+using namespace std;
 
 int main(int argc, const char * argv[])
 {
 
-    // insert code here...
-    std::cout << "Hello, World!\n";
+    FileWriter* fw = new FileWriter("/Users/songrenchu/Develop/test/test.txt", false);
+	fw->writeInt(123);
+	fw->writeChar(' ');
+	fw->writeDouble(21312123.53453434432);
+	fw->writeChar('A');
+	fw->writeChar(' ');
+	fw->writeShort((short)101);
+	fw->~FileWriter();
+	
+	FileReader* fr = new FileReader("/Users/songrenchu/Develop/test/test.txt", false);
+	cout << fr->nextInt() << endl;
+	cout << fr->nextDouble() << endl;
+	cout << fr->nextChar() << endl;
+	cout << fr->nextShort() << endl;
     return 0;
 }
 
