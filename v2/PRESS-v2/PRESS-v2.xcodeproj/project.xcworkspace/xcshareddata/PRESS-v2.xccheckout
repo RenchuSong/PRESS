@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>IDESourceControlProjectFavoriteDictionaryKey</key>
+	<false/>
+	<key>IDESourceControlProjectIdentifier</key>
+	<string>6FC4EE72-7C72-4226-AF1C-670C194CD126</string>
+	<key>IDESourceControlProjectName</key>
+	<string>PRESS-v2</string>
+	<key>IDESourceControlProjectOriginsDictionary</key>
+	<dict>
+		<key>33BD6F1C-9BD7-416D-87D8-40B77D45B907</key>
+		<string>https://github.com/RenchuSong/PRESS.git</string>
+	</dict>
+	<key>IDESourceControlProjectPath</key>
+	<string>v2/PRESS-v2/PRESS-v2.xcodeproj/project.xcworkspace</string>
+	<key>IDESourceControlProjectRelativeInstallPathDictionary</key>
+	<dict>
+		<key>33BD6F1C-9BD7-416D-87D8-40B77D45B907</key>
+		<string>../../../..</string>
+	</dict>
+	<key>IDESourceControlProjectURL</key>
+	<string>https://github.com/RenchuSong/PRESS.git</string>
+	<key>IDESourceControlProjectVersion</key>
+	<integer>110</integer>
+	<key>IDESourceControlProjectWCCIdentifier</key>
+	<string>33BD6F1C-9BD7-416D-87D8-40B77D45B907</string>
+	<key>IDESourceControlProjectWCConfigurations</key>
+	<array>
+		<dict>
+			<key>IDESourceControlRepositoryExtensionIdentifierKey</key>
+			<string>public.vcs.git</string>
+			<key>IDESourceControlWCCIdentifierKey</key>
+			<string>33BD6F1C-9BD7-416D-87D8-40B77D45B907</string>
+			<key>IDESourceControlWCCName</key>
+			<string>PRESS</string>
+		</dict>
+	</array>
+</dict>
+</plist>
