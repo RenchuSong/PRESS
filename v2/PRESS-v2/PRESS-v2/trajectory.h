@@ -42,7 +42,7 @@ public:
 	}
 	
 	//Store a GPS trajectory
-	void storeTrajectory(FileWriter* fw) {
+	void store(FileWriter* fw) {
 		fw->writeInt(this->pointNumber);
 		for (int i = 0; i < this->pointNumber; ++i) {
 			fw->writeInt(sequence[i].t);
@@ -51,6 +51,13 @@ public:
 		}
 	}
 	
+	//Display a GPS trajectory
+	void display() {
+		cout << this->pointNumber << endl;
+		for (int i = 0; i < this->pointNumber; ++i) {
+			cout << sequence[i].t << ": " << sequence[i].x << " " << sequence[i].y << endl;
+		}
+	}
 };
 
 // Road network trajectory in PRESS
@@ -87,8 +94,8 @@ public:
 		}
 	}
 	
-	//Store a road network trajectory
-	void storeTrajectory(FileWriter* spatialWriter, FileWriter* temporalWriter) {
+	//Store the road network trajectory
+	void store(FileWriter* spatialWriter, FileWriter* temporalWriter) {
 		spatialWriter->writeInt(this->spatialNumber);
 		for (int i = 0; i < this->spatialNumber; ++i) {
 			spatialWriter->writeInt(spatial[i]);
@@ -98,6 +105,23 @@ public:
 			temporalWriter->writeInt(temporal[i].t);
 			temporalWriter->writeDouble(temporal[i].d);
 		}
+	}
+	
+	//Display the road network trajectory
+	void display() {
+		cout << "Spatial" << endl;
+		cout << this->spatialNumber << endl;
+		for (int i = 0; i < this->spatialNumber; ++i) {
+			cout << this->spatial[i] << " ";
+		}
+		cout << endl << endl;
+		
+		cout << "Temporal" << endl;
+		cout << this->temporalNumber << endl;
+		for (int i = 0; i < this->temporalNumber; ++i) {
+			cout << this->temporal[i].t << ", " << this->temporal[i].d << "\t    ";
+		}
+		cout << endl;
 	}
 };
 

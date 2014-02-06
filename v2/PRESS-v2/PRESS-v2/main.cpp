@@ -32,7 +32,7 @@ int main(int argc, const char * argv[])
 	
 	GPSTrajectory* gps = new GPSTrajectory(new FileReader("/Users/songrenchu/Develop/test/test.txt", false));
 	
-	gps->printTrajectory();
+	gps->store(new FileWriter("/Users/songrenchu/Develop/test/test2.txt", true));
 	
     return 0;
 }
