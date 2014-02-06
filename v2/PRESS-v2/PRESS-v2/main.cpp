@@ -8,13 +8,14 @@
 
 #include <iostream>
 #include "file_processor.h"
+#include "trajectory.h"
 
 using namespace std;
 
 int main(int argc, const char * argv[])
 {
 
-    FileWriter* fw = new FileWriter("/Users/songrenchu/Develop/test/test.txt", false);
+    /*FileWriter* fw = new FileWriter("/Users/songrenchu/Develop/test/test.txt", false);
 	fw->writeInt(123);
 	fw->writeChar(' ');
 	fw->writeDouble(21312123.53453434432);
@@ -27,7 +28,12 @@ int main(int argc, const char * argv[])
 	cout << fr->nextInt() << endl;
 	cout << fr->nextDouble() << endl;
 	cout << fr->nextChar() << endl;
-	cout << fr->nextShort() << endl;
+	cout << fr->nextShort() << endl;*/
+	
+	GPSTrajectory* gps = new GPSTrajectory(new FileReader("/Users/songrenchu/Develop/test/test.txt", false));
+	
+	gps->printTrajectory();
+	
     return 0;
 }
 

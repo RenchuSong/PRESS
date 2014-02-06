@@ -29,6 +29,7 @@
 		2BCB036018A0D2FD009DBEFE /* main.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
 		2BCB036218A0D2FD009DBEFE /* PRESS_v2.1 */ = {isa = PBXFileReference; lastKnownFileType = text.man; path = PRESS_v2.1; sourceTree = "<group>"; };
 		2BCB036D18A0D59B009DBEFE /* file_processor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = file_processor.h; sourceTree = "<group>"; };
+		2BCB036F18A37419009DBEFE /* trajectory.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = trajectory.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -64,6 +65,7 @@
 				2BCB036018A0D2FD009DBEFE /* main.cpp */,
 				2BCB036218A0D2FD009DBEFE /* PRESS_v2.1 */,
 				2BCB036D18A0D59B009DBEFE /* file_processor.h */,
+				2BCB036F18A37419009DBEFE /* trajectory.h */,
 			);
 			path = "PRESS-v2";
 			sourceTree = "<group>";
@@ -227,6 +229,7 @@
 				2BCB036818A0D2FD009DBEFE /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};
