@@ -9,6 +9,9 @@
 #include <iostream>
 #include "file_processor.h"
 #include "trajectory.h"
+#include "road_network.h"
+#include "utility.h"
+#include <vector>
 
 using namespace std;
 
@@ -28,11 +31,18 @@ int main(int argc, const char * argv[])
 	cout << fr->nextInt() << endl;
 	cout << fr->nextDouble() << endl;
 	cout << fr->nextChar() << endl;
-	cout << fr->nextShort() << endl;*/
+	cout << fr->nextShort() << endl;
 	
 	GPSTrajectory* gps = new GPSTrajectory(new FileReader("/Users/songrenchu/Develop/test/test.txt", false));
 	
 	gps->store(new FileWriter("/Users/songrenchu/Develop/test/test2.txt", true));
+	*/
+	
+	vector<Node> nodes;
+	for (int i = 1; i < 11; ++i) {
+		Node n(i, i*i, i*i*i);
+		nodes.push_back(n);
+	}
 	
     return 0;
 }
