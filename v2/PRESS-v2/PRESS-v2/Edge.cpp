@@ -6,8 +6,11 @@
 //  Copyright (c) 2014 Renchu Song. All rights reserved.
 //
 
-#include "road_network.h"
+#include "Edge.h"
+#include "Node.h"
+#include "utility.h"
 #include <iostream>
+#include <vector>
 
 using namespace std;
 

@@ -6,6 +6,7 @@
 //  Copyright (c) 2014 Renchu Song. All rights reserved.
 //
 
+#include "Node.h"
 #include "Edge.h"
 #include "utility.h"
 #include <vector>

@@ -9,6 +9,7 @@
 #ifndef PRESS_v2_Edge_h
 #define PRESS_v2_Edge_h
 
+class Node;
 extern class Edge;
 
 #endif
