@@ -10,6 +10,8 @@
 		2BCB036118A0D2FD009DBEFE /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2BCB036018A0D2FD009DBEFE /* main.cpp */; };
 		2BCB036318A0D2FD009DBEFE /* PRESS_v2.1 in CopyFiles */ = {isa = PBXBuildFile; fileRef = 2BCB036218A0D2FD009DBEFE /* PRESS_v2.1 */; };
 		2BCB037318A3E0CC009DBEFE /* utility.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2BCB037118A3E0CC009DBEFE /* utility.cpp */; };
+		2BCB037618A47539009DBEFE /* Edge.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2BCB037418A47539009DBEFE /* Edge.cpp */; };
+		2BCB037918A4761B009DBEFE /* Node.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2BCB037718A4761B009DBEFE /* Node.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -34,6 +36,10 @@
 		2BCB037018A39DBD009DBEFE /* road_network.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = road_network.h; sourceTree = "<group>"; };
 		2BCB037118A3E0CC009DBEFE /* utility.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = utility.cpp; sourceTree = "<group>"; };
 		2BCB037218A3E0CC009DBEFE /* utility.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = utility.h; sourceTree = "<group>"; };
+		2BCB037418A47539009DBEFE /* Edge.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Edge.cpp; sourceTree = "<group>"; };
+		2BCB037718A4761B009DBEFE /* Node.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Node.cpp; sourceTree = "<group>"; };
+		2BCB037A18A47736009DBEFE /* Edge.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Edge.h; sourceTree = "<group>"; };
+		2BCB037B18A4777C009DBEFE /* Node.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Node.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -71,8 +77,12 @@
 				2BCB036D18A0D59B009DBEFE /* file_processor.h */,
 				2BCB036F18A37419009DBEFE /* trajectory.h */,
 				2BCB037018A39DBD009DBEFE /* road_network.h */,
+				2BCB037418A47539009DBEFE /* Edge.cpp */,
 				2BCB037118A3E0CC009DBEFE /* utility.cpp */,
 				2BCB037218A3E0CC009DBEFE /* utility.h */,
+				2BCB037718A4761B009DBEFE /* Node.cpp */,
+				2BCB037A18A47736009DBEFE /* Edge.h */,
+				2BCB037B18A4777C009DBEFE /* Node.h */,
 			);
 			path = "PRESS-v2";
 			sourceTree = "<group>";
@@ -128,8 +138,10 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				2BCB037618A47539009DBEFE /* Edge.cpp in Sources */,
 				2BCB037318A3E0CC009DBEFE /* utility.cpp in Sources */,
 				2BCB036118A0D2FD009DBEFE /* main.cpp in Sources */,
+				2BCB037918A4761B009DBEFE /* Node.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
