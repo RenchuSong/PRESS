@@ -64,7 +64,9 @@ public:
 			return char2Binary.value;
 		} else {
 			char temp;
-			fscanf(fp, "%c", &temp);
+			if (fscanf(fp, "%c", &temp) == EOF) {
+				return EOF;
+			}
 			return temp;
 		}
 	}
@@ -76,7 +78,9 @@ public:
 			return short2Binary.value;
 		} else {
 			short temp;
-			fscanf(fp, "%hd", &temp);
+			if (fscanf(fp, "%hd", &temp) == EOF) {
+				return EOF;
+			}
 			return temp;
 		}
 	}
@@ -88,7 +92,9 @@ public:
 			return int2Binary.value;
 		} else {
 			int temp;
-			fscanf(fp, "%d", &temp);
+			if (fscanf(fp, "%d", &temp) == EOF) {
+				return EOF;
+			}
 			return temp;
 		}
 	}
@@ -100,7 +106,9 @@ public:
 			return double2Binary.value;
 		} else {
 			double temp;
-			fscanf(fp, "%lf", &temp);
+			if (fscanf(fp, "%lf", &temp) == EOF) {
+				return EOF;
+			}
 			return temp;
 		}
 	}

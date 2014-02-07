@@ -37,11 +37,13 @@ int main(int argc, const char * argv[])
 	gps->store(new FileWriter("/Users/songrenchu/Develop/test/test2.txt", true));
 	*/
 	
-	vector<Node> nodes;
-	for (int i = 1; i < 11; ++i) {
-		Node n(i, i*i, i*i*i);
-		nodes.push_back(n);
-	}
+	Graph* g = new Graph(
+						 new FileReader("/Users/songrenchu/Develop/test/node.txt", false),
+						 new FileReader("/Users/songrenchu/Develop/test/edge.txt", false),
+						 new FileReader("/Users/songrenchu/Develop/test/geo.txt", false)
+	);
+	
+	g->display();
 	
     return 0;
 }

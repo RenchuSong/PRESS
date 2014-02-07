@@ -60,7 +60,7 @@ public:
 		for (int i = 0; i < this->geoSize; ++i) {
 			cout << "(" << geometry[i]->x << "," << geometry[i]->y << ") ";
 		}
-		cout << endl;
+		cout << "Length: " << this->len << endl;
 	}
 };
 
@@ -88,21 +88,16 @@ public:
 	void display() {
 		cout << "Node " << this->id << ":" << endl;
 		cout << "location (" << location->x << " " << location-> y << ")" << endl;
-		cout << "EdgeList:";
-		for (int i = 0; i < edgeNumber; ++i) {
-			cout << " " << outEdges[i]->id;
-		}
-		cout << endl;
 	}
 };
 
 // Road network graph
 class Graph {
 public:
-	int edgeNumber;												// Number of edges in the graph
-	vector<Edge*> edgeList;										// Edges in the graph
-	int nodeNumber;												// Number of nodes in the graph
-	vector<Node*> nodeList;										// Nodes in the graph
+	int edgeNumber;										// Number of edges in the graph
+	vector<Edge*> edgeList;								// Edges in the graph
+	int nodeNumber;										// Number of nodes in the graph
+	vector<Node*> nodeList;								// Nodes in the graph
 	
 	Graph(FileReader* frNode, FileReader* frEdge, FileReader* frGeo) {
 		this->nodeNumber = 0;
@@ -188,7 +183,7 @@ public:
 		cout << "EDGES" << endl;
 		for (int i = 0; i < edgeNumber; ++i) {
 			edgeList[i]->display();
-			cout << "Endpoints:" << edgeList[i]->startNode->id << " " << edgeList[i]->endNode->id << endl;
+			cout << "Endpoints:" << edgeList[i]->startNode->id << " " << edgeList[i]->endNode->id << endl << endl;
 		}
 		cout << endl;
 	}
