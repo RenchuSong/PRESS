@@ -14,7 +14,6 @@
 #include "file_processor.h"
 #include "utility.h"
 
-class Edge;
 class Node;
 
 // Edge of graph
@@ -92,8 +91,14 @@ public:
 	}
 };
 
-//Graph
+// Road network graph
 class Graph {
+public:
+	int edgeNumber;
+	vector<Edge*> edgeList;
+	int nodeNumber;
+	vector<Node*> nodeList;
+	
 	
 };
 

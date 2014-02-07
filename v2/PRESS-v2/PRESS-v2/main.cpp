@@ -10,7 +10,6 @@
 #include "file_processor.h"
 #include "trajectory.h"
 #include "road_network.h"
-#include "utility.h"
 #include <vector>
 
 using namespace std;
