@@ -9,6 +9,6 @@
 #include "utility.h"
 #include <cmath>
 
-double ecldDistance(EcldPoint u, EcldPoint v) {
-	return sqrt((u.x - v.x) * (u.x - v.x) + (u.y - v.y) * (u.y - v.y));
+double ecldDistance(EcldPoint* u, EcldPoint* v) {
+	return sqrt((u->x - v->x) * (u->x - v->x) + (u->y - v->y) * (u->y - v->y));
 }

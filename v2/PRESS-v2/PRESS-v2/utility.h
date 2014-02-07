@@ -18,6 +18,6 @@ struct EcldPoint {
 	}
 };
 
-extern double ecldDistance(EcldPoint, EcldPoint);
+extern double ecldDistance(EcldPoint*, EcldPoint*);
 
 #endif /* defined(__PRESS_v2__utility__) */
