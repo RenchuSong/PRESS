@@ -89,6 +89,11 @@ public:
 		cout << "Node " << this->id << ":" << endl;
 		cout << "location (" << location->x << " " << location-> y << ")" << endl;
 	}
+	
+	// delete node
+	~Node() {
+		delete this->location;
+	}
 };
 
 // Road network graph
@@ -136,7 +141,16 @@ public:
 			}
 			edge->setLength();
 		}
-		
+	}
+	
+	// delete graph
+	~Graph() {
+		for (int i = 0; i < edgeNumber; ++i) {
+			delete edgeList[i];
+		}
+		for (int i = 0; i < nodeNumber; ++i) {
+			delete nodeList[i];
+		}
 	}
 	
 	// Get node by node id
@@ -186,6 +200,22 @@ public:
 			cout << "Endpoints:" << edgeList[i]->startNode->id << " " << edgeList[i]->endNode->id << endl << endl;
 		}
 		cout << endl;
+	}
+	
+	// Calculate shortest path table and store
+	void calSPTable(FileWriter* fw) {
+		double* shortLen = new double[this->edgeNumber];
+		int* pre = new int[this->edgeNumber];
+		
+		for (int s = 0; s < edgeNumber; ++s) {
+			for (int j = 0; j < edgeNumber; ++j) {			//
+				shortLen[j] = 1e100;
+			}
+			
+		}
+		
+		delete[] shortLen;
+		delete[] pre;
 	}
 };
 
