@@ -208,7 +208,7 @@ public:
 		int* pre = new int[this->edgeNumber];
 		
 		for (int s = 0; s < edgeNumber; ++s) {
-			for (int j = 0; j < edgeNumber; ++j) {			//
+			for (int j = 0; j < edgeNumber; ++j) {			// initialize single source shortest path
 				shortLen[j] = 1e100;
 			}
 			
