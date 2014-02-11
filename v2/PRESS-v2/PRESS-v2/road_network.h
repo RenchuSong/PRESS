@@ -11,6 +11,7 @@
 
 #include <iostream>
 #include <vector>
+#include <queue>
 #include "file_processor.h"
 #include "utility.h"
 
@@ -206,16 +207,30 @@ public:
 	void calSPTable(FileWriter* fw) {
 		double* shortLen = new double[this->edgeNumber];
 		int* pre = new int[this->edgeNumber];
+		bool* visit = new bool[this->edgeNumber];
+		queue<Edge*> sequence;
 		
 		for (int s = 0; s < edgeNumber; ++s) {
 			for (int j = 0; j < edgeNumber; ++j) {			// initialize single source shortest path
 				shortLen[j] = 1e100;
 			}
 			
+			Edge* startNode = this->getEdge(s);
+			shortLen[s] = 0;
+			pre[s] = s;
+			visit[s] = true;
+			sequence.push(startNode);
+			while (!sequence.empty()) {
+				Edge* tmp = sequence.back();
+				
+				visit[tmp->id] = false;
+				sequence.pop();
+			}
 		}
 		
 		delete[] shortLen;
 		delete[] pre;
+		delete[] visit;
 	}
 };
 
