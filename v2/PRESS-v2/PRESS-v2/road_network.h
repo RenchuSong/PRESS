@@ -221,7 +221,7 @@ public:
 			visit[s] = true;
 			sequence.push(startNode);
 			while (!sequence.empty()) {
-				Edge* tmp = sequence.back();
+				Edge* tmp = sequence.back();				// check out current edge
 				
 				visit[tmp->id] = false;
 				sequence.pop();
