@@ -223,7 +223,7 @@ public:
 			while (!sequence.empty()) {
 				Edge* tmp = sequence.back();				// check out current edge
 				
-				visit[tmp->id] = false;
+				visit[tmp->id] = false;						// get out of queue
 				sequence.pop();
 			}
 		}
