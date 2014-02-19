@@ -44,6 +44,7 @@ int main(int argc, const char * argv[])
 	);
 	
 	g->display();
+	g->calSPTable(new FileWriter("/Users/songrenchu/Develop/test/SP.txt", false));
 	
     return 0;
 }

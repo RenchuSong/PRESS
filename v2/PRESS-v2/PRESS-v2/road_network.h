@@ -203,28 +203,56 @@ public:
 		cout << endl;
 	}
 	
-	// Calculate shortest path table and store
+	// Calculate shortest path table and store (using plain SPFA)
 	void calSPTable(FileWriter* fw) {
-		double* shortLen = new double[this->edgeNumber];
-		int* pre = new int[this->edgeNumber];
-		bool* visit = new bool[this->edgeNumber];
-		queue<Edge*> sequence;
+		double* shortLen = new double[this->nodeNumber];
+		int* pre = new int[this->nodeNumber];
+		bool* visit = new bool[this->nodeNumber];
+		queue<Node*> sequence;
 		
 		for (int s = 0; s < edgeNumber; ++s) {
-			for (int j = 0; j < edgeNumber; ++j) {			// initialize single source shortest path
+			for (int j = 0; j < nodeNumber; ++j) {			// initialize single source shortest path
 				shortLen[j] = 1e100;
 			}
 			
-			Edge* startNode = this->getEdge(s);
-			shortLen[s] = 0;
-			pre[s] = s;
-			visit[s] = true;
+			Edge* startEdge = this->getEdge(s);
+			Node* startNode = startEdge->endNode;
+			shortLen[startNode->id] = 0;
+			pre[startNode->id] = startNode->id;
+			visit[startNode->id] = true;
 			sequence.push(startNode);
 			while (!sequence.empty()) {
-				Edge* tmp = sequence.back();				// check out current edge
+				Node* tmp = sequence.back();				// check out current edge
+				
+				for (int i = 0; i < tmp->edgeNumber; ++i) {
+					Edge* currentEdge = tmp->outEdges[i];
+					if (shortLen[currentEdge->endNode->id] > shortLen[tmp->id] + currentEdge->len) {
+						shortLen[currentEdge->endNode->id] = shortLen[tmp->id] + currentEdge->len;
+						pre[currentEdge->endNode->id] = currentEdge->id;
+						if (!visit[currentEdge->endNode->id]) {
+							visit[currentEdge->endNode->id] = true;
+							sequence.push(currentEdge->endNode);
+						}
+					}
+				}
 				
 				visit[tmp->id] = false;						// get out of queue
 				sequence.pop();
+			}
+			
+			for (int t = 0; t < edgeNumber; ++t) {			// output the single source SP table
+				Edge* tmp = getEdge(t);
+				if (shortLen[tmp->startNode->id] > 1e80) {
+					fw->writeInt(-1);
+				} else {
+					fw->writeInt(pre[tmp->startNode->id]);
+				}
+				if (!fw->isBinary()) {
+					fw->writeChar(' ');
+				}
+			}
+			if (!fw->isBinary()) {
+				fw->writeChar('\n');
 			}
 		}
 		

@@ -15,6 +15,36 @@
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "14"
             endingLineNumber = "14">
+            <Locations>
+               <Location
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "Edge::Edge(int, Node*, Node*)"
+                  moduleName = "PRESS-v2"
+                  urlString = "file:///Users/songrenchu/Develop/PRESS/v2/PRESS-v2/PRESS-v2/road_network.h"
+                  timestampString = "414491980.346511"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "34"
+                  endingLineNumber = "34"
+                  offsetFromSymbolStart = "27">
+               </Location>
+               <Location
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "Edge::Edge(int, Node*, Node*)"
+                  moduleName = "PRESS-v2"
+                  urlString = "file:///Users/songrenchu/Develop/PRESS/v2/PRESS-v2/PRESS-v2/road_network.h"
+                  timestampString = "414491980.346831"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "29"
+                  endingLineNumber = "29"
+                  offsetFromSymbolStart = "59">
+               </Location>
+            </Locations>
          </BreakpointContent>
       </BreakpointProxy>
    </Breakpoints>
