@@ -214,11 +214,14 @@ public:
 			for (int j = 0; j < nodeNumber; ++j) {			// initialize single source shortest path
 				shortLen[j] = 1e100;
 			}
+			for (int j = 0; j < nodeNumber; ++j) {			// initialize visit table as all false
+				visit[j] = false;
+			}
 			
 			Edge* startEdge = this->getEdge(s);
 			Node* startNode = startEdge->endNode;
 			shortLen[startNode->id] = 0;
-			pre[startNode->id] = startNode->id;
+			pre[startNode->id] = -1;
 			visit[startNode->id] = true;
 			sequence.push(startNode);
 			while (!sequence.empty()) {
