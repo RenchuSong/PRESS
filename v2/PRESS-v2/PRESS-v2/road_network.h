@@ -226,7 +226,6 @@ public:
 			sequence.push(startNode);
 			while (!sequence.empty()) {
 				Node* tmp = sequence.back();				// check out current edge
-				
 				for (int i = 0; i < tmp->edgeNumber; ++i) {
 					Edge* currentEdge = tmp->outEdges[i];
 					if (shortLen[currentEdge->endNode->id] > shortLen[tmp->id] + currentEdge->len) {
