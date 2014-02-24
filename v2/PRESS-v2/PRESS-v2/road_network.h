@@ -258,7 +258,7 @@ public:
 			}
 		}
 		
-		delete[] shortLen;									// release source
+		delete[] shortLen;									// release resource
 		delete[] pre;
 		delete[] visit;
 	}
