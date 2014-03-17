@@ -89,6 +89,11 @@ public:
 	void display() {
 		cout << "Node " << this->id << ":" << endl;
 		cout << "location (" << location->x << " " << location-> y << ")" << endl;
+		cout << "Linked edges:" << endl;
+		for (int j = 0; j < this->edgeNumber; ++j) {
+			cout << this->outEdges[j]->id << " ";
+		}
+		cout << endl;
 	}
 	
 	// delete node
@@ -187,11 +192,7 @@ public:
 		cout << "NODES" << endl;
 		for (int i = 0; i < nodeNumber; ++i) {
 			nodeList[i]->display();
-			cout << "Linked edges:" << endl;
-			for (int j = 0; j < nodeList[i]->edgeNumber; ++j) {
-				cout << nodeList[i]->outEdges[j]->id << " ";
-			}
-			cout << endl << endl;
+			cout << endl;
 		}
 		cout << endl << endl;
 		
@@ -223,9 +224,11 @@ public:
 			shortLen[startNode->id] = 0;
 			pre[startNode->id] = -1;
 			visit[startNode->id] = true;
+			
 			sequence.push(startNode);
+			
 			while (!sequence.empty()) {
-				Node* tmp = sequence.back();				// check out current edge
+				Node* tmp = sequence.front();				// check out current edge
 				for (int i = 0; i < tmp->edgeNumber; ++i) {
 					Edge* currentEdge = tmp->outEdges[i];
 					if (shortLen[currentEdge->endNode->id] > shortLen[tmp->id] + currentEdge->len) {
@@ -234,6 +237,7 @@ public:
 						if (!visit[currentEdge->endNode->id]) {
 							visit[currentEdge->endNode->id] = true;
 							sequence.push(currentEdge->endNode);
+							
 						}
 					}
 				}
