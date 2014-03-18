@@ -10,10 +10,13 @@
 #define PRESS_v2_road_network_h
 
 #include <iostream>
+#include <cmath>
 #include <vector>
 #include <queue>
 #include "file_processor.h"
 #include "utility.h"
+#include "config.h"
+#include <sys/stat.h>
 
 class Node;
 
@@ -211,18 +214,18 @@ public:
 		bool* visit = new bool[this->nodeNumber];
 		queue<Node*> sequence;
 		
-		for (int s = 0; s < edgeNumber; ++s) {
+		for (int s = 0; s < this->nodeNumber; ++s) {
+			
 			for (int j = 0; j < nodeNumber; ++j) {			// initialize single source shortest path
-				shortLen[j] = 1e100;
+				shortLen[j] = Config::INFINITE_DISTANCE;
 			}
 			for (int j = 0; j < nodeNumber; ++j) {			// initialize visit table as all false
 				visit[j] = false;
 			}
 			
-			Edge* startEdge = this->getEdge(s);
-			Node* startNode = startEdge->endNode;
+			Node* startNode = this->getNode(s);
 			shortLen[startNode->id] = 0;
-			pre[startNode->id] = -1;
+			pre[startNode->id] = Config::NOT_CONNECTED_IN_ROAD_NETWORK;
 			visit[startNode->id] = true;
 			
 			sequence.push(startNode);
@@ -246,12 +249,11 @@ public:
 				sequence.pop();
 			}
 			
-			for (int t = 0; t < edgeNumber; ++t) {			// output the single source SP table
-				Edge* tmp = getEdge(t);
-				if (shortLen[tmp->startNode->id] > 1e80) {
-					fw->writeInt(-1);
+			for (int t = 0; t < nodeNumber; ++t) {			// output the single source SP table
+				if (shortLen[t] == Config::INFINITE_DISTANCE) {
+					fw->writeInt(Config::NOT_CONNECTED_IN_ROAD_NETWORK);
 				} else {
-					fw->writeInt(pre[tmp->startNode->id]);
+					fw->writeInt(pre[t]);
 				}
 				if (!fw->isBinary()) {
 					fw->writeChar(' ');
@@ -267,5 +269,89 @@ public:
 		delete[] visit;
 	}
 };
+
+// Shorest Path table, support modification
+// Use Singleton to avoid memory waste
+class SPTable {
+private:
+	int nodeSize = 0;
+	int ** table;
+	static SPTable* instance;
+	static vector<int>* pathBuffer;
+	
+	void checkBoudary(int id) {
+		if (id < 0 || id >= getInstance()->nodeSize) {
+			throw "boundary exceed";
+		}
+	}
+	
+	SPTable() {
+		// SP table not defined
+		if (Config::SP_TABLE == NULL) {
+			throw "SP Table path not assigned";
+		}
+		
+		// get node number from SP table file size
+		struct stat f_stat;
+		if (stat(Config::SP_TABLE, &f_stat) == Config::FILE_SIZE_EMPTY) {
+			throw "SP Table file error";
+		}
+		nodeSize = sqrt(f_stat.st_size / 4);
+		table = new int*[nodeSize];
+		for (int i = 0; i < nodeSize; ++i) {
+			table[i] = new int[nodeSize];
+		}
+		
+		// load SP table
+		FileReader* fr = new FileReader(Config::SP_TABLE, true);
+		for (int i = 0; i < nodeSize; ++i) {
+			for (int j = 0; j < nodeSize; ++j) {
+				table[i][j] = fr->nextInt();
+			}
+		}
+	}
+	
+public:
+	static SPTable* getInstance() {
+		if (instance == NULL) {
+			instance = new SPTable();
+		}
+		return instance;
+	}
+	
+	static int getPre(int pre, int scc) {
+		getInstance()->checkBoudary(pre);
+		getInstance()->checkBoudary(scc);
+		return getInstance()->table[pre][scc];
+	}
+	
+	static vector<int>* getPath(int pre, int scc) {
+		getInstance()->checkBoudary(pre);
+		getInstance()->checkBoudary(scc);
+		SPTable::pathBuffer->clear();
+		
+//		pathBuffer->push_back(scc);
+		
+		while (getInstance()->table[pre][scc] != Config::NOT_CONNECTED_IN_ROAD_NETWORK) {
+			scc = getInstance()->table[pre][scc];
+			pathBuffer->push_back(scc);
+		}
+//		if (pre != scc) {
+//			pathBuffer->push_back(pre);
+//		}
+//		
+		reverse(SPTable::pathBuffer->begin(), SPTable::pathBuffer->end());
+		return SPTable::pathBuffer;
+	}
+	
+	~SPTable() {
+		for (int i = 0; i < nodeSize; ++i) {
+			delete[] table[i];
+		}
+	}
+};
+
+SPTable* SPTable::instance = NULL;
+vector<int>* SPTable::pathBuffer = new vector<int>();
 
 #endif

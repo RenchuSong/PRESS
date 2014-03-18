@@ -10,13 +10,40 @@
 #include "file_processor.h"
 #include "trajectory.h"
 #include "road_network.h"
+#include "config.h"
+#include "utility.h"
 #include <vector>
 
 using namespace std;
 
+// Initialize the system
+void systemInitialize() {
+	Config::ROAD_NETWORK_NODE = "/Users/songrenchu/百度云同步盘/PRESS_SampleDataset/WA_Nodes.txt";
+	Config::ROAD_NETWORK_EDGE = "/Users/songrenchu/百度云同步盘/PRESS_SampleDataset/WA_Edges.txt";
+	Config::ROAD_NETWORK_GEOMETRY = "/Users/songrenchu/百度云同步盘/PRESS_SampleDataset/WA_EdgeGeometry.txt";
+	Config::SP_TABLE = "/Users/songrenchu/百度云同步盘/PRESS_SampleDataset/ShortestPath/SPTable.txt";
+}
+
 int main(int argc, const char * argv[])
 {
+	// Initialize the system with hard coded urls;
+	systemInitialize();
+	
+	vector<int>* src = SPTable::getInstance()->getPath(1, 100);
+	
+	for (int i = 0; i < src->size(); ++i) {
+		cout << (*src)[i] << "\t";
+	}
+	cout << endl;
 
+	return 0;
+	
+	
+	
+	
+	
+	
+	
     /*FileWriter* fw = new FileWriter("/Users/songrenchu/Develop/test/test.txt", false);
 	fw->writeInt(123);
 	fw->writeChar(' ');
@@ -37,15 +64,19 @@ int main(int argc, const char * argv[])
 	gps->store(new FileWriter("/Users/songrenchu/Develop/test/test2.txt", true));
 	*/
 	
-	Graph* g = new Graph(
-						 new FileReader("/Users/songrenchu/Develop/test/node.txt", false),
-						 new FileReader("/Users/songrenchu/Develop/test/edge.txt", false),
-						 new FileReader("/Users/songrenchu/Develop/test/geo.txt", false)
-	);
 	
-	g->display();
-	g->calSPTable(new FileWriter("/Users/songrenchu/Develop/test/SP.txt", false));
 	
-    return 0;
+//	Graph* g = new Graph(
+//						 new FileReader(Config::ROAD_NETWORK_NODE, false),
+//						 new FileReader(Config::ROAD_NETWORK_EDGE, false),
+//						 new FileReader(Config::ROAD_NETWORK_GEOMETRY, false)
+//	);
+//	
+//	
+//	g->display();
+//	
+	//g->calSPTable(new FileWriter("/Users/songrenchu/Develop/test/SP.txt", true));
+	
+    
 }
 

@@ -18,6 +18,8 @@ struct EcldPoint {
 	}
 };
 
+// calculate the euclidean distance of two points
 extern double ecldDistance(EcldPoint*, EcldPoint*);
+
 
 #endif /* defined(__PRESS_v2__utility__) */
