@@ -26,6 +26,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		2B22520618D970CF00CCFD4D /* press.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = press.h; sourceTree = "<group>"; };
 		2BBB76C618D7FECF006E28DB /* config.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.h; path = config.h; sourceTree = "<group>"; };
 		2BCB035D18A0D2FD009DBEFE /* PRESS-v2 */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = "PRESS-v2"; sourceTree = BUILT_PRODUCTS_DIR; };
 		2BCB036018A0D2FD009DBEFE /* main.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
@@ -75,6 +76,7 @@
 				2BCB037118A3E0CC009DBEFE /* utility.cpp */,
 				2BCB037218A3E0CC009DBEFE /* utility.h */,
 				2BBB76C618D7FECF006E28DB /* config.h */,
+				2B22520618D970CF00CCFD4D /* press.h */,
 			);
 			path = "PRESS-v2";
 			sourceTree = "<group>";

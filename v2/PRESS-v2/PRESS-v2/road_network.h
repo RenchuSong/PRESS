@@ -279,8 +279,8 @@ private:
 	static SPTable* instance;
 	static vector<int>* pathBuffer;
 	
-	void checkBoudary(int id) {
-		if (id < 0 || id >= getInstance()->nodeSize) {
+	void checkBoudary(Graph* graph, int id) {
+		if (id < 0 || id >= graph->edgeNumber) {
 			throw "boundary exceed";
 		}
 	}
@@ -319,27 +319,29 @@ public:
 		return instance;
 	}
 	
-	static int getPre(int pre, int scc) {
-		getInstance()->checkBoudary(pre);
-		getInstance()->checkBoudary(scc);
-		return getInstance()->table[pre][scc];
+	// get the previous edge of the SP path of two edges
+	static int getPre(Graph* graph, int pre, int scc) {
+		getInstance()->checkBoudary(graph, pre);
+		getInstance()->checkBoudary(graph, scc);
+		int startNodeId = graph->getEdge(pre)->endNode->id;
+		int endNodeId = graph->getEdge(scc)->startNode->id;
+		return getInstance()->table[startNodeId][endNodeId];
 	}
 	
-	static vector<int>* getPath(int pre, int scc) {
-		getInstance()->checkBoudary(pre);
-		getInstance()->checkBoudary(scc);
+	// get the shortest path between two edges (endpoints not included)
+	static vector<int>* getPath(Graph* graph, int pre, int scc) {
+		getInstance()->checkBoudary(graph, pre);
+		getInstance()->checkBoudary(graph, scc);
 		SPTable::pathBuffer->clear();
 		
-//		pathBuffer->push_back(scc);
+		int startNodeId = graph->getEdge(pre)->endNode->id;
+		int endNodeId = graph->getEdge(scc)->startNode->id;
 		
-		while (getInstance()->table[pre][scc] != Config::NOT_CONNECTED_IN_ROAD_NETWORK) {
-			scc = getInstance()->table[pre][scc];
-			pathBuffer->push_back(scc);
+		while (startNodeId != endNodeId && getInstance()->table[startNodeId][endNodeId] != Config::NOT_CONNECTED_IN_ROAD_NETWORK) {
+			pathBuffer->push_back(getInstance()->table[startNodeId][endNodeId]);
+			endNodeId = graph->getEdge(getInstance()->table[startNodeId][endNodeId])->startNode->id;
 		}
-//		if (pre != scc) {
-//			pathBuffer->push_back(pre);
-//		}
-//		
+
 		reverse(SPTable::pathBuffer->begin(), SPTable::pathBuffer->end());
 		return SPTable::pathBuffer;
 	}

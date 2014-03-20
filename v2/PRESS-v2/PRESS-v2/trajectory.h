@@ -44,10 +44,22 @@ public:
 	//Store a GPS trajectory
 	void store(FileWriter* fw) {
 		fw->writeInt(this->pointNumber);
+		if (!fw->isBinary()) {
+			fw->writeChar('\n');
+		}
 		for (int i = 0; i < this->pointNumber; ++i) {
-			fw->writeInt(sequence[i].t);
-			fw->writeDouble(sequence[i].x);
-			fw->writeDouble(sequence[i].y);
+			if (fw->isBinary()) {
+				fw->writeInt(sequence[i].t);
+				fw->writeDouble(sequence[i].x);
+				fw->writeDouble(sequence[i].y);
+			} else {
+				fw->writeInt(sequence[i].t);
+				fw->writeChar(' ');
+				fw->writeDouble(sequence[i].x);
+				fw->writeChar(' ');
+				fw->writeDouble(sequence[i].y);
+				fw->writeChar('\n');
+			}
 		}
 	}
 	
@@ -74,36 +86,45 @@ struct TemporalPair {
 class RoadNetTrajectory {
 public:
 	int spatialNumber, temporalNumber;
-	vector<int> spatial;
-	vector<TemporalPair> temporal;
+	vector<int>* spatial = new vector<int>();
+	vector<TemporalPair>* temporal = new vector<TemporalPair>();
 	
 	//Construct a road network trajectory from Spatial File Reader and Temporal File Reader
 	RoadNetTrajectory(FileReader* spatialReader, FileReader* temporalReader) {
 		//Construct spatial path
 		this->spatialNumber = spatialReader->nextInt();
-		this->spatial.clear();
+		this->spatial->clear();
 		for (int i = 0; i < this->spatialNumber; ++i) {
-			this->spatial.push_back(spatialReader->nextInt());
+			this->spatial->push_back(spatialReader->nextInt());
 		}
 		//Construct temporal sequence
 		this->temporalNumber = temporalReader->nextInt();
-		this->temporal.clear();
+		this->temporal->clear();
 		for (int i = 0; i < this->temporalNumber; ++i) {
-			TemporalPair dtPair(temporalReader->nextInt(), temporalReader->nextDouble());
-			this->temporal.push_back(dtPair);
+			//TemporalPair dtPair(temporalReader->nextInt(), temporalReader->nextDouble());
+			TemporalPair dtPair(temporalReader->nextInt(), temporalReader->nextInt());
+			this->temporal->push_back(dtPair);
 		}
+	}
+	
+	//Construct a trajectory from spatial and temporal vector
+	RoadNetTrajectory(vector<int>* spatial, vector<TemporalPair>* temporal) {
+		this->spatial = spatial;
+		this->spatialNumber = (int)spatial->size();
+		this->temporal = temporal;
+		this->temporalNumber = (int)temporal->size();
 	}
 	
 	//Store the road network trajectory
 	void store(FileWriter* spatialWriter, FileWriter* temporalWriter) {
 		spatialWriter->writeInt(this->spatialNumber);
 		for (int i = 0; i < this->spatialNumber; ++i) {
-			spatialWriter->writeInt(spatial[i]);
+			spatialWriter->writeInt(spatial->at(i));
 		}
 		temporalWriter->writeInt(this->temporalNumber);
 		for (int i = 0; i < this->temporalNumber; ++i) {
-			temporalWriter->writeInt(temporal[i].t);
-			temporalWriter->writeDouble(temporal[i].d);
+			temporalWriter->writeInt(temporal->at(i).t);
+			temporalWriter->writeDouble(temporal->at(i).d);
 		}
 	}
 	
@@ -112,16 +133,21 @@ public:
 		cout << "Spatial" << endl;
 		cout << this->spatialNumber << endl;
 		for (int i = 0; i < this->spatialNumber; ++i) {
-			cout << this->spatial[i] << " ";
+			cout << this->spatial->at(i) << " ";
 		}
 		cout << endl << endl;
 		
 		cout << "Temporal" << endl;
 		cout << this->temporalNumber << endl;
 		for (int i = 0; i < this->temporalNumber; ++i) {
-			cout << this->temporal[i].t << ", " << this->temporal[i].d << "\t    ";
+			cout << this->temporal->at(i).t << ", " << this->temporal->at(i).d << "\t    ";
 		}
 		cout << endl;
+	}
+	
+	~RoadNetTrajectory() {
+		delete spatial;
+		delete temporal;
 	}
 };
 

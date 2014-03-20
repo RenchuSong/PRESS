@@ -12,6 +12,7 @@
 #include "road_network.h"
 #include "config.h"
 #include "utility.h"
+#include "press.h"
 #include <vector>
 
 using namespace std;
@@ -29,20 +30,88 @@ int main(int argc, const char * argv[])
 	// Initialize the system with hard coded urls;
 	systemInitialize();
 	
-	vector<int>* src = SPTable::getInstance()->getPath(1, 100);
+	// Road network
+	Graph* g = new Graph(
+		new FileReader(Config::ROAD_NETWORK_NODE, false),
+		new FileReader(Config::ROAD_NETWORK_EDGE, false),
+		new FileReader(Config::ROAD_NETWORK_GEOMETRY, false)
+	);
+
+//	vector<int>* path = SPTable::getPath(g, 19304, 19393);
+//	for (int i = 0; i < path->size(); ++i) {
+//		cout << path->at(i) << " ";
+//	}
+//	cout << endl;
+//	
+//	path = SPTable::getPath(g, 19393, 19098);
+//	for (int i = 0; i < path->size(); ++i) {
+//		cout << path->at(i) << " ";
+//	}
+//	cout << endl;
+//	
+//	path = SPTable::getPath(g, 19304, 19098);
+//	for (int i = 0; i < path->size(); ++i) {
+//		cout << path->at(i) << " ";
+//	}
+//	cout << endl;
+//	
+//	return 0;
 	
-	for (int i = 0; i < src->size(); ++i) {
-		cout << (*src)[i] << "\t";
+//	g->getEdge(19393)->endNode->display();
+//	g->getEdge(19097)->startNode->display();
+//	
+//	return 0;
+	
+	FileReader* spatial = new FileReader("/Users/songrenchu/百度云同步盘/PRESS_SampleDataset/v2_Spatial_2.txt", true);
+	FileReader* temporal = new FileReader("/Users/songrenchu/百度云同步盘/PRESS_SampleDataset/Temporal_2.txt", true);
+	
+	FileWriter* newSpatial = new FileWriter("/Users/songrenchu/百度云同步盘/PRESS_SampleDataset/v2_Spatial_2.txt", true);
+	
+	int trNumber = spatial->nextInt();
+	newSpatial->writeInt(trNumber);
+	temporal->nextInt();
+	for (int i = 0; i < trNumber; ++i) {
+		if (i % 1000 == 0) {
+			cout << i << endl;
+		}
+		
+		RoadNetTrajectory* trajectory = new RoadNetTrajectory(spatial, temporal);
+		vector<int>* spComponent = PRESS::SPCompression(g, trajectory->spatial);
+		
+//		
+//		vector<int>* extend = new vector<int>();
+//		
+//		for (int j = 0; j < spComponent->size() - 1; ++j) {
+//			extend->push_back(spComponent->at(j));
+//			vector<int>* path = SPTable::getPath(g, spComponent->at(j), spComponent->at(j+1));
+//			for (int k = 0; k < path->size(); ++k) {
+//				extend->push_back(path->at(k));
+//			}
+//		}
+//		extend->push_back(spComponent->at(spComponent->size() - 1));
+//		
+//		newSpatial->writeInt((int)extend->size());
+//		
+//		for (int j = 0; j < extend->size(); ++j) {
+//			newSpatial->writeInt(extend->at(j));
+//		}
+		
+		extend->clear();
 	}
-	cout << endl;
+	
 
 	return 0;
 	
 	
 	
 	
-	
-	
+
+//	vector<int>* src = SPTable::getInstance()->getPath(g, 1, 100);
+//	
+//	for (int i = 0; i < src->size(); ++i) {
+//		cout << (*src)[i] << "\t";
+//	}
+//	cout << endl;
 	
     /*FileWriter* fw = new FileWriter("/Users/songrenchu/Develop/test/test.txt", false);
 	fw->writeInt(123);
