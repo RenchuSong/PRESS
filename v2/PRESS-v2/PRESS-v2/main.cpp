@@ -13,6 +13,7 @@
 #include "config.h"
 #include "utility.h"
 #include "press.h"
+#include "ac_automaton.h"
 #include <vector>
 
 using namespace std;
@@ -37,35 +38,41 @@ int main(int argc, const char * argv[])
 		new FileReader(Config::ROAD_NETWORK_GEOMETRY, false)
 	);
 
-//	vector<int>* path = SPTable::getPath(g, 19304, 19393);
-//	for (int i = 0; i < path->size(); ++i) {
-//		cout << path->at(i) << " ";
-//	}
-//	cout << endl;
-//	
-//	path = SPTable::getPath(g, 19393, 19098);
-//	for (int i = 0; i < path->size(); ++i) {
-//		cout << path->at(i) << " ";
-//	}
-//	cout << endl;
-//	
-//	path = SPTable::getPath(g, 19304, 19098);
-//	for (int i = 0; i < path->size(); ++i) {
-//		cout << path->at(i) << " ";
-//	}
-//	cout << endl;
-//	
-//	return 0;
 	
-//	g->getEdge(19393)->endNode->display();
-//	g->getEdge(19097)->startNode->display();
-//	
-//	return 0;
-	
-	FileReader* spatial = new FileReader("/Users/songrenchu/百度云同步盘/PRESS_SampleDataset/v2_Spatial_2.txt", true);
+	FileReader* spatial = new FileReader("/Users/songrenchu/百度云同步盘/PRESS_SampleDataset/v2_SPCompressedSpatial_2.txt", true);
 	FileReader* temporal = new FileReader("/Users/songrenchu/百度云同步盘/PRESS_SampleDataset/Temporal_2.txt", true);
+	FileWriter* newSpatial = new FileWriter("/Users/songrenchu/百度云同步盘/PRESS_SampleDataset/v2_SPCompressedSpatial_2.txt", true);
 	
-	FileWriter* newSpatial = new FileWriter("/Users/songrenchu/百度云同步盘/PRESS_SampleDataset/v2_Spatial_2.txt", true);
+	
+
+	return 0;
+	
+	
+	
+	//	vector<int>* path = SPTable::getPath(g, 19304, 19393);
+	//	for (int i = 0; i < path->size(); ++i) {
+	//		cout << path->at(i) << " ";
+	//	}
+	//	cout << endl;
+	//
+	//	path = SPTable::getPath(g, 19393, 19098);
+	//	for (int i = 0; i < path->size(); ++i) {
+	//		cout << path->at(i) << " ";
+	//	}
+	//	cout << endl;
+	//
+	//	path = SPTable::getPath(g, 19304, 19098);
+	//	for (int i = 0; i < path->size(); ++i) {
+	//		cout << path->at(i) << " ";
+	//	}
+	//	cout << endl;
+	//
+	//	return 0;
+	
+	//	g->getEdge(19393)->endNode->display();
+	//	g->getEdge(19097)->startNode->display();
+	//	
+	//	return 0;
 	
 	int trNumber = spatial->nextInt();
 	newSpatial->writeInt(trNumber);
@@ -78,31 +85,32 @@ int main(int argc, const char * argv[])
 		RoadNetTrajectory* trajectory = new RoadNetTrajectory(spatial, temporal);
 		vector<int>* spComponent = PRESS::SPCompression(g, trajectory->spatial);
 		
-//		
-//		vector<int>* extend = new vector<int>();
-//		
-//		for (int j = 0; j < spComponent->size() - 1; ++j) {
-//			extend->push_back(spComponent->at(j));
-//			vector<int>* path = SPTable::getPath(g, spComponent->at(j), spComponent->at(j+1));
-//			for (int k = 0; k < path->size(); ++k) {
-//				extend->push_back(path->at(k));
-//			}
-//		}
-//		extend->push_back(spComponent->at(spComponent->size() - 1));
-//		
-//		newSpatial->writeInt((int)extend->size());
-//		
-//		for (int j = 0; j < extend->size(); ++j) {
-//			newSpatial->writeInt(extend->at(j));
-//		}
-		
-		extend->clear();
+		newSpatial->writeInt((int)spComponent->size());
+		for (int j = 0; j < spComponent->size(); ++j) {
+			newSpatial->writeInt(spComponent->at(j));
+		}
 	}
 	
-
-	return 0;
 	
+	//
+	//		vector<int>* extend = new vector<int>();
+	//
+	//		for (int j = 0; j < spComponent->size() - 1; ++j) {
+	//			extend->push_back(spComponent->at(j));
+	//			vector<int>* path = SPTable::getPath(g, spComponent->at(j), spComponent->at(j+1));
+	//			for (int k = 0; k < path->size(); ++k) {
+	//				extend->push_back(path->at(k));
+	//			}
+	//		}
+	//		extend->push_back(spComponent->at(spComponent->size() - 1));
+	//
+	//		newSpatial->writeInt((int)extend->size());
+	//
+	//		for (int j = 0; j < extend->size(); ++j) {
+	//			newSpatial->writeInt(extend->at(j));
+	//		}
 	
+	//		extend->clear();
 	
 	
 
