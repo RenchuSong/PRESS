@@ -10,6 +10,7 @@
 #define PRESS_v2_ac_automaton_h
 
 #include <vector>
+#include <queue>
 #include "trajectory.h"
 #include "config.h"
 
@@ -23,19 +24,20 @@ public:
 	int fail;						// fail pointer in matching
 	int frequency;					// accur times in training dataset
 	
-	ACNode(int id, int value, int father) {
+	ACNode(int id, int father, int value) {
 		this->id = id;
 		this->value = value;
 		this->leftSon = Config::NULL_POINTER;
 		this->rightBrother = Config::NULL_POINTER;
 		this->father = father;
 		this->frequency = 1;
+		this->fail = 0;
 	}
 	
 	void display() {
 		cout << id << " value: " << value
-		<< " leftSon: " << leftSon << " rightBrother: " << rightBrother << " father: " << father
-		<< " frequency: " << frequency << endl;
+		<< "\t father: " << father << "\t leftSon: " << leftSon << "\t rightBrother: " << rightBrother
+		<< "\t frequency: " << frequency << "\t fail: " << fail << endl;
 	}
 };
 
@@ -55,6 +57,11 @@ public:
 	vector<ACNode*>* trie = new vector<ACNode*>();
 
 	ACAutomaton(Graph* graph, vector<RoadNetTrajectory*>* spCompressedTrSet, int suffixMaxLength) {
+		// Trajectory set must not be empty
+		if (spCompressedTrSet->size() == 0) {
+			throw "Trajetory set empty exception";
+		}
+		
 		// Trie root
 		trie->push_back(new ACNode(0, -1, Config::NULL_POINTER));
 		trieSize = 1;
@@ -64,6 +71,11 @@ public:
 		for (int i = 0; i < trNumber; ++i) {
 			RoadNetTrajectory* trajectory = spCompressedTrSet->at(i);
 			int spLength = (int)trajectory->spatialNumber;
+			
+			if (spLength == 0) {
+				throw "trajectory spatial component empty exception";
+			}
+			
 			for (int start = 0; start < spLength; ++start) {
 				int end = start + suffixMaxLength;
 				if (end > spLength) {
@@ -95,15 +107,57 @@ public:
 						}
 					}
 				}
-				
-				
 			}
 		}
 		
 		// add not shown edges
+		bool* inserted = new bool[graph->edgeNumber];
+		for (int i = 0; i < graph->edgeNumber; ++i) {
+			inserted[i] = false;
+		}
+		
+		int pt = getNode(0)->leftSon, last = 0;
+		while (pt != Config::NULL_POINTER) {
+			inserted[getNode(pt)->value] = true;
+			last = pt;
+			pt = getNode(pt)->rightBrother;
+		}
+		for (int i = 0; i < graph->edgeNumber; ++i) {
+			if (!inserted[i]) {
+				getNode(last)->rightBrother = trieSize;
+				trie->push_back(new ACNode(trieSize, 0, i));
+				getNode(trieSize)->frequency = 0;
+				last = trieSize;
+				++trieSize;
+			}
+		}
+		
+		delete[] inserted;
 		
 		// add fail pointer
-		
+		queue<ACNode*> sequence;
+		pt = getNode(0)->leftSon;
+		while (pt != Config::NULL_POINTER) {
+			sequence.push(getNode(pt));
+			pt = getNode(pt)->rightBrother;
+		}
+		while (!sequence.empty()) {
+			ACNode* tmp = sequence.front();
+			if (tmp->father != 0) {
+				int pt = getNode(tmp->father)->fail;
+				int fail;
+				while ((fail = containSon(pt, tmp->value)) == Config::NULL_POINTER) {
+					pt = getNode(pt)->fail;
+				}
+				tmp->fail = fail;
+			}
+			int pt = tmp->leftSon;
+			while (pt != Config::NULL_POINTER) {
+				sequence.push(getNode(pt));
+				pt = getNode(pt)->rightBrother;
+			}
+			sequence.pop();
+		}
 	}
 	
 	ACAutomaton(FileReader* fr) {
@@ -113,35 +167,39 @@ public:
 			node->leftSon = fr->nextInt();
 			node->rightBrother = fr->nextInt();
 			node->frequency = fr->nextInt();
+			node->fail = fr->nextInt();
 			trie->push_back(node);
 		}
 	}
 	
 	void store(FileWriter* fw) {
 		fw->writeInt(trieSize);
-		if (fw->isBinary()) {
+		if (!fw->isBinary()) {
 			fw->writeChar('\n');
 		}
 		for (int i = 0; i < trieSize; ++i) {
 			if (fw->isBinary()) {
 				fw->writeInt(trie->at(i)->id);
-				fw->writeInt(trie->at(i)->value);
 				fw->writeInt(trie->at(i)->father);
+				fw->writeInt(trie->at(i)->value);
 				fw->writeInt(trie->at(i)->leftSon);
 				fw->writeInt(trie->at(i)->rightBrother);
 				fw->writeInt(trie->at(i)->frequency);
+				fw->writeInt(trie->at(i)->fail);
 			} else {
 				fw->writeInt(trie->at(i)->id);
 				fw->writeChar(' ');
-				fw->writeInt(trie->at(i)->value);
-				fw->writeChar(' ');
 				fw->writeInt(trie->at(i)->father);
+				fw->writeChar(' ');
+				fw->writeInt(trie->at(i)->value);
 				fw->writeChar(' ');
 				fw->writeInt(trie->at(i)->leftSon);
 				fw->writeChar(' ');
 				fw->writeInt(trie->at(i)->rightBrother);
 				fw->writeChar(' ');
 				fw->writeInt(trie->at(i)->frequency);
+				fw->writeChar(' ');
+				fw->writeInt(trie->at(i)->fail);
 				fw->writeChar('\n');
 			}
 		}
