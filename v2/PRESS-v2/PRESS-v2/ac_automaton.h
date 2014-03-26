@@ -64,6 +64,7 @@ public:
 		
 		// Trie root
 		trie->push_back(new ACNode(0, -1, Config::NULL_POINTER));
+		trie->at(0)->frequency = 0;
 		trieSize = 1;
 		
 		// each trajectory

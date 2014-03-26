@@ -15,6 +15,7 @@
 #include "press.h"
 #include "ac_automaton.h"
 #include "huffman.h"
+#include "timer.h"
 #include <vector>
 
 using namespace std;
@@ -29,6 +30,13 @@ void systemInitialize() {
 
 int main(int argc, const char * argv[])
 {
+//	Timer* timer = new Timer();
+//	timer->resetTimer();
+//	for (int i = 0; i < 1000000000; ++i);
+//	cout << timer->getSystemClockDuration() << endl;
+//	
+//	return 0;
+	
 	// Initialize the system with hard coded urls;
 	systemInitialize();
 	
@@ -81,6 +89,7 @@ int main(int argc, const char * argv[])
 	
 	HuffmanTree* huffman = new HuffmanTree(ac);
 	
+	huffman->display();
 	
 	//ac->display();
 	//ac->store(new FileWriter("/Users/songrenchu/Develop/test/ac.txt", true));
