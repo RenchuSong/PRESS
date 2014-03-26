@@ -27,6 +27,7 @@ public:
 	static const int NOT_CONNECTED_IN_ROAD_NETWORK;	// not connected
 	static const double INFINITE_DISTANCE;	// from infinite distance
 	static const double NULL_POINTER;		// null pointer expressed by integer
+	static const int HUGE_NUMBER;			// huge number
 	
 	
 };
@@ -40,5 +41,6 @@ const int Config::FILE_SIZE_EMPTY = -1;
 const int Config::NOT_CONNECTED_IN_ROAD_NETWORK = -1;
 const double Config::INFINITE_DISTANCE = 1e100;
 const double Config::NULL_POINTER = -1;
+const int Config::HUGE_NUMBER = 1047483648;
 
 #endif

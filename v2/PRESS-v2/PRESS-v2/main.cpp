@@ -14,6 +14,7 @@
 #include "utility.h"
 #include "press.h"
 #include "ac_automaton.h"
+#include "huffman.h"
 #include <vector>
 
 using namespace std;
@@ -77,8 +78,12 @@ int main(int argc, const char * argv[])
 	traSet->push_back(tra3);
 	
 	ACAutomaton* ac = new ACAutomaton(g, traSet, 3);
-	ac->display();
-	ac->store(new FileWriter("/Users/songrenchu/Develop/test/ac.txt", true));
+	
+	HuffmanTree* huffman = new HuffmanTree(ac);
+	
+	
+	//ac->display();
+	//ac->store(new FileWriter("/Users/songrenchu/Develop/test/ac.txt", true));
 //
 //	ACAutomaton* ac = new ACAutomaton(new FileReader("/Users/songrenchu/Develop/test/ac.txt", true));
 //	ac->display();
