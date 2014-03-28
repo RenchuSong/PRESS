@@ -125,13 +125,14 @@ public:
 	}
 	
 	// FST compress, get a compressed spatial bit stream from an original spatial component
-	static Binary* FSTCompression(Graph* g, ACAutomaton* ac, HuffmanTree* huffman, vector<int>* source) {
+	static Binary* FSTCompression(ACAutomaton* ac, HuffmanTree* huffman, vector<int>* source) {
 		if (source == NULL || source->size() < 1) {
 			throw "Spatial component empty";
 		}
 		
 		// get AC node set
 		vector<int> matchSet;
+		
 		int pt = 0;
 		for (int i = 0; i < source->size(); ++i) {
 			while (ac->containSon(pt, source->at(i)) == Config::NULL_POINTER) {
@@ -140,6 +141,7 @@ public:
 			pt = ac->containSon(pt, source->at(i));
 			matchSet.push_back(pt);
 		}
+		
 		vector<int> compressedSet;
 		while (!matchSet.empty()) {
 			int pt = matchSet[matchSet.size() - 1];
@@ -152,12 +154,16 @@ public:
 		}
 		
 		matchSet.clear();
+		reverse(compressedSet.begin(), compressedSet.end());
+
+		// combine binary code
+		vector<bool>* code = new vector<bool>();
 		for (int i = 0; i < compressedSet.size(); ++i) {
-			cout << compressedSet[i] << " ";
+			HuffmanCode* item = huffman->trieHuffmanCode[compressedSet[i]];
+			copy(item->code.begin(), item->code.end(), back_inserter(*code));
 		}
-		cout << endl;
 		
-		Binary* binary = new Binary(new vector<bool>);
+		Binary* binary = new Binary(code);
 		return binary;
 	}
 };
