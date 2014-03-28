@@ -10,6 +10,9 @@
 #define __PRESS_v2__file_processor__
 
 #include <iostream>
+#include <vector>
+
+using namespace std;
 
 //convertor between char and binary char
 union Char2Binary {
@@ -184,6 +187,89 @@ public:
 	
 	~FileWriter() {
 		fclose(fp);
+	}
+};
+
+// Binary bit stream
+class Binary {
+private:
+	int byteNumber(int number) {
+		return number / 8 + (number % 8 ? 1 : 0);
+	}
+	
+public:
+	int number;
+	vector<bool>* binary;
+	
+	Binary(vector<bool>* binary) {
+		this->binary = binary;
+		this->number = (int)binary->size();
+	}
+	
+	Binary(FileReader* fr) {
+		this->number = fr->nextInt();
+		int byteNumber = this->byteNumber(this->number);
+		this->binary = new vector<bool>();
+		for (int i = 1; i < byteNumber; ++i) {
+			unsigned char byte = fr->nextChar();
+			int mask = 0x80;
+			for (int i = 0; i < 8; ++i) {
+				binary->push_back(byte & mask);
+				mask >>= 1;
+			}
+		}
+		unsigned char byte = fr->nextChar();
+		if (this->number % 8) {
+			int mask = 1 << this->number % 8;
+			for (int i = 0; i < this->number % 8; ++i) {
+				mask >>= 1;
+				binary->push_back(byte & mask);
+			}
+		} else {
+			int mask = 0x80;
+			for (int i = 0; i < 8; ++i) {
+				binary->push_back(byte & mask);
+				mask >>= 1;
+			}
+		}
+	}
+	
+	void store(FileWriter* fw) {
+		fw->writeInt(this->number);
+		int byteNumber = this->byteNumber(this->number);
+		for (int i = 0; i < byteNumber - 1; ++i) {
+			int byte = 0;
+			for (int j = 0; j < 8; ++j) {
+				byte = byte * 2 + (this->binary->at((i << 3) + j) ? 1 : 0);
+			}
+			fw->writeChar((unsigned char) byte);
+		}
+		int i = byteNumber - 1;
+		if (this->number % 8) {
+			int byte = 0;
+			for (int j = 0; j < this->number % 8; ++j) {
+				byte = byte * 2 + (this->binary->at((i << 3) + j) ? 1 : 0);
+			}
+			fw->writeChar((unsigned char) byte);
+		} else {
+			int byte = 0;
+			for (int j = 0; j < 8; ++j) {
+				byte = byte * 2 + (this->binary->at((i << 3) + j) ? 1 : 0);
+			}
+			fw->writeChar((unsigned char) byte);
+		}
+	}
+	
+	void display() {
+		cout << this->number << endl;
+		for (int i = 0; i < this->number; ++i) {
+			cout << binary->at(i) << " ";
+		}
+		cout << endl;
+	}
+	
+	~Binary() {
+		delete binary;
 	}
 };
 

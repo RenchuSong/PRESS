@@ -12,6 +12,7 @@
 #include <iostream>
 #include <vector>
 #include "file_processor.h"
+
 using namespace std;
 
 // GPS point is tuple (t, x, y)
@@ -152,4 +153,40 @@ public:
 	}
 };
 
+// Trajectory compressed by PRESS
+class PRESSCompressedTrajectory {
+public:
+	Binary* spatial;
+	vector<TemporalPair>* temporal;
+	
+	// Construct a PRESSCompressedTrajectory from spatial and temporal component
+	PRESSCompressedTrajectory(Binary* binary, vector<TemporalPair>* temporal) {
+		this->spatial = binary;
+		this->temporal = temporal;
+	}
+	
+	// Construct a PRESSCompressedTrajectory from FileReaders
+	PRESSCompressedTrajectory(FileReader* spatialReader, FileReader* temporalReader) {
+		spatial = new Binary(spatialReader);
+		int temporalNumber = temporalReader->nextInt();
+		this->temporal = new vector<TemporalPair>();
+		this->temporal->clear();
+		for (int i = 0; i < temporalNumber; ++i) {
+			//TemporalPair dtPair(temporalReader->nextInt(), temporalReader->nextDouble());
+			TemporalPair dtPair(temporalReader->nextInt(), temporalReader->nextInt());
+			this->temporal->push_back(dtPair);
+		}
+	}
+	
+	//Store the PRESS compressed trajectory
+	void store(FileWriter* spatialWriter, FileWriter* temporalWriter) {
+		spatial->store(spatialWriter);
+		temporalWriter->writeInt((int)temporal->size());
+		for (int i = 0; i < temporal->size(); ++i) {
+			temporalWriter->writeInt(temporal->at(i).t);
+			temporalWriter->writeDouble(temporal->at(i).d);
+		}
+	}
+	
+};
 #endif

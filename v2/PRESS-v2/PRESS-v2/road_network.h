@@ -18,6 +18,8 @@
 #include "config.h"
 #include <sys/stat.h>
 
+using namespace std;
+
 class Node;
 
 // Edge of graph
