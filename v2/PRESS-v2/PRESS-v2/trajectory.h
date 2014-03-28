@@ -73,6 +73,7 @@ public:
 };
 
 // Road network trajectory in PRESS
+
 //Temporal representation in (d, t) pair
 struct TemporalPair {
 	double d;

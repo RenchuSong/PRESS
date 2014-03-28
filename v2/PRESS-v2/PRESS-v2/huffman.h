@@ -63,7 +63,6 @@ public:
 // Huffman Code Binary Code;
 class HuffmanCode {
 public:
-	int trieId;
 	vector<bool> code;
 };
 
@@ -85,10 +84,32 @@ private:
 		}
 	}
 	
+	vector<bool> code;	// huffman code buffer
+	// assign huffman code
+	void assignHuffmanCode(int trieId) {
+		this->trieHuffmanCode[trieId] = new HuffmanCode();
+		for (int i = 0; i < code.size(); ++i) {
+			this->trieHuffmanCode[trieId]->code.push_back(code[i]);
+		}
+	}
+	// recursively get huffman code
+	void getHuffmanCode(HuffmanNode* node) {
+		if (node->leftSon == Config::NULL_POINTER && node->rightSon == Config::NULL_POINTER) {
+			assignHuffmanCode(((HuffmanLeafNode*)node)->trieId);
+			return;
+		}
+		code.push_back(false);
+		getHuffmanCode(getNode(node->leftSon));
+		code.pop_back();
+		
+		code.push_back(true);
+		getHuffmanCode(getNode(node->rightSon));
+		code.pop_back();
+	}
+	
 public:
-	int huffmanSize;
+	int huffmanSize, trieSize;
 	vector<HuffmanNode*>* huffman = new vector<HuffmanNode*>();
-	int* trieToHuffman = NULL;			// map trie node id to huffman tree node id
 	HuffmanCode** trieHuffmanCode = NULL;	// each trie node's huffman code
 	int root;
 	
@@ -96,7 +117,7 @@ public:
 		if (acAutomaton == NULL) {
 			throw "AC Automaton NULL exception";
 		}
-		trieToHuffman = new int[acAutomaton->trieSize];					//
+		this->trieSize = acAutomaton->trieSize;
 		trieHuffmanCode = new HuffmanCode*[acAutomaton->trieSize];		// the huffman code of each trie node
 		ACNode** acNodeList = new ACNode*[acAutomaton->trieSize];
 		for (int i = 0; i < acAutomaton->trieSize; ++i) {
@@ -169,6 +190,36 @@ public:
 		}
 		
 		hfmBranchNode.clear();
+		
+		// get huffman code
+		getHuffmanCode(getNode(root));
+	}
+	
+	HuffmanTree(FileReader* fr) {
+		huffmanSize = fr->nextInt();
+		trieSize = fr->nextInt();
+		root = fr->nextInt();
+		for (int i = 0; i < huffmanSize; ++i) {
+			int id = fr->nextInt();
+			int weight = fr->nextInt();
+			int father = fr->nextInt();
+			int leftSon = fr->nextInt();
+			int rightSon = fr->nextInt();
+			int trieId = fr->nextInt();
+			HuffmanNode* node;
+			if (trieId == Config::NULL_POINTER) {
+				node = new HuffmanNode(id, weight, leftSon, rightSon);
+			} else {
+				node = new HuffmanLeafNode(id, trieId, weight, leftSon, rightSon);
+			}
+			node->father = father;
+			huffman->push_back(node);
+		}
+		
+		trieHuffmanCode = new HuffmanCode*[trieSize];		// the huffman code of each trie node
+		
+		// get huffman code
+		getHuffmanCode(getNode(root));
 	}
 	
 	HuffmanNode* getNode(int id) {
@@ -183,14 +234,41 @@ public:
 		return NULL;
 	}
 	
+	// store the Huffman tree structure
+	void store(FileWriter* fw) {
+		fw->writeInt(huffmanSize);
+		fw->writeInt(trieSize);
+		fw->writeInt(root);
+		for (int i = 0; i < huffman->size(); ++i) {
+			fw->writeInt(huffman->at(i)->id);
+			fw->writeInt(huffman->at(i)->weight);
+			fw->writeInt(huffman->at(i)->father);
+			fw->writeInt(huffman->at(i)->leftSon);
+			fw->writeInt(huffman->at(i)->rightSon);
+			
+			if (huffman->at(i)->leftSon == Config::NULL_POINTER && huffman->at(i)->rightSon == Config::NULL_POINTER) {
+				fw->writeInt(((HuffmanLeafNode*)huffman->at(i))->trieId);
+			} else {
+				fw->writeInt(Config::NULL_POINTER);
+			}
+		}
+	}
+	
 	void display() {
 		display(getNode(root));
 	}
 	
-	~HuffmanTree() {
-		if (trieToHuffman != NULL){
-			delete[] trieToHuffman;
+	void displayCode() {
+		for (int i = 0; i < this->trieSize; ++i) {
+			cout << "Trie " << i << ": ";
+			for (int j = 0; j < trieHuffmanCode[i]->code.size(); ++j) {
+				cout << trieHuffmanCode[i]->code[j];
+			}
+			cout << endl;
 		}
+	}
+	
+	~HuffmanTree() {
 		if (trieHuffmanCode != NULL) {
 			delete[] trieHuffmanCode;
 		}

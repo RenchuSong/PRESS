@@ -42,16 +42,6 @@ public:
 };
 
 class ACAutomaton {
-private:
-	int containSon(int id, int value) {
-		int pt = getNode(id)->leftSon;
-		while (pt != Config::NULL_POINTER) {
-			if (getNode(pt)->value == value) return getNode(pt)->id;
-			pt = getNode(pt)->rightBrother;
-		}
-		return Config::NULL_POINTER;
-	}
-	
 public:
 	int trieSize;
 	vector<ACNode*>* trie = new vector<ACNode*>();
@@ -171,6 +161,15 @@ public:
 			node->fail = fr->nextInt();
 			trie->push_back(node);
 		}
+	}
+	
+	int containSon(int id, int value) {
+		int pt = getNode(id)->leftSon;
+		while (pt != Config::NULL_POINTER) {
+			if (getNode(pt)->value == value) return getNode(pt)->id;
+			pt = getNode(pt)->rightBrother;
+		}
+		return Config::NULL_POINTER;
 	}
 	
 	void store(FileWriter* fw) {

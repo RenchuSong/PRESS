@@ -30,66 +30,108 @@ void systemInitialize() {
 
 int main(int argc, const char * argv[])
 {
-//	Timer* timer = new Timer();
-//	timer->resetTimer();
-//	for (int i = 0; i < 1000000000; ++i);
-//	cout << timer->getSystemClockDuration() << endl;
+//	vector<bool>* binary = new vector<bool>();
+//	binary->push_back(true);
+//	binary->push_back(false);
+//	binary->push_back(false);
+//	binary->push_back(true);
+//	binary->push_back(true);
+//	binary->push_back(false);
+//	binary->push_back(true);
+//	binary->push_back(false);
+//	binary->push_back(true);
+//	binary->push_back(false);
+//	binary->push_back(true);
+//	binary->push_back(true);
+//	binary->push_back(false);
+//	binary->push_back(true);
+//	binary->push_back(true);
+//	binary->push_back(true);
+//	binary->push_back(false);
+//	binary->push_back(true);
+//	binary->push_back(false);
+//	binary->push_back(false);
+//	binary->push_back(true);
+//	binary->push_back(true);
+//	binary->push_back(true);
+//	binary->push_back(true);
+//	
+//	
+////	Binary b(binary);
+////	b.store(new FileWriter("/Users/songrenchu/Develop/test/binary.txt", true));
+//
+//	
+//	Binary b(new FileReader("/Users/songrenchu/Develop/test/binary.txt", true));
+//	b.display();
 //	
 //	return 0;
 	
-	// Initialize the system with hard coded urls;
-	systemInitialize();
-	
-	// Road network
-	Graph* g = new Graph(
-		new FileReader(Config::ROAD_NETWORK_NODE, false),
-		new FileReader(Config::ROAD_NETWORK_EDGE, false),
-		new FileReader(Config::ROAD_NETWORK_GEOMETRY, false)
-	);
-
+////	Timer* timer = new Timer();
+////	timer->resetTimer();
+////	for (int i = 0; i < 1000000000; ++i);
+////	cout << timer->getSystemClockDuration() << endl;
+////	
+////	return 0;
 //	
-//	FileReader* spatial = new FileReader("/Users/songrenchu/百度云同步盘/PRESS_SampleDataset/v2_SPCompressedSpatial_2.txt", true);
-//	FileReader* temporal = new FileReader("/Users/songrenchu/百度云同步盘/PRESS_SampleDataset/Temporal_2.txt", true);
-//	FileWriter* newSpatial = new FileWriter("/Users/songrenchu/百度云同步盘/PRESS_SampleDataset/v2_SPCompressedSpatial_2.txt", true);
+//	// Initialize the system with hard coded urls;
+//	systemInitialize();
 //	
-
-	g->edgeNumber = 10;
-	
-	vector<RoadNetTrajectory*>* traSet = new vector<RoadNetTrajectory*>();
-	
-	vector<int>* spatial = new vector<int>();
-	spatial->push_back(1);
-	spatial->push_back(5);
-	spatial->push_back(8);
-	spatial->push_back(6);
-	spatial->push_back(3);
-	vector<TemporalPair>* temporal = new vector<TemporalPair>();
-	RoadNetTrajectory* tra1 = new RoadNetTrajectory(spatial, temporal);
-	traSet->push_back(tra1);
-	
-	vector<int>* spatial2 = new vector<int>();
-	spatial2->push_back(1);
-	spatial2->push_back(5);
-	spatial2->push_back(2);
-	spatial2->push_back(1);
-	spatial2->push_back(4);
-	spatial2->push_back(8);
-	RoadNetTrajectory* tra2 = new RoadNetTrajectory(spatial2, temporal);
-	traSet->push_back(tra2);
-	
-	vector<int>* spatial3 = new vector<int>();
-	spatial3->push_back(2);
-	spatial3->push_back(1);
-	spatial3->push_back(4);
-	spatial3->push_back(6);
-	RoadNetTrajectory* tra3 = new RoadNetTrajectory(spatial3, temporal);
-	traSet->push_back(tra3);
-	
-	ACAutomaton* ac = new ACAutomaton(g, traSet, 3);
-	
-	HuffmanTree* huffman = new HuffmanTree(ac);
-	
+//	// Road network
+//	Graph* g = new Graph(
+//		new FileReader(Config::ROAD_NETWORK_NODE, false),
+//		new FileReader(Config::ROAD_NETWORK_EDGE, false),
+//		new FileReader(Config::ROAD_NETWORK_GEOMETRY, false)
+//	);
+//
+////	
+////	FileReader* spatial = new FileReader("/Users/songrenchu/百度云同步盘/PRESS_SampleDataset/v2_SPCompressedSpatial_2.txt", true);
+////	FileReader* temporal = new FileReader("/Users/songrenchu/百度云同步盘/PRESS_SampleDataset/Temporal_2.txt", true);
+////	FileWriter* newSpatial = new FileWriter("/Users/songrenchu/百度云同步盘/PRESS_SampleDataset/v2_SPCompressedSpatial_2.txt", true);
+////	
+//
+//	g->edgeNumber = 10;
+//	
+//	vector<RoadNetTrajectory*>* traSet = new vector<RoadNetTrajectory*>();
+//	
+//	vector<int>* spatial = new vector<int>();
+//	spatial->push_back(1);
+//	spatial->push_back(5);
+//	spatial->push_back(8);
+//	spatial->push_back(6);
+//	spatial->push_back(3);
+//	vector<TemporalPair>* temporal = new vector<TemporalPair>();
+//	RoadNetTrajectory* tra1 = new RoadNetTrajectory(spatial, temporal);
+//	traSet->push_back(tra1);
+//	
+//	vector<int>* spatial2 = new vector<int>();
+//	spatial2->push_back(1);
+//	spatial2->push_back(5);
+//	spatial2->push_back(2);
+//	spatial2->push_back(1);
+//	spatial2->push_back(4);
+//	spatial2->push_back(8);
+//	RoadNetTrajectory* tra2 = new RoadNetTrajectory(spatial2, temporal);
+//	traSet->push_back(tra2);
+//	
+//	vector<int>* spatial3 = new vector<int>();
+//	spatial3->push_back(2);
+//	spatial3->push_back(1);
+//	spatial3->push_back(4);
+//	spatial3->push_back(6);
+//	RoadNetTrajectory* tra3 = new RoadNetTrajectory(spatial3, temporal);
+//	traSet->push_back(tra3);
+//	
+//	ACAutomaton* ac = new ACAutomaton(g, traSet, 3);
+//	
+//	HuffmanTree* huffman = new HuffmanTree(ac);
+//
+	HuffmanTree* huffman = new HuffmanTree(new FileReader("/Users/songrenchu/Develop/test/huffman.txt", true));
 	huffman->display();
+	
+	huffman->displayCode();
+	
+//	huffman->store(new FileWriter("/Users/songrenchu/Develop/test/huffman.txt", true));
+	
 	
 	//ac->display();
 	//ac->store(new FileWriter("/Users/songrenchu/Develop/test/ac.txt", true));
