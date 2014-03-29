@@ -84,6 +84,20 @@ public:
 		Binary* binary = new Binary(code);
 		return binary;
 	}
+	
+	// ========= BTC ==========
+	static vector<TemporalPair>* basicBTC(RoadNetTrajectory* trajectory, double tsnd, double nstd) {
+		/** TODO to be impelmented */
+		return trajectory->temporal;
+	}
+	
+	// ========= PRESS ========
+	// get compressed trajectory
+	PRESSCompressedTrajectory* compression(Graph* graph, ACAutomaton* ac, HuffmanTree* huffman, RoadNetTrajectory* trajectory, double tsnd, double nstd) {
+		Binary* binary = PRESS::FSTCompression(ac, huffman, PRESS::SPCompression(graph, trajectory->spatial));
+		vector<TemporalPair>* temporal = PRESS::basicBTC(trajectory, tsnd, nstd);
+		return new PRESSCompressedTrajectory(binary, temporal);
+	}
 };
 
 #endif

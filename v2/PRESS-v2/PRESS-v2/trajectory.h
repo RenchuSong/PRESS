@@ -188,5 +188,9 @@ public:
 		}
 	}
 	
+	~PRESSCompressedTrajectory() {
+		delete spatial;
+		delete temporal;
+	}
 };
 #endif

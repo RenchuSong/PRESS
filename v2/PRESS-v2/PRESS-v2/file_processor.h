@@ -11,6 +11,9 @@
 
 #include <iostream>
 #include <vector>
+#include <cstdlib>
+#include <dirent.h>
+#include <cstring>
 
 using namespace std;
 
@@ -111,6 +114,30 @@ public:
 			double temp;
 			if (fscanf(fp, "%lf", &temp) == EOF) {
 				return EOF;
+			}
+			return temp;
+		}
+	}
+	
+	// read a string (shorter than 256)
+	char* nextString() {
+		char* temp = new char[256];
+		if (this->binary) {
+			int i = 0;
+			while (fread(char2Binary.data,sizeof(unsigned char), 1,fp) > 0) {
+				temp[i] = (char)char2Binary.value;
+				if (temp[i++] == 0 || i > 254) {
+					break;
+				}
+			}
+			if (i == 0) {
+				return NULL;
+			}
+			temp[i] = 0;
+			return temp;
+		} else {
+			if (fscanf(fp, "%s", temp) == EOF) {
+				return NULL;
 			}
 			return temp;
 		}
@@ -272,5 +299,40 @@ public:
 		delete binary;
 	}
 };
+
+// Other tool functions
+class FileTool {
+private:
+	static FileTool* instance;
+	
+public:
+	static FileTool* getInstance() {
+		if (instance == NULL) {
+			instance = new FileTool();
+		}
+		return instance;
+	}
+	
+	// get path filename set (filepath length should not exceed 128)
+	vector<char*>* getFileNameSet(char* path) {
+		vector<char*>* result = new vector<char*>();
+		struct dirent* ent = NULL;
+		DIR *dir;
+		dir = opendir(path);
+		while((ent = readdir(dir))!= NULL){
+			if (ent->d_name[0]=='.') continue;
+			char* name = new char[128];
+			strcat(name, path);
+			strcat(name, "/");
+			strcat(name, ent->d_name);
+			result->push_back(name);
+		}
+		closedir(dir);
+		return result;
+	}
+};
+
+FileTool* FileTool::instance = NULL;
+
 
 #endif /* defined(__PRESS_v2__file_processor__) */

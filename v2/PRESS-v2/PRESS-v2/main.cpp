@@ -16,6 +16,7 @@
 #include "ac_automaton.h"
 #include "huffman.h"
 #include "timer.h"
+#include "pre_processing.h"
 #include <vector>
 
 using namespace std;
@@ -28,8 +29,18 @@ void systemInitialize() {
 	Config::SP_TABLE = "/Users/songrenchu/百度云同步盘/PRESS_SampleDataset/ShortestPath/SPTable.txt";
 }
 
-int main(int argc, const char * argv[])
-{
+int main(int argc, const char * argv[]) {
+	
+	vector<char*>* list = FileTool::getInstance()->getFileNameSet("/Users/songrenchu/Develop/test/");
+	for (int i = 0; i < list->size(); ++i) {
+		cout << list->at(i) << endl;
+	}
+	
+//	FileReader* fr = new FileReader("/Users/songrenchu/Develop/test/test.txt", false);
+//	cout << fr->nextString() << endl << fr->nextString() << endl << fr->nextString() << endl << fr->nextString() << endl;
+//	if (fr->nextString() == NULL) cout << "dfdf" << endl;
+	return 0;
+	
 //	vector<bool>* binary = new vector<bool>();
 //	binary->push_back(true);
 //	binary->push_back(false);
