@@ -23,22 +23,6 @@
             shouldBeEnabled = "No"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
-            filePath = "PRESS-v2/main.cpp"
-            timestampString = "417844901.155616"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "294"
-            endingLineNumber = "294"
-            landmarkName = "main(int argc, const char * argv[])"
-            landmarkType = "7">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            shouldBeEnabled = "No"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
             filePath = "PRESS-v2/road_network.h"
             timestampString = "417703855.120294"
             startingColumnNumber = "9223372036854775807"
@@ -85,13 +69,13 @@
             shouldBeEnabled = "No"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
-            filePath = "PRESS-v2/main.cpp"
-            timestampString = "417844901.155616"
+            filePath = "PRESS-v2/utility.cpp"
+            timestampString = "417863693.775619"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "202"
-            endingLineNumber = "202"
-            landmarkName = "main(int argc, const char * argv[])"
+            startingLineNumber = "73"
+            endingLineNumber = "73"
+            landmarkName = "edgeBias(EcldPoint* p, vector&lt;EcldPoint*&gt; geometry)"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>

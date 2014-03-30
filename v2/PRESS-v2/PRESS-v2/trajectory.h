@@ -94,13 +94,17 @@ struct TemporalPair {
 		this->t = t;
 		this->d = d;
 	}
+	
+	void display() {
+		cout << t << ":" << d << endl;
+	}
 };
 
 class RoadNetTrajectory {
 public:
 	int spatialNumber, temporalNumber;
 	vector<int>* spatial = new vector<int>();
-	vector<TemporalPair>* temporal = new vector<TemporalPair>();
+	vector<TemporalPair*>* temporal = new vector<TemporalPair*>();
 	
 	//Construct a road network trajectory from Spatial File Reader and Temporal File Reader
 	RoadNetTrajectory(FileReader* spatialReader, FileReader* temporalReader) {
@@ -115,13 +119,13 @@ public:
 		this->temporal->clear();
 		for (int i = 0; i < this->temporalNumber; ++i) {
 			//TemporalPair dtPair(temporalReader->nextInt(), temporalReader->nextDouble());
-			TemporalPair dtPair(temporalReader->nextInt(), temporalReader->nextInt());
+			TemporalPair* dtPair = new TemporalPair(temporalReader->nextInt(), temporalReader->nextDouble());
 			this->temporal->push_back(dtPair);
 		}
 	}
 	
 	//Construct a trajectory from spatial and temporal vector
-	RoadNetTrajectory(vector<int>* spatial, vector<TemporalPair>* temporal) {
+	RoadNetTrajectory(vector<int>* spatial, vector<TemporalPair*>* temporal) {
 		this->spatial = spatial;
 		this->spatialNumber = (int)spatial->size();
 		this->temporal = temporal;
@@ -136,8 +140,8 @@ public:
 		}
 		temporalWriter->writeInt(this->temporalNumber);
 		for (int i = 0; i < this->temporalNumber; ++i) {
-			temporalWriter->writeInt(temporal->at(i).t);
-			temporalWriter->writeDouble(temporal->at(i).d);
+			temporalWriter->writeInt(temporal->at(i)->t);
+			temporalWriter->writeDouble(temporal->at(i)->d);
 		}
 	}
 	
@@ -153,13 +157,16 @@ public:
 		cout << "Temporal" << endl;
 		cout << this->temporalNumber << endl;
 		for (int i = 0; i < this->temporalNumber; ++i) {
-			cout << this->temporal->at(i).t << ", " << this->temporal->at(i).d << "\t    ";
+			cout << this->temporal->at(i)->t << ", " << this->temporal->at(i)->d << "\t    ";
 		}
 		cout << endl;
 	}
 	
 	~RoadNetTrajectory() {
 		delete spatial;
+		for (int i = 0; i < temporal->size(); ++i) {
+			delete temporal->at(i);
+		}
 		delete temporal;
 	}
 };
@@ -168,10 +175,10 @@ public:
 class PRESSCompressedTrajectory {
 public:
 	Binary* spatial;
-	vector<TemporalPair>* temporal;
+	vector<TemporalPair*>* temporal;
 	
 	// Construct a PRESSCompressedTrajectory from spatial and temporal component
-	PRESSCompressedTrajectory(Binary* binary, vector<TemporalPair>* temporal) {
+	PRESSCompressedTrajectory(Binary* binary, vector<TemporalPair*>* temporal) {
 		this->spatial = binary;
 		this->temporal = temporal;
 	}
@@ -180,11 +187,11 @@ public:
 	PRESSCompressedTrajectory(FileReader* spatialReader, FileReader* temporalReader) {
 		spatial = new Binary(spatialReader);
 		int temporalNumber = temporalReader->nextInt();
-		this->temporal = new vector<TemporalPair>();
+		this->temporal = new vector<TemporalPair*>();
 		this->temporal->clear();
 		for (int i = 0; i < temporalNumber; ++i) {
 			//TemporalPair dtPair(temporalReader->nextInt(), temporalReader->nextDouble());
-			TemporalPair dtPair(temporalReader->nextInt(), temporalReader->nextInt());
+			TemporalPair* dtPair = new TemporalPair(temporalReader->nextInt(), temporalReader->nextInt());
 			this->temporal->push_back(dtPair);
 		}
 	}
@@ -194,13 +201,16 @@ public:
 		spatial->store(spatialWriter);
 		temporalWriter->writeInt((int)temporal->size());
 		for (int i = 0; i < temporal->size(); ++i) {
-			temporalWriter->writeInt(temporal->at(i).t);
-			temporalWriter->writeDouble(temporal->at(i).d);
+			temporalWriter->writeInt(temporal->at(i)->t);
+			temporalWriter->writeDouble(temporal->at(i)->d);
 		}
 	}
 	
 	~PRESSCompressedTrajectory() {
 		delete spatial;
+		for (int i = 0; i < temporal->size(); ++i) {
+			delete temporal->at(i);
+		}
 		delete temporal;
 	}
 };

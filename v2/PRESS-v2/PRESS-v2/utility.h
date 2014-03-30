@@ -9,6 +9,10 @@
 #ifndef __PRESS_v2__utility__
 #define __PRESS_v2__utility__
 
+#include <vector>
+
+using namespace std;
+
 // euclidean point
 struct EcldPoint {
 	double x, y;
@@ -22,6 +26,9 @@ struct EcldPoint {
 extern double ecldDistance(EcldPoint*, EcldPoint*);
 
 // calculate the distance from a point to an interval
-extern double point2Interval(EcldPoint*, EcldPoint*, EcldPoint*);
+extern double point2IntervalDistance(EcldPoint*, EcldPoint*, EcldPoint*);
+
+// Calculate the bias from start of a vector of points to the projection of a point on the vector of points
+extern double edgeBias(EcldPoint*, vector<EcldPoint*>);
 
 #endif /* defined(__PRESS_v2__utility__) */

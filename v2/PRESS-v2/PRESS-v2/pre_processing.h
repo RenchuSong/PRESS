@@ -9,6 +9,7 @@
 #ifndef PRESS_v2_pre_processing_h
 #define PRESS_v2_pre_processing_h
 
+#include "utility.h"
 #include "file_processor.h"
 #include "road_network.h"
 #include "trajectory.h"
@@ -113,9 +114,43 @@ public:
 			vector<int>* spatial = PRESS::SPComplement(graph, mm->getProcessedSequence());
 
 			// generate temporal component
-			cout << "herre" << endl;
+			for (int j = 1; j < mm->sequence->size(); ++j) {
+				if (mm->sequence->at(j)->edgeId == Config::NULL_POINTER) {
+					mm->sequence->at(j)->edgeId = mm->sequence->at(j - 1)->edgeId;
+				}
+			}
 			
+			for (int j = (int)mm->sequence->size() - 2; j >= 0; --j) {
+				if (mm->sequence->at(j)->edgeId == Config::NULL_POINTER) {
+					mm->sequence->at(j)->edgeId = mm->sequence->at(j + 1)->edgeId;
+				}
+			}
 
+			vector<TemporalPair*>* temporal = new vector<TemporalPair*>();
+			double accumulate = 0;			// distance accumulation
+			int pt = 0;						// pointer to the edge
+			for (int j = 0; j < mm->sequence->size(); ++j) {
+				while (mm->sequence->at(j)->edgeId != spatial->at(pt)) {
+					accumulate += graph->getEdge(spatial->at(pt))->len;
+					++pt;
+				}
+				
+				EcldPoint* p = new EcldPoint(gps->sequence->at(j)->x, gps->sequence->at(j)->y);
+				double bias = edgeBias(p, graph->getEdge(spatial->at(pt))->geometry);
+				delete p;
+				temporal->push_back(new TemporalPair(gps->sequence->at(j)->t, accumulate + bias));
+			}
+			
+			// decline gaussian random route
+			for (int j = 1; j < temporal->size(); ++j) {
+				if (temporal->at(j)->d < temporal->at(j - 1)->d) {
+					temporal->at(j)->d = temporal->at(j - 1)->d;
+				}
+			}
+			
+			RoadNetTrajectory* trajectory = new RoadNetTrajectory(spatial, temporal);
+			trajectory->store(spatialWriter, temporalWriter);
+			delete trajectory;
 		}
 		
 		delete gpsPathSet;
