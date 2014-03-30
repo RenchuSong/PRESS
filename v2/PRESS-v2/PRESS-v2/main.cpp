@@ -65,11 +65,19 @@ int main(int argc, const char * argv[]) {
 	
 	PreProcessor::getInstance()->generateRoadNetTrajectory(
 		g,
-		"/Users/songrenchu/百度云同步盘/PRESS_SampleDataset/v2/input1",
-		"/Users/songrenchu/百度云同步盘/PRESS_SampleDataset/v2/output1",
-		new FileWriter("/Users/songrenchu/百度云同步盘/PRESS_SampleDataset/v2/RoadNetTrajectory/spatial1.txt", true),
-		new FileWriter("/Users/songrenchu/百度云同步盘/PRESS_SampleDataset/v2/RoadNetTrajectory/temporal1.txt", true)
+		"/Users/songrenchu/百度云同步盘/PRESS_SampleDataset/v2/input2",
+		"/Users/songrenchu/百度云同步盘/PRESS_SampleDataset/v2/output2",
+		new FileWriter("/Users/songrenchu/百度云同步盘/PRESS_SampleDataset/v2/RoadNetTrajectory/spatial2.txt", true),
+		new FileWriter("/Users/songrenchu/百度云同步盘/PRESS_SampleDataset/v2/RoadNetTrajectory/temporal2.txt", true)
 	);
+	
+//	PreProcessor::getInstance()->generateRoadNetTrajectory(
+//														   g,
+//														   "/Users/songrenchu/Develop/test/input",
+//														   "/Users/songrenchu/Develop/test/output",
+//														   new FileWriter("/Users/songrenchu/Develop/test/spatial1.txt", true),
+//														   new FileWriter("/Users/songrenchu/Develop/test/temporal1.txt", true)
+//	);
 	
 	return 0;
 //

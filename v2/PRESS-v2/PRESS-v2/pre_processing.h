@@ -49,7 +49,9 @@ public:
 	vector<int>* getProcessedSequence() {
 		vector<int>* result = new vector<int>();
 		int i = 0;
-		while (sequence->at(i)->edgeId == Config::NULL_POINTER && i++ < sequence->size()) { }
+		while (i < sequence->size() && sequence->at(i)->edgeId == Config::NULL_POINTER) {
+			i++;
+		}
 		for (; i < sequence->size(); ++i) {
 			if (sequence->at(i)->edgeId != Config::NULL_POINTER) {
 				if (!result->size() || result->at(result->size() - 1) != sequence->at(i)->edgeId) {
@@ -103,6 +105,7 @@ public:
 		temporalWriter->writeInt((int)mapmatchPathSet->size());
 		
 		for (int i = 0; i < gpsPathSet->size(); ++i) {
+			cout << gpsPathSet->at(i) << endl;
 			FileReader* gpsReader = new FileReader(gpsPathSet->at(i), false);
 			GPSTrajectory* gps = new GPSTrajectory(gpsReader);
 			delete gpsReader;
@@ -110,8 +113,15 @@ public:
 			MapMatchResult* mm = new MapMatchResult(mapReader);
 			delete mapReader;
 
+			// Hook: outlier trajectory, directly match to 0
+			vector<int>* processedSequence = mm->getProcessedSequence();
+			if (!processedSequence->size()) {
+				processedSequence->push_back(0);
+				mm->sequence->at(0)->edgeId = 0;
+			}
+			
 			// generate spatial component
-			vector<int>* spatial = PRESS::SPComplement(graph, mm->getProcessedSequence());
+			vector<int>* spatial = PRESS::SPComplement(graph, processedSequence);
 
 			// generate temporal component
 			for (int j = 1; j < mm->sequence->size(); ++j) {
@@ -125,7 +135,7 @@ public:
 					mm->sequence->at(j)->edgeId = mm->sequence->at(j + 1)->edgeId;
 				}
 			}
-
+			
 			vector<TemporalPair*>* temporal = new vector<TemporalPair*>();
 			double accumulate = 0;			// distance accumulation
 			int pt = 0;						// pointer to the edge
