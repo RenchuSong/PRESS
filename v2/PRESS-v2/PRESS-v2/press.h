@@ -85,6 +85,28 @@ public:
 		return binary;
 	}
 	
+	// Complement spatial component from broken edge sequence
+	static vector<int>* SPComplement(Graph* graph, vector<int>* source) {
+		if (source == NULL || source->size() < 1) {
+			throw "Spatial component empty";
+		}
+		vector<int>* result = new vector<int>();
+		
+		for (int i = (int)source->size() - 1; i > 0; --i) {
+			int edge = source->at(i);
+			result->push_back(edge);
+			while (SPTable::getPre(graph, source->at(i - 1), edge) != Config::NULL_POINTER) {
+				result->push_back(SPTable::getPre(graph, source->at(i - 1), edge));
+				edge = SPTable::getPre(graph, source->at(i - 1), edge);
+			}
+		}
+		result->push_back(source->at(0));
+		reverse(result->begin(), result->end());
+		
+		return result;
+	}
+	
+	
 	// ========= BTC ==========
 	static vector<TemporalPair>* basicBTC(RoadNetTrajectory* trajectory, double tsnd, double nstd) {
 		/** TODO to be impelmented */

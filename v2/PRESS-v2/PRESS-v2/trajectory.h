@@ -24,41 +24,46 @@ struct GPSPoint {
 		this->y = y;
 		this->t = t;
 	}
+	
+	void display() {
+		cout << t << ":" << x << " " << y << endl;
+	}
 };
 
 // GPS trajectory is a sequence of GPS points
 class GPSTrajectory {
 public:
-	int pointNumber = 0;
-	vector<GPSPoint> sequence;
+	vector<GPSPoint*>* sequence = new vector<GPSPoint*>();
 	
 	//Construct a GPS trajectory from a file handler
 	GPSTrajectory(FileReader* fr) {
-		this->pointNumber = fr->nextInt();
-		this->sequence.clear();
-		for (int i = 0; i < this->pointNumber; ++i) {
-			GPSPoint point(fr->nextInt(), fr->nextDouble(), fr->nextDouble());
-			this->sequence.push_back(point);
+		this->sequence->clear();
+		int t;
+		while ((t = fr->nextInt()) != EOF) {
+			fr->nextChar();
+			double x = fr->nextDouble();
+			fr->nextChar();
+			double y = fr->nextDouble();
+			this->sequence->push_back(new GPSPoint(t, x, y));
 		}
 	}
 	
 	//Store a GPS trajectory
 	void store(FileWriter* fw) {
-		fw->writeInt(this->pointNumber);
 		if (!fw->isBinary()) {
 			fw->writeChar('\n');
 		}
-		for (int i = 0; i < this->pointNumber; ++i) {
+		for (int i = 0; i < sequence->size(); ++i) {
 			if (fw->isBinary()) {
-				fw->writeInt(sequence[i].t);
-				fw->writeDouble(sequence[i].x);
-				fw->writeDouble(sequence[i].y);
+				fw->writeInt(sequence->at(i)->t);
+				fw->writeDouble(sequence->at(i)->x);
+				fw->writeDouble(sequence->at(i)->y);
 			} else {
-				fw->writeInt(sequence[i].t);
+				fw->writeInt(sequence->at(i)->t);
 				fw->writeChar(' ');
-				fw->writeDouble(sequence[i].x);
+				fw->writeDouble(sequence->at(i)->x);
 				fw->writeChar(' ');
-				fw->writeDouble(sequence[i].y);
+				fw->writeDouble(sequence->at(i)->y);
 				fw->writeChar('\n');
 			}
 		}
@@ -66,10 +71,16 @@ public:
 	
 	//Display a GPS trajectory
 	void display() {
-		cout << this->pointNumber << endl;
-		for (int i = 0; i < this->pointNumber; ++i) {
-			cout << sequence[i].t << ": " << sequence[i].x << " " << sequence[i].y << endl;
+		for (int i = 0; i < sequence->size(); ++i) {
+			cout << sequence->at(i)->t << ": " << sequence->at(i)->x << " " << sequence->at(i)->y << endl;
 		}
+	}
+	
+	~GPSTrajectory() {
+		for (int i = 0; i < sequence->size(); ++i) {
+			delete sequence->at(i);
+		}
+		delete sequence;
 	}
 };
 

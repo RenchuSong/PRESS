@@ -21,4 +21,7 @@ struct EcldPoint {
 // calculate the euclidean distance of two points
 extern double ecldDistance(EcldPoint*, EcldPoint*);
 
+// calculate the distance from a point to an interval
+extern double point2Interval(EcldPoint*, EcldPoint*, EcldPoint*);
+
 #endif /* defined(__PRESS_v2__utility__) */

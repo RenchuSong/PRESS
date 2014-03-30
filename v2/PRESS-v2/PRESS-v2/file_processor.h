@@ -322,6 +322,7 @@ public:
 		while((ent = readdir(dir))!= NULL){
 			if (ent->d_name[0]=='.') continue;
 			char* name = new char[128];
+			memset(name, 0, 128);
 			strcat(name, path);
 			strcat(name, "/");
 			strcat(name, ent->d_name);
