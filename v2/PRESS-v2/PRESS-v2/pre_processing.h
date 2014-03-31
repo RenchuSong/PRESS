@@ -93,7 +93,7 @@ public:
 	// generate spatial
 	// get GPS path set of one day from gpsTraPath, get map match result from mapmatchTraSet
 	// write Spatial and Temporal component to spatialWriter and temporalWriter
-	void generateRoadNetTrajectory(Graph* graph, char* gpsTraPath, char* mapmatchTraPath, FileWriter* spatialWriter, FileWriter* temporalWriter) {
+	void generateRoadNetTrajectory(Graph* graph, char* gpsTraPath, char* mapmatchTraPath, char* spatialPath, char* temporalPath) {
 		vector<char*>* mapmatchPathSet = FileTool::getInstance()->getFileNameSet(mapmatchTraPath);
 		vector<char*>* gpsPathSet = FileTool::getInstance()->getFileNameSet(gpsTraPath);
 		
@@ -101,11 +101,16 @@ public:
 			throw "GPS trajectory set number and map matched trajectory set number dont match";
 		}
 		
+		FileWriter* spatialWriter = new FileWriter(spatialPath, true);
+		FileWriter* temporalWriter = new FileWriter(temporalPath, true);
+		
 		spatialWriter->writeInt((int)gpsPathSet->size());
 		temporalWriter->writeInt((int)mapmatchPathSet->size());
 		
 		for (int i = 0; i < gpsPathSet->size(); ++i) {
+			
 			cout << gpsPathSet->at(i) << endl;
+			
 			FileReader* gpsReader = new FileReader(gpsPathSet->at(i), false);
 			GPSTrajectory* gps = new GPSTrajectory(gpsReader);
 			delete gpsReader;
@@ -165,6 +170,8 @@ public:
 		
 		delete gpsPathSet;
 		delete mapmatchPathSet;
+		delete spatialWriter;
+		delete temporalWriter;
 	}
 };
 

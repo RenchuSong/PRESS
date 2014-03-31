@@ -17,6 +17,7 @@
 #include "huffman.h"
 #include "timer.h"
 #include "pre_processing.h"
+#include "experiment.h"
 #include <vector>
 
 using namespace std;
@@ -30,55 +31,54 @@ void systemInitialize() {
 }
 
 int main(int argc, const char * argv[]) {
-//	
-//	FileReader* spatial = new FileReader("/Users/songrenchu/Develop/test/spatial.txt", true);
-//	FileReader* temporal = new FileReader("/Users/songrenchu/Develop/test/temporal.txt", true);
-//	int t = spatial->nextInt();
-//	temporal->nextInt();
-//	for (int i = 0; i < t; ++i) {
-//		RoadNetTrajectory* tra = new RoadNetTrajectory(spatial, temporal);
-//		tra->display();
-//	}
-//	return 0;
-//	
-//	vector<EcldPoint*> ls;
-//	ls.push_back(new EcldPoint(1, 1));
-//	ls.push_back(new EcldPoint(2, 1));
-//	ls.push_back(new EcldPoint(3, 1));
-//	ls.push_back(new EcldPoint(4, 1));
-//	ls.push_back(new EcldPoint(5, 1));
-//	
-//	cout << edgeBias(new EcldPoint(5.5, 2), ls) << endl;
-//	
-//	return 0;
-//	
+	
 	// Initialize the system with hard coded urls;
 	systemInitialize();
 	
 	// Road network
-	Graph* g = new Graph(
-		new FileReader(Config::ROAD_NETWORK_NODE, false),
-		new FileReader(Config::ROAD_NETWORK_EDGE, false),
-		new FileReader(Config::ROAD_NETWORK_GEOMETRY, false)
-	);
-
+	FileReader* nodeReader = new FileReader(Config::ROAD_NETWORK_NODE, false);
+	FileReader* edgeReader = new FileReader(Config::ROAD_NETWORK_EDGE, false);
+	FileReader* geoReader = new FileReader(Config::ROAD_NETWORK_GEOMETRY, false);
 	
-	PreProcessor::getInstance()->generateRoadNetTrajectory(
-		g,
-		"/Users/songrenchu/百度云同步盘/PRESS_SampleDataset/v2/input2",
-		"/Users/songrenchu/百度云同步盘/PRESS_SampleDataset/v2/output2",
-		new FileWriter("/Users/songrenchu/百度云同步盘/PRESS_SampleDataset/v2/RoadNetTrajectory/spatial2.txt", true),
-		new FileWriter("/Users/songrenchu/百度云同步盘/PRESS_SampleDataset/v2/RoadNetTrajectory/temporal2.txt", true)
-	);
+	Graph* graph = new Graph(nodeReader, edgeReader, geoReader);
 	
+	delete nodeReader;
+	delete edgeReader;
+	delete geoReader;
+	
+	SPTable::getInstance();
+	
+//  // Get road network trajectory from GPS trajectory and map match result
 //	PreProcessor::getInstance()->generateRoadNetTrajectory(
-//														   g,
-//														   "/Users/songrenchu/Develop/test/input",
-//														   "/Users/songrenchu/Develop/test/output",
-//														   new FileWriter("/Users/songrenchu/Develop/test/spatial1.txt", true),
-//														   new FileWriter("/Users/songrenchu/Develop/test/temporal1.txt", true)
+//		graph,
+//		"/Users/songrenchu/百度云同步盘/PRESS_SampleDataset/v2/input2",
+//		"/Users/songrenchu/百度云同步盘/PRESS_SampleDataset/v2/output2",
+//		"/Users/songrenchu/百度云同步盘/PRESS_SampleDataset/v2/RoadNetTrajectory/spatial2.txt",
+//		"/Users/songrenchu/百度云同步盘/PRESS_SampleDataset/v2/RoadNetTrajectory/temporal2.txt"
+//	);
+
+
+//	// Get SP compressed spatial component from training dataset
+//	Experiment::getInstance()->trainingSPCompress(
+//		graph,
+//		"/Users/songrenchu/Develop/test/spatial1.txt",
+//		"/Users/songrenchu/Develop/test/temporal1.txt",
+//		"/Users/songrenchu/Develop/test/comp.txt"
 //	);
 	
+	// Generate AC automaton and Huffman tree from SP compressed component
+	Experiment::getInstance()->generateACHuffman(
+		graph,
+		"/Users/songrenchu/百度云同步盘/PRESS_SampleDataset/v2/CompressedTrajectory/sp_compressed_1.txt",
+		"/Users/songrenchu/百度云同步盘/PRESS_SampleDataset/v2/RoadNetTrajectory/temporal1.txt",
+		"/Users/songrenchu/百度云同步盘/PRESS_SampleDataset/v2/AC_Huffman/ac.txt",
+		3,
+		"/Users/songrenchu/百度云同步盘/PRESS_SampleDataset/v2/AC_Huffman/huffman.txt"
+	);
+	
+
+
+	SPTable::free();
 	return 0;
 //
 ////	vector<char*>* list = FileTool::getInstance()->getFileNameSet("/Users/songrenchu/Develop/test/");

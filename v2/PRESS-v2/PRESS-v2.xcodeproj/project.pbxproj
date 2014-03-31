@@ -40,6 +40,7 @@
 		2BCB037018A39DBD009DBEFE /* road_network.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = road_network.h; sourceTree = "<group>"; };
 		2BCB037118A3E0CC009DBEFE /* utility.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = utility.cpp; sourceTree = "<group>"; };
 		2BCB037218A3E0CC009DBEFE /* utility.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = utility.h; sourceTree = "<group>"; };
+		2BF3B49018E927630074B220 /* experiment.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = experiment.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -85,6 +86,7 @@
 				2B8A974A18E02D0C0093EBE8 /* huffman.h */,
 				2B8A974B18E2CBD10093EBE8 /* timer.h */,
 				2BA60ED118E6DA8900F244FA /* pre_processing.h */,
+				2BF3B49018E927630074B220 /* experiment.h */,
 			);
 			path = "PRESS-v2";
 			sourceTree = "<group>";

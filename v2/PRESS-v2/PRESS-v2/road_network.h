@@ -311,6 +311,8 @@ private:
 				table[i][j] = fr->nextInt();
 			}
 		}
+		delete fr;
+		
 	}
 	
 public:
@@ -351,6 +353,13 @@ public:
 	~SPTable() {
 		for (int i = 0; i < nodeSize; ++i) {
 			delete[] table[i];
+		}
+	}
+	
+	static void free() {
+		delete pathBuffer;
+		if (instance != NULL) {
+			delete instance;
 		}
 	}
 };

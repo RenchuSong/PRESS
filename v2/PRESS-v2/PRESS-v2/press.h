@@ -26,6 +26,7 @@ public:
 		if (source == NULL || source->size() < 1) {
 			throw "Spatial component empty";
 		}
+		
 		vector<int>* result = new vector<int>();
 		result->push_back(source->at(0));
 		int preEdge = source->at(0);
