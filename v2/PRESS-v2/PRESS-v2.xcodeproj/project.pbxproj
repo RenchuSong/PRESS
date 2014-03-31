@@ -31,6 +31,7 @@
 		2B8A974A18E02D0C0093EBE8 /* huffman.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = huffman.h; sourceTree = "<group>"; };
 		2B8A974B18E2CBD10093EBE8 /* timer.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = timer.h; sourceTree = "<group>"; };
 		2BA60ED118E6DA8900F244FA /* pre_processing.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = pre_processing.h; sourceTree = "<group>"; };
+		2BAE85AC18E95C8600162BCF /* counter_tool.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = counter_tool.h; sourceTree = "<group>"; };
 		2BBB76C618D7FECF006E28DB /* config.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.h; path = config.h; sourceTree = "<group>"; };
 		2BCB035D18A0D2FD009DBEFE /* PRESS-v2 */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = "PRESS-v2"; sourceTree = BUILT_PRODUCTS_DIR; };
 		2BCB036018A0D2FD009DBEFE /* main.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
@@ -87,6 +88,7 @@
 				2B8A974B18E2CBD10093EBE8 /* timer.h */,
 				2BA60ED118E6DA8900F244FA /* pre_processing.h */,
 				2BF3B49018E927630074B220 /* experiment.h */,
+				2BAE85AC18E95C8600162BCF /* counter_tool.h */,
 			);
 			path = "PRESS-v2";
 			sourceTree = "<group>";

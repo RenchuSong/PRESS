@@ -19,6 +19,7 @@
 #include "pre_processing.h"
 #include "experiment.h"
 #include <vector>
+#include "counter_tool.h"
 
 using namespace std;
 
@@ -66,17 +67,47 @@ int main(int argc, const char * argv[]) {
 //		"/Users/songrenchu/Develop/test/comp.txt"
 //	);
 	
-	// Generate AC automaton and Huffman tree from SP compressed component
-	Experiment::getInstance()->generateACHuffman(
-		graph,
-		"/Users/songrenchu/百度云同步盘/PRESS_SampleDataset/v2/CompressedTrajectory/sp_compressed_1.txt",
-		"/Users/songrenchu/百度云同步盘/PRESS_SampleDataset/v2/RoadNetTrajectory/temporal1.txt",
-		"/Users/songrenchu/百度云同步盘/PRESS_SampleDataset/v2/AC_Huffman/ac.txt",
-		3,
-		"/Users/songrenchu/百度云同步盘/PRESS_SampleDataset/v2/AC_Huffman/huffman.txt"
-	);
+//	// Generate AC automaton and Huffman tree from SP compressed component
+//	Experiment::getInstance()->generateACHuffman(
+//		graph,
+//		"/Users/songrenchu/百度云同步盘/PRESS_SampleDataset/v2/CompressedTrajectory/sp_compressed_1.txt",
+//		"/Users/songrenchu/百度云同步盘/PRESS_SampleDataset/v2/RoadNetTrajectory/temporal1.txt",
+//		"/Users/songrenchu/百度云同步盘/PRESS_SampleDataset/v2/AC_Huffman/ac.txt",
+//		3,
+//		"/Users/songrenchu/百度云同步盘/PRESS_SampleDataset/v2/AC_Huffman/huffman.txt"
+//	);
 	
+	// PRESS compression, get FST used frequency of each length
+	FileReader* acReader = new FileReader("/Users/songrenchu/百度云同步盘/PRESS_SampleDataset/v2/AC_Huffman/ac.txt", true);
+	ACAutomaton* ac = new ACAutomaton(acReader);
+	delete acReader;
+	
+	FileReader* huffmanReader = new FileReader("/Users/songrenchu/百度云同步盘/PRESS_SampleDataset/v2/AC_Huffman/huffman.txt", true);
+	HuffmanTree* huffman = new HuffmanTree(huffmanReader);
+	delete huffmanReader;
+	
+	
+	Experiment::getInstance()->pressCompress(
+		graph,
+		ac,
+		huffman,
+		"/Users/songrenchu/百度云同步盘/PRESS_SampleDataset/v2/RoadNetTrajectory/spatial2.txt",
+		"/Users/songrenchu/百度云同步盘/PRESS_SampleDataset/v2/RoadNetTrajectory/temporal2.txt",
+		"/Users/songrenchu/百度云同步盘/PRESS_SampleDataset/v2/CompressedTrajectory/hsc_compressed_2.txt",
+		"/Users/songrenchu/百度云同步盘/PRESS_SampleDataset/v2/CompressedTrajectory/btc_compressed_2.txt",
+		10,
+		10
+	);
 
+	int total = 0;
+	for (int i = 0; i < 100; ++i) {
+		total += CounterTool::getInstance()->lenFrequency[i];
+	}
+	for (int i = 0; i < 100; ++i) {
+		if (CounterTool::getInstance()->lenFrequency[i] > 0) {
+			cout << "Len " << i << ": " << CounterTool::getInstance()->lenFrequency[i] / (double)total << endl;
+		}
+	}
 
 	SPTable::free();
 	return 0;

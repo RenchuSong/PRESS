@@ -13,6 +13,7 @@
 #include "file_processor.h"
 #include "ac_automaton.h"
 #include "huffman.h"
+#include "counter_tool.h"
 #include <vector>
 
 using namespace std;
@@ -66,10 +67,13 @@ public:
 			int pt = matchSet[matchSet.size() - 1];
 			compressedSet.push_back(pt);
 			matchSet.pop_back();
+			int len = 1;
 			while (ac->getNode(pt)->father != 0) {
 				pt = ac->getNode(pt)->father;
 				matchSet.pop_back();
+				++len;
 			}
+			CounterTool::getInstance()->lenFrequency[len]++;	// count frequency of each length FST used
 		}
 		
 		matchSet.clear();
@@ -116,7 +120,7 @@ public:
 	
 	// ========= PRESS ========
 	// get compressed trajectory
-	PRESSCompressedTrajectory* compression(Graph* graph, ACAutomaton* ac, HuffmanTree* huffman, RoadNetTrajectory* trajectory, double tsnd, double nstd) {
+	static PRESSCompressedTrajectory* compression(Graph* graph, ACAutomaton* ac, HuffmanTree* huffman, RoadNetTrajectory* trajectory, double tsnd, double nstd) {
 		Binary* binary = PRESS::FSTCompression(ac, huffman, PRESS::SPCompression(graph, trajectory->spatial));
 		vector<TemporalPair*>* temporal = PRESS::basicBTC(trajectory, tsnd, nstd);
 		return new PRESSCompressedTrajectory(binary, temporal);

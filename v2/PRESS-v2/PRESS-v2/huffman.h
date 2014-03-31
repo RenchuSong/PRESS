@@ -130,7 +130,12 @@ public:
 		
 		int ptFirst = 0, ptSecond = 0;
 		huffmanSize = 0;
+		cout << "total: " << acAutomaton->trieSize << endl;
 		for (int i = 0; i < acAutomaton->trieSize; ++i) {
+			if (i % 10000 == 0) {
+				cout << i << "\t";
+			}
+			
 			int minFrequency = Config::HUGE_NUMBER;
 			int operation = 0;
 			if (ptFirst < (int)acAutomaton->trieSize - 1 && minFrequency > acNodeList[ptFirst]->frequency + acNodeList[ptFirst + 1]->frequency) {
@@ -188,6 +193,8 @@ public:
 				}
 			}
 		}
+		
+		cout << endl;
 		
 		hfmBranchNode.clear();
 		

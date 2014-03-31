@@ -57,9 +57,12 @@ public:
 		trie->at(0)->frequency = 0;
 		trieSize = 1;
 		
+		cout << "trajectory set" << endl;
 		// each trajectory
 		int trNumber = (int)spCompressedTrSet->size();
 		for (int i = 0; i < trNumber; ++i) {
+			if (i % 100 == 0) cout << "tra " << i << endl;
+			
 			RoadNetTrajectory* trajectory = spCompressedTrSet->at(i);
 			int spLength = (int)trajectory->spatialNumber;
 			
@@ -126,6 +129,10 @@ public:
 		delete[] inserted;
 		
 		// add fail pointer
+		cout << "fail pointer" << endl;
+		cout << "total trie size:" << trieSize << endl;
+		int count = 0;
+		
 		queue<ACNode*> sequence;
 		pt = getNode(0)->leftSon;
 		while (pt != Config::NULL_POINTER) {
@@ -148,7 +155,10 @@ public:
 				pt = getNode(pt)->rightBrother;
 			}
 			sequence.pop();
+			if (count % 10000 == 0) cout << count << '\t';
+			++count;
 		}
+		cout << endl;
 	}
 	
 	ACAutomaton(FileReader* fr) {

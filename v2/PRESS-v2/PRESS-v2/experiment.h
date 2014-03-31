@@ -77,7 +77,10 @@ public:
 		delete spatial;
 		delete temporal;
 		
+		cout << "AC Automaton Start" << endl;
 		ACAutomaton* ac = new ACAutomaton(graph, trajectorySet, sfxMaxLen);
+		
+		cout << "Huffman Start" << endl;
 		HuffmanTree* huffman = new HuffmanTree(ac);
 		
 		FileWriter* acWriter = new FileWriter(acPath, true);
@@ -92,8 +95,36 @@ public:
 			delete trajectorySet->at(i);
 		}
 		delete trajectorySet;
+		
+		delete ac;
+		delete huffman;
 	}
 	
+	// PRESS compress
+	void pressCompress(Graph* graph, ACAutomaton* ac, HuffmanTree* huffman, char* spatialPath, char* temporalPath, char* comSpatialPath, char* comTemporalPath, double tsnd, double nstd) {
+		FileReader* spatial = new FileReader(spatialPath, true);
+		FileReader* temporal = new FileReader(temporalPath, true);
+		
+		FileWriter* comSpatial = new FileWriter(comSpatialPath, true);
+		FileWriter* comTemporal = new FileWriter(comTemporalPath, true);
+		int traNumber = spatial->nextInt();
+		temporal->nextInt();
+		for (int i = 0; i < traNumber; ++i) {
+			if (i % 100 == 0) {
+				cout << "compressing " << i << endl;
+			}
+			
+			RoadNetTrajectory* trajectory = new RoadNetTrajectory(spatial, temporal);
+			PRESSCompressedTrajectory* com = PRESS::compression(graph, ac, huffman, trajectory, tsnd, nstd);
+			com->store(comSpatial, comTemporal);
+			delete trajectory;
+		}
+		
+		delete comSpatial;
+		delete comTemporal;
+		delete spatial;
+		delete temporal;
+	}
 	
 };
 Experiment* Experiment::instance = NULL;
