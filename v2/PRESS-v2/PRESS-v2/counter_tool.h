@@ -23,6 +23,7 @@ private:
 	
 public:
 	int lenFrequency[100];	// the frequency of each length of FST used during FST compression
+	int fstFrequency[100];	// the frequency of each length of FST in Huffman tree
 	
 	static CounterTool* getInstance() {
 		if (instance == NULL) {
@@ -36,6 +37,10 @@ public:
 		for (int i = 0; i < 100; ++i) {
 			lenFrequency[i] = 0;
 		}
+		for (int i = 0; i < 100; ++i) {
+			fstFrequency[i] = 0;
+		}
+		
 	}
 	
 };

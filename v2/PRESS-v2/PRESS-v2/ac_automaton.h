@@ -13,6 +13,7 @@
 #include <queue>
 #include "trajectory.h"
 #include "config.h"
+#include "counter_tool.h"
 
 class ACNode {
 public:
@@ -170,6 +171,21 @@ public:
 			node->frequency = fr->nextInt();
 			node->fail = fr->nextInt();
 			trie->push_back(node);
+		}
+	}
+	
+	void getFrequency() {
+		for (int i = 0; i < this->trie->size(); ++i) {
+			ACNode* node = this->trie->at(i);
+			if (node->id) {
+				int len = 1;
+				int freq = node->frequency;
+				while (node->father != 0) {
+					++len;
+					node = getNode(node->father);
+				}
+				CounterTool::getInstance()->fstFrequency[len] += freq;
+			}
 		}
 	}
 	
