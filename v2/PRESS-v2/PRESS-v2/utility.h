@@ -31,4 +31,7 @@ extern double point2IntervalDistance(EcldPoint*, EcldPoint*, EcldPoint*);
 // Calculate the bias from start of a vector of points to the projection of a point on the vector of points
 extern double edgeBias(EcldPoint*, vector<EcldPoint*>);
 
+// Calculate the angle of two points
+extern double angle(double x1, double y1, double x2, double y2);
+
 #endif /* defined(__PRESS_v2__utility__) */

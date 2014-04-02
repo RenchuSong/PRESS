@@ -109,6 +109,8 @@ public:
 		FileWriter* comTemporal = new FileWriter(comTemporalPath, true);
 		int traNumber = spatial->nextInt();
 		temporal->nextInt();
+		comSpatial->writeInt(traNumber);
+		comTemporal->writeInt(traNumber);
 		for (int i = 0; i < traNumber; ++i) {
 			if (i % 100 == 0) {
 				cout << "compressing " << i << endl;
@@ -126,6 +128,36 @@ public:
 		delete temporal;
 	}
 	
+	// PRESS BTC compression individually
+	void pressCompress(Graph* graph, char* spatialPath, char* temporalPath, char* comTemporalPath, double tsnd, double nstd, bool extend) {
+		FileReader* spatial = new FileReader(spatialPath, true);
+		FileReader* temporal = new FileReader(temporalPath, true);
+		
+		FileWriter* comTemporal = new FileWriter(comTemporalPath, true);
+		int traNumber = spatial->nextInt();
+		temporal->nextInt();
+		comTemporal->writeInt(traNumber);
+		
+		for (int i = 0; i < traNumber; ++i) {
+			if (i % 100 == 0) {
+				cout << "BTC compressing " << i << endl;
+			}
+			
+			RoadNetTrajectory* trajectory = new RoadNetTrajectory(spatial, temporal);
+			
+			vector<TemporalPair*>* temp = extend ? PRESS::extendBTC(graph, trajectory, tsnd, nstd) : PRESS::basicBTC(trajectory->temporal, tsnd, nstd);
+			comTemporal->writeInt((int)temp->size());
+			for (int j = 0; j < temp->size(); ++j) {
+				comTemporal->writeInt(temp->at(j)->t);
+				comTemporal->writeDouble(temp->at(j)->d);
+			}
+			delete trajectory;
+		}
+		
+		delete comTemporal;
+		delete spatial;
+		delete temporal;
+	}
 };
 Experiment* Experiment::instance = NULL;
 

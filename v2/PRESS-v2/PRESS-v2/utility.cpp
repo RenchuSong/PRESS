@@ -74,3 +74,14 @@ double edgeBias(EcldPoint* p, vector<EcldPoint*> geometry) {
 	
 	return result;
 }
+
+// Calculate the angle of two points
+double angle(double x1, double y1, double x2, double y2) {
+	if (x1 >= x2) {
+		if (y1 < y2) {
+			return 1e100;
+		}
+		return -1e100;
+	}
+	return (y2 - y1) / (x2 - x1);
+}

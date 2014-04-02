@@ -14,7 +14,9 @@
 #include "ac_automaton.h"
 #include "huffman.h"
 #include "counter_tool.h"
+#include "utility.h"
 #include <vector>
+#include <algorithm>
 
 using namespace std;
 
@@ -113,20 +115,74 @@ public:
 	
 	
 	// ========= BTC ==========
-	static vector<TemporalPair*>* kernelBTC(vector<TemporalPair*>* temporal, vector<pair<int, int>*>* tolerance) {
-		return temporal;
+	static vector<TemporalPair*>* kernelBTC(vector<TemporalPair*>* temporal, vector<pair<int, int>*>* toleranceD, vector<pair<int, int>*>* toleranceT) {
+		vector<TemporalPair*>* result = new vector<TemporalPair*>();
+		result->push_back(temporal->at(0));
+		if (temporal->size() > 1) {
+			double lower = -1e100, higher = 1e100;
+			int anchor = 0;
+			for (int i = 1; i < temporal->size(); ++i) {
+				double direction = angle(temporal->at(anchor)->t, temporal->at(anchor)->d, temporal->at(i)->t, temporal->at(i)->d);
+				if (direction < lower || direction > higher) {
+					result->push_back(temporal->at(i - 1));
+					anchor = i - 1;
+					lower = -1e100;
+					higher = 1e100;
+				}
+				double tsndU = toleranceD->at(i)->first;
+				double tsndB = toleranceD->at(i)->second;
+				double nstdU = toleranceT->at(i)->first;
+				double nstdB = toleranceT->at(i)->second;
+				
+				lower = max(lower, angle(temporal->at(anchor)->t, temporal->at(anchor)->d, temporal->at(i)->t, temporal->at(i)->d - tsndB));
+				higher = min(higher, angle(temporal->at(anchor)->t, temporal->at(anchor)->d, temporal->at(i)->t, temporal->at(i)->d + tsndU));
+				lower = max(lower, angle(temporal->at(anchor)->t, temporal->at(anchor)->d, temporal->at(i)->t + nstdU, temporal->at(i)->d));
+				higher = min(higher, angle(temporal->at(anchor)->t, temporal->at(anchor)->d, temporal->at(i)->t - nstdB, temporal->at(i)->d));
+			}
+			result->push_back(temporal->at(temporal->size() - 1));
+		}
+		return result;
 	}
 	
 	static vector<TemporalPair*>* basicBTC(vector<TemporalPair*>* temporal, double tsnd, double nstd) {
-		vector<pair<int, int>*>* tolerance = new vector<pair<int, int>*>();
+		vector<pair<int, int>*>* toleranceD = new vector<pair<int, int>*>();
+		vector<pair<int, int>*>* toleranceT = new vector<pair<int, int>*>();
+		
 		for (int i = 0; i < temporal->size(); ++i) {
-			tolerance->push_back(new pair<int, int>(tsnd, nstd));
+			toleranceD->push_back(new pair<int, int>(tsnd, tsnd));
+			toleranceT->push_back(new pair<int, int>(nstd, nstd));
 		}
-		vector<TemporalPair*>* result = PRESS::kernelBTC(temporal, tolerance);
-		for (int i = 0; i < tolerance->size(); ++i) {
-			delete tolerance->at(i);
+		vector<TemporalPair*>* result = PRESS::kernelBTC(temporal, toleranceD, toleranceT);
+		for (int i = 0; i < toleranceT->size(); ++i) {
+			delete toleranceT->at(i);
+			delete toleranceD->at(i);
 		}
-		delete tolerance;
+		delete toleranceT;
+		delete toleranceD;
+		return result;
+	}
+	
+	static vector<TemporalPair*>* extendBTC(Graph* graph, RoadNetTrajectory* trajectory, double tsnd, double nstd) {
+		vector<pair<int, int>*>* toleranceD = new vector<pair<int, int>*>();
+		vector<pair<int, int>*>* toleranceT = new vector<pair<int, int>*>();
+		double dist = 0;
+		int flag = 0;
+		for (int i = 0; i < trajectory->temporal->size(); ++i) {
+			toleranceT->push_back(new pair<int, int>(nstd, nstd));
+			while (flag < trajectory->spatial->size()-1 && dist + graph->getEdge(trajectory->spatial->at(flag))->len < trajectory->temporal->at(i)->d) {
+				dist += graph->getEdge(trajectory->spatial->at(flag++))->len;
+			}
+			double tsndU = min(tsnd, dist + graph->getEdge(trajectory->spatial->at(flag))->len - trajectory->temporal->at(i)->d);
+			double tsndB = min(tsnd, trajectory->temporal->at(i)->d - dist);
+			toleranceD->push_back(new pair<int, int>(tsndU, tsndB));
+		}
+		vector<TemporalPair*>* result = PRESS::kernelBTC(trajectory->temporal, toleranceD, toleranceT);
+		for (int i = 0; i < toleranceT->size(); ++i) {
+			delete toleranceT->at(i);
+			delete toleranceD->at(i);
+		}
+		delete toleranceD;
+		delete toleranceT;
 		return result;
 	}
 	
