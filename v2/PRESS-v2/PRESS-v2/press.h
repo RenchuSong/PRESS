@@ -113,16 +113,28 @@ public:
 	
 	
 	// ========= BTC ==========
-	static vector<TemporalPair*>* basicBTC(RoadNetTrajectory* trajectory, double tsnd, double nstd) {
-		/** TODO to be impelmented */
-		return trajectory->temporal;
+	static vector<TemporalPair*>* kernelBTC(vector<TemporalPair*>* temporal, vector<pair<int, int>*>* tolerance) {
+		return temporal;
+	}
+	
+	static vector<TemporalPair*>* basicBTC(vector<TemporalPair*>* temporal, double tsnd, double nstd) {
+		vector<pair<int, int>*>* tolerance = new vector<pair<int, int>*>();
+		for (int i = 0; i < temporal->size(); ++i) {
+			tolerance->push_back(new pair<int, int>(tsnd, nstd));
+		}
+		vector<TemporalPair*>* result = PRESS::kernelBTC(temporal, tolerance);
+		for (int i = 0; i < tolerance->size(); ++i) {
+			delete tolerance->at(i);
+		}
+		delete tolerance;
+		return result;
 	}
 	
 	// ========= PRESS ========
 	// get compressed trajectory
 	static PRESSCompressedTrajectory* compression(Graph* graph, ACAutomaton* ac, HuffmanTree* huffman, RoadNetTrajectory* trajectory, double tsnd, double nstd) {
 		Binary* binary = PRESS::FSTCompression(ac, huffman, PRESS::SPCompression(graph, trajectory->spatial));
-		vector<TemporalPair*>* temporal = PRESS::basicBTC(trajectory, tsnd, nstd);
+		vector<TemporalPair*>* temporal = PRESS::basicBTC(trajectory->temporal, tsnd, nstd);
 		return new PRESSCompressedTrajectory(binary, temporal);
 	}
 };
