@@ -125,27 +125,27 @@ int main(int argc, const char * argv[]) {
 //		"/Users/songrenchu/Develop/test/free_busy/huffman_1_free.txt"
 //	);
 	
-	// PRESS compression, get FST used frequency of each length
-	FileReader* acReader = new FileReader("/Users/songrenchu/百度云同步盘/PRESS_SampleDataset/v2/AC_Huffman/ac.txt", true);
-	ACAutomaton* ac = new ACAutomaton(acReader);
-	delete acReader;
-	
-	FileReader* huffmanReader = new FileReader("/Users/songrenchu/百度云同步盘/PRESS_SampleDataset/v2/AC_Huffman/huffman.txt", true);
-	HuffmanTree* huffman = new HuffmanTree(huffmanReader);
-	delete huffmanReader;
-	
-	
-	Experiment::getInstance()->pressCompress(
-		graph,
-		ac,
-		huffman,
-		"/Users/songrenchu/百度云同步盘/PRESS_SampleDataset/v2/RoadNetTrajectory/spatial2.txt",
-		"/Users/songrenchu/百度云同步盘/PRESS_SampleDataset/v2/RoadNetTrajectory/temporal2.txt",
-		"/Users/songrenchu/百度云同步盘/PRESS_SampleDataset/v2/CompressedTrajectory/hsc_compressed_2.txt",
-		"/Users/songrenchu/百度云同步盘/PRESS_SampleDataset/v2/CompressedTrajectory/btc_compressed_2.txt",
-		10,
-		10
-	);
+//	// PRESS compression, get FST used frequency of each length
+//	FileReader* acReader = new FileReader("/Users/songrenchu/百度云同步盘/PRESS_SampleDataset/v2/AC_Huffman/ac.txt", true);
+//	ACAutomaton* ac = new ACAutomaton(acReader);
+//	delete acReader;
+//	
+//	FileReader* huffmanReader = new FileReader("/Users/songrenchu/百度云同步盘/PRESS_SampleDataset/v2/AC_Huffman/huffman.txt", true);
+//	HuffmanTree* huffman = new HuffmanTree(huffmanReader);
+//	delete huffmanReader;
+//	
+//	
+//	Experiment::getInstance()->pressCompress(
+//		graph,
+//		ac,
+//		huffman,
+//		"/Users/songrenchu/百度云同步盘/PRESS_SampleDataset/v2/RoadNetTrajectory/spatial2.txt",
+//		"/Users/songrenchu/百度云同步盘/PRESS_SampleDataset/v2/RoadNetTrajectory/temporal2.txt",
+//		"/Users/songrenchu/百度云同步盘/PRESS_SampleDataset/v2/CompressedTrajectory/hsc_compressed_2.txt",
+//		"/Users/songrenchu/百度云同步盘/PRESS_SampleDataset/v2/CompressedTrajectory/btc_compressed_2.txt",
+//		10,
+//		10
+//	);
 //
 //	int total = 0;
 //	for (int i = 0; i < 100; ++i) {
