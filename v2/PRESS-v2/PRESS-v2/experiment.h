@@ -129,7 +129,7 @@ public:
 	}
 	
 	// PRESS BTC compression individually
-	void pressCompress(Graph* graph, char* spatialPath, char* temporalPath, char* comTemporalPath, double tsnd, double nstd, bool extend) {
+	void btcCompress(Graph* graph, char* spatialPath, char* temporalPath, char* comTemporalPath, double tsnd, double nstd, bool extend) {
 		FileReader* spatial = new FileReader(spatialPath, true);
 		FileReader* temporal = new FileReader(temporalPath, true);
 		
