@@ -158,6 +158,33 @@ public:
 		delete spatial;
 		delete temporal;
 	}
+	
+	// merge two spatial/temporal files
+	void mergeSpatialOrTemporal(char* file1, char* file2, char* result) {
+		FileReader* fr1 = new FileReader(file1, true);
+		FileReader* fr2 = new FileReader(file2, true);
+		FileWriter* fw = new FileWriter(result, true);
+		int traNumber1 = fr1->nextInt();
+		int traNumber2 = fr2->nextInt();
+		fw->writeInt(traNumber1 + traNumber2);
+		for (int i = 0; i < traNumber1; ++i) {
+			int tmp = fr1->nextInt();
+			fw->writeInt(tmp);
+			for (int j = 0; j < tmp; ++j) {
+				fw->writeInt(fr1->nextInt());
+			}
+		}
+		for (int i = 0; i < traNumber2; ++i) {
+			int tmp = fr2->nextInt();
+			fw->writeInt(tmp);
+			for (int j = 0; j < tmp; ++j) {
+				fw->writeInt(fr2->nextInt());
+			}
+		}
+		delete fr1;
+		delete fr2;
+		delete fw;
+	}
 };
 Experiment* Experiment::instance = NULL;
 
