@@ -20,6 +20,7 @@
 #include "ac_automaton.h"
 #include "huffman.h"
 #include "timer.h"
+#include "query.h"
 #include <vector>
 
 using namespace std;

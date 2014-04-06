@@ -27,6 +27,7 @@
 
 /* Begin PBXFileReference section */
 		2B22520618D970CF00CCFD4D /* press.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = press.h; sourceTree = "<group>"; };
+		2B289F0718F13B1700D349C2 /* query.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = query.h; sourceTree = "<group>"; };
 		2B32A03518DAD13200609629 /* ac_automaton.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ac_automaton.h; sourceTree = "<group>"; };
 		2B8A974A18E02D0C0093EBE8 /* huffman.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = huffman.h; sourceTree = "<group>"; };
 		2B8A974B18E2CBD10093EBE8 /* timer.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = timer.h; sourceTree = "<group>"; };
@@ -89,6 +90,7 @@
 				2BA60ED118E6DA8900F244FA /* pre_processing.h */,
 				2BF3B49018E927630074B220 /* experiment.h */,
 				2BAE85AC18E95C8600162BCF /* counter_tool.h */,
+				2B289F0718F13B1700D349C2 /* query.h */,
 			);
 			path = "PRESS-v2";
 			sourceTree = "<group>";
