@@ -113,6 +113,16 @@ public:
 		return result;
 	}
 	
+	// Decompress from binary code
+	static vector<int>* FSTComplement(Graph* graph, ACAutomaton* ac, HuffmanTree* huffman, Binary* binary) {
+		if (binary == NULL) {
+			throw "Binary NULL";
+		}
+		vector<int>* result = new vector<int>();
+		
+		return result;
+	}
+	
 	
 	// ========= BTC ==========
 	static vector<TemporalPair*>* kernelBTC(vector<TemporalPair*>* temporal, vector<pair<int, int>*>* toleranceD, vector<pair<int, int>*>* toleranceT) {
