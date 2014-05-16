@@ -203,6 +203,11 @@ public:
 		vector<TemporalPair*>* temporal = PRESS::basicBTC(trajectory->temporal, tsnd, nstd);
 		return new PRESSCompressedTrajectory(binary, temporal);
 	}
+	
+	// de-compress PRESS compressed trajectory
+	static RoadNetTrajectory* decompress(Graph* graph, ACAutomaton* ac, HuffmanTree* huffman, PRESSCompressedTrajectory* trajectory) {
+		return NULL;
+	}
 };
 
 #endif
