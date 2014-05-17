@@ -206,7 +206,11 @@ public:
 	
 	// de-compress PRESS compressed trajectory
 	static RoadNetTrajectory* decompress(Graph* graph, ACAutomaton* ac, HuffmanTree* huffman, PRESSCompressedTrajectory* trajectory) {
-		return NULL;
+		return new RoadNetTrajectory(
+			SPComplement(graph,
+				FSTComplement(graph, ac, huffman, trajectory->spatial)
+			), trajectory->temporal
+		);
 	}
 };
 
