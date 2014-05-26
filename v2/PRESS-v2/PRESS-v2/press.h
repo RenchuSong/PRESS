@@ -119,7 +119,9 @@ public:
 			throw "Binary NULL";
 		}
 		vector<int>* result = new vector<int>();
-		
+		for (int i = 0; i < binary->number; ++i) {
+			//TODO: search huffman tree
+		}
 		return result;
 	}
 	
