@@ -119,9 +119,17 @@ public:
 			throw "Binary NULL";
 		}
 		vector<int>* result = new vector<int>();
+		HuffmanNode* node = huffman->getNode(huffman->root);
 		for (int i = 0; i < binary->number; ++i) {
-			//TODO: search huffman tree
-			
+			if (node->leftSon == Config::NULL_POINTER && node->rightSon == Config::NULL_POINTER) {
+				if (binary->binary->at(i) == false) {
+					node = huffman->getNode(node->leftSon);
+				} else {
+					node = huffman->getNode(node->rightSon);
+				}
+				result->push_back(((HuffmanLeafNode*)node)->trieId);
+				node = huffman->getNode(huffman->root);
+			}
 		}
 		return result;
 	}
