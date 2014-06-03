@@ -13,6 +13,7 @@
 #include "ac_automaton.h"
 #include "huffman.h"
 #include "trajectory.h"
+#include "auxiliary.h"
 
 using namespace std;
 
@@ -22,6 +23,16 @@ public:
 		
 		GPSPoint* result = new GPSPoint(t, 0, 0);
 		return result;
+	}
+	
+	static double whenAt(Graph* graph, ACAutomaton* ac, HuffmanTree* huffman, PRESSCompressedTrajectory* trajectory, GPSPoint* queryLocation) {
+		
+		return 0;
+	}
+	
+	static double range(Graph* graph, ACAutomaton* ac, HuffmanTree* huffman, PRESSCompressedTrajectory* trajectory, double t1, double t2, MBR* range) {
+		
+		return false;
 	}
 };
 
