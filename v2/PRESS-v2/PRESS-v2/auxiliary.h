@@ -11,6 +11,7 @@
 
 #include "file_processor.h"
 
+// MBR class with four boundaries (x1, x2, y1, y2) defining the rectangle region in 2D euclidean space.
 class MBR {
 public:
 	double x1, x2, y1, y2;		// MBR boundary
@@ -43,8 +44,24 @@ public:
 	bool intersect(MBR* other) {
 		return (this->x1 < other->x2 && this->x2 > other->x1 && this->y1 < other->y2 && this->y2 > other->y1);
 	}
+};
+
+class Auxiliary {
+public:
+	int nodeNumber;
+	int edgeNumber;
+	int fstNumber;
 	
+	vector<MBR*>* fstMBR;		// The MBR of a sub-trajectory
+	vector<MBR*>** spMBR;		// The MBR of a shortest path (between two nodes)
+	vector<MBR*>* edgeMBR;		// The MBR of an edge
 	
+	vector<double>* fstLen;		// The total road network length of a sub-trajectory
+	vector<double>** spLen;		// The total road netwoek length of a shortest path (between two nodes)
+	
+	Auxiliary(int nodeNumber, int edgeNumber, int fstNumber, FileReader* fstMBRReader, FileReader* spMBRReader, FileReader* edgeMBRReader, FileReader* fstLenReader, FileReader* spLenReader) {
+		
+	}
 };
 
 #endif
