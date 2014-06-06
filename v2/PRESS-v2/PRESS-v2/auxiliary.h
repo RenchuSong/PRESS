@@ -52,15 +52,43 @@ public:
 	int edgeNumber;
 	int fstNumber;
 	
-	vector<MBR*>* fstMBR;		// The MBR of a sub-trajectory
-	vector<MBR*>** spMBR;		// The MBR of a shortest path (between two nodes)
-	vector<MBR*>* edgeMBR;		// The MBR of an edge
+	MBR** fstMBR;				// The MBR of a sub-trajectory
+	MBR*** spMBR;				// The MBR of a shortest path (between two nodes)
+	MBR** edgeMBR;				// The MBR of an edge
 	
-	vector<double>* fstLen;		// The total road network length of a sub-trajectory
-	vector<double>** spLen;		// The total road netwoek length of a shortest path (between two nodes)
+	double* fstLen;				// The total road network length of a sub-trajectory
+	double** spLen;				// The total road netwoek length of a shortest path (between two nodes)
 	
 	Auxiliary(int nodeNumber, int edgeNumber, int fstNumber, FileReader* fstMBRReader, FileReader* spMBRReader, FileReader* edgeMBRReader, FileReader* fstLenReader, FileReader* spLenReader) {
-		
+		this->nodeNumber = nodeNumber;
+		this->edgeNumber = edgeNumber;
+		this->fstNumber = fstNumber;
+		this->fstMBR = new MBR*[fstNumber];
+		for (int i = 0; i < this->nodeNumber; ++i) {
+			this->fstMBR[i] = new MBR(fstMBRReader);
+		}
+		this->spMBR = new MBR**[nodeNumber];
+		for (int i = 0; i < this->nodeNumber; ++i) {
+			this->spMBR[i] = new MBR*[nodeNumber];
+			for (int j = 0; j < this->nodeNumber; ++j) {
+				this->spMBR[i][j] = new MBR(spMBRReader);
+			}
+		}
+		this->edgeMBR = new MBR*[edgeNumber];
+		for (int i = 0; i < this->edgeNumber; ++i) {
+			this->edgeMBR[i] = new MBR(edgeMBRReader);
+		}
+		this->fstLen = new double[fstNumber];
+		for (int i = 0; i < this->fstNumber; ++i) {
+			this->fstLen[i] = fstLenReader->nextDouble();
+		}
+		this->spLen = new double*[nodeNumber];
+		for (int i = 0; i < this->nodeNumber; ++i) {
+			this->spLen[i] = new double[nodeNumber];
+			for (int j = 0; j < this->nodeNumber; ++j) {
+				this->spLen[i][j] = spLenReader->nextDouble();
+			}
+		}
 	}
 };
 
