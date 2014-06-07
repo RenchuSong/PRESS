@@ -59,34 +59,50 @@ public:
 	double* fstLen;				// The total road network length of a sub-trajectory
 	double** spLen;				// The total road netwoek length of a shortest path (between two nodes)
 	
+	// If any FileReader == NULL, then that auxiliary is not loaded.
 	Auxiliary(int nodeNumber, int edgeNumber, int fstNumber, FileReader* fstMBRReader, FileReader* spMBRReader, FileReader* edgeMBRReader, FileReader* fstLenReader, FileReader* spLenReader) {
 		this->nodeNumber = nodeNumber;
 		this->edgeNumber = edgeNumber;
 		this->fstNumber = fstNumber;
-		this->fstMBR = new MBR*[fstNumber];
-		for (int i = 0; i < this->nodeNumber; ++i) {
-			this->fstMBR[i] = new MBR(fstMBRReader);
-		}
-		this->spMBR = new MBR**[nodeNumber];
-		for (int i = 0; i < this->nodeNumber; ++i) {
-			this->spMBR[i] = new MBR*[nodeNumber];
-			for (int j = 0; j < this->nodeNumber; ++j) {
-				this->spMBR[i][j] = new MBR(spMBRReader);
+		
+		if (fstMBRReader != NULL) {
+			this->fstMBR = new MBR*[fstNumber];
+			for (int i = 0; i < this->nodeNumber; ++i) {
+				this->fstMBR[i] = new MBR(fstMBRReader);
 			}
 		}
-		this->edgeMBR = new MBR*[edgeNumber];
-		for (int i = 0; i < this->edgeNumber; ++i) {
-			this->edgeMBR[i] = new MBR(edgeMBRReader);
+		
+		if (spMBRReader != NULL) {
+			this->spMBR = new MBR**[nodeNumber];
+			for (int i = 0; i < this->nodeNumber; ++i) {
+				this->spMBR[i] = new MBR*[nodeNumber];
+				for (int j = 0; j < this->nodeNumber; ++j) {
+					this->spMBR[i][j] = new MBR(spMBRReader);
+				}
+			}
 		}
-		this->fstLen = new double[fstNumber];
-		for (int i = 0; i < this->fstNumber; ++i) {
-			this->fstLen[i] = fstLenReader->nextDouble();
+		
+		if (edgeMBRReader != NULL) {
+			this->edgeMBR = new MBR*[edgeNumber];
+			for (int i = 0; i < this->edgeNumber; ++i) {
+				this->edgeMBR[i] = new MBR(edgeMBRReader);
+			}
 		}
-		this->spLen = new double*[nodeNumber];
-		for (int i = 0; i < this->nodeNumber; ++i) {
-			this->spLen[i] = new double[nodeNumber];
-			for (int j = 0; j < this->nodeNumber; ++j) {
-				this->spLen[i][j] = spLenReader->nextDouble();
+		
+		if (fstLenReader != NULL) {
+			this->fstLen = new double[fstNumber];
+			for (int i = 0; i < this->fstNumber; ++i) {
+				this->fstLen[i] = fstLenReader->nextDouble();
+			}
+		}
+		
+		if (spLenReader != NULL) {
+			this->spLen = new double*[nodeNumber];
+			for (int i = 0; i < this->nodeNumber; ++i) {
+				this->spLen[i] = new double[nodeNumber];
+				for (int j = 0; j < this->nodeNumber; ++j) {
+					this->spLen[i][j] = spLenReader->nextDouble();
+				}
 			}
 		}
 	}
