@@ -34,4 +34,7 @@ extern double edgeBias(EcldPoint*, vector<EcldPoint*>);
 // Calculate the angle of two points
 extern double angle(double x1, double y1, double x2, double y2);
 
+// Interpolate values
+double interpolate(double x, double y, double t);
+
 #endif /* defined(__PRESS_v2__utility__) */

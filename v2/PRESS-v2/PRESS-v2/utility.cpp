@@ -85,3 +85,8 @@ double angle(double x1, double y1, double x2, double y2) {
 	}
 	return (y2 - y1) / (x2 - x1);
 }
+
+// Interpolate values
+double interpolate(double x, double y, double t) {
+	return x * (1 - t) + y * t;
+}

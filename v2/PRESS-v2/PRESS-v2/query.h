@@ -14,13 +14,14 @@
 #include "huffman.h"
 #include "trajectory.h"
 #include "auxiliary.h"
+#include "utility.h"
 
 using namespace std;
 
 class Query {
 public:
 	// ========== Query on Original Trajectory
-	static GPSPoint* whereAt(Graph* graph, RoadNetTrajectory* trajectory, int t) {
+	static EcldPoint* whereAt(Graph* graph, RoadNetTrajectory* trajectory, int t) {
 		// Calculate d from given t at temporal component
 		double d = 0;
 		for (int i = 0; i < trajectory->temporalNumber; ++i) {
@@ -40,11 +41,13 @@ public:
 			} else {
 				Edge* edge = graph->getEdge(trajectory->spatial->at(i));
 				double ratio = d / edge->len;
-				double x =
-				GPSPoint* result = new GPSPoint(t, x, y);
+				EcldPoint* start = edge->startNode->location;
+				EcldPoint* end = edge->endNode->location;
+				EcldPoint* result = new EcldPoint(interpolate(start->x, end->x, ratio), interpolate(start->y, end->y, ratio));
 				return result;
 			}
 		}
+		throw "timestamp outside trajectory travel period";
 	}
 	
 	static double whenAt(Graph* graph, RoadNetTrajectory* trajectory, GPSPoint* queryLocation) {
@@ -58,9 +61,9 @@ public:
 	}
 	
 	// ========== Query on Compressed Trajectory
-	static GPSPoint* whereAtOnCompressed(Graph* graph, ACAutomaton* ac, HuffmanTree* huffman, PRESSCompressedTrajectory* trajectory, int t) {
+	static EcldPoint* whereAtOnCompressed(Graph* graph, ACAutomaton* ac, HuffmanTree* huffman, PRESSCompressedTrajectory* trajectory, int t) {
 		
-		GPSPoint* result = new GPSPoint(t, 0, 0);
+		EcldPoint* result = new EcldPoint(0, 0);
 		return result;
 	}
 	
