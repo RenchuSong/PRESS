@@ -21,9 +21,30 @@ class Query {
 public:
 	// ========== Query on Original Trajectory
 	static GPSPoint* whereAt(Graph* graph, RoadNetTrajectory* trajectory, int t) {
+		// Calculate d from given t at temporal component
+		double d = 0;
+		for (int i = 0; i < trajectory->temporalNumber; ++i) {
+			if (trajectory->temporal->at(i)->t > t) {
+				d += (double)(t - trajectory->temporal->at(i - 1)->t) /
+				(trajectory->temporal->at(i)->t - trajectory->temporal->at(i - 1)->t) *
+				trajectory->temporal->at(i)->d;
+			} else {
+				d += trajectory->temporal->at(i)->d;
+			}
+		}
 		
-		GPSPoint* result = new GPSPoint(t, 0, 0);
-		return result;
+		// Get location from spatial component
+		for (int i = 0; i < trajectory->spatialNumber; ++i) {
+			if (d > trajectory->spatial->at(i)) {
+				d -= graph->getEdge(trajectory->spatial->at(i))->len;
+			} else {
+				Edge* edge = graph->getEdge(trajectory->spatial->at(i));
+				double ratio = d / edge->len;
+				double x =
+				GPSPoint* result = new GPSPoint(t, x, y);
+				return result;
+			}
+		}
 	}
 	
 	static double whenAt(Graph* graph, RoadNetTrajectory* trajectory, GPSPoint* queryLocation) {
