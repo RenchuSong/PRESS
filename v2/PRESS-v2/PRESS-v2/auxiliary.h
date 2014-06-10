@@ -44,6 +44,11 @@ public:
 	bool intersect(MBR* other) {
 		return (this->x1 < other->x2 && this->x2 > other->x1 && this->y1 < other->y2 && this->y2 > other->y1);
 	}
+	
+	// Judge if a EcldPoint locates inside the MBR
+	bool contain(EcldPoint* point) {
+		return point->x >= this->x1 && point->x <=this->x2 && point->y >= this->y1 && point->y <= this->y2;
+	}
 };
 
 class Auxiliary {

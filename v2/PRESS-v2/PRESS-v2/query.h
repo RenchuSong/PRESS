@@ -50,7 +50,24 @@ public:
 		throw "timestamp outside trajectory travel period";
 	}
 	
-	static double whenAt(Graph* graph, RoadNetTrajectory* trajectory, GPSPoint* queryLocation) {
+	static double whenAt(Graph* graph, Auxiliary* auxiliary, RoadNetTrajectory* trajectory, EcldPoint* queryLocation) {
+		// Calculate the distance from start of the trajectory to the location
+		double d = 0;
+		for (int i = 0; i < trajectory->spatialNumber; ++i) {
+			bool flag = false;
+			double mid = 0;
+			Edge* edge = graph->getEdge(trajectory->spatial->at(i));
+			if (auxiliary->spMBR[edge->startNode->id][edge->endNode->id]->contain(queryLocation)) {
+				throw "Not Implemented Yet!"; //TODO judge position
+			}
+			if (!flag) {
+				d += edge->len;
+			} else {
+				d += mid; break;
+			}
+		}
+		
+		// Calculate the time stamp
 		
 		return 0;
 	}
@@ -67,7 +84,7 @@ public:
 		return result;
 	}
 	
-	static double whenAtOnCompressed(Graph* graph, ACAutomaton* ac, HuffmanTree* huffman, PRESSCompressedTrajectory* trajectory, GPSPoint* queryLocation) {
+	static double whenAtOnCompressed(Graph* graph, ACAutomaton* ac, HuffmanTree* huffman, PRESSCompressedTrajectory* trajectory, EcldPoint* queryLocation) {
 		
 		return 0;
 	}
