@@ -35,6 +35,9 @@ extern double edgeBias(EcldPoint*, vector<EcldPoint*>);
 extern double angle(double x1, double y1, double x2, double y2);
 
 // Interpolate values
-double interpolate(double x, double y, double t);
+extern double interpolate(double x, double y, double t);
+
+// Return the distance bias from the start of a directed broken line
+extern double bias(vector<EcldPoint*> geometry, EcldPoint* point);
 
 #endif /* defined(__PRESS_v2__utility__) */

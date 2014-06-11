@@ -90,3 +90,22 @@ double angle(double x1, double y1, double x2, double y2) {
 double interpolate(double x, double y, double t) {
 	return x * (1 - t) + y * t;
 }
+
+// Return the distance bias from the start of a directed broken line
+double bias(vector<EcldPoint*> geometry, EcldPoint* point) {
+	double d = 0;
+	for (int i = 1; i < geometry.size(); ++i) {
+		double x1 = point->x - geometry[i - 1]->x,
+			   x2 = geometry[i]->x - geometry[i - 1]->x,
+			   y1 = point->y - geometry[i - 1]->y,
+			   y2 = geometry[i]->y - geometry[i - 1]->y;
+		double cross = x1 * y1 - x2 * y1,
+			   dot = x1 * x2 + y1 * y2;
+		if (fabs(cross) < 1e-5) {
+			d += dot / ecldDistance(geometry[i - 1], geometry[i]);
+			break;
+		}
+		d += ecldDistance(geometry[i - 1], geometry[i]);
+	}
+	return d;
+}
