@@ -71,9 +71,17 @@ public:
 		}
 		
 		// Calculate the time stamp
+		for (int i = 1; i < trajectory->temporalNumber; ++i) {
+			if (trajectory->temporal->at(i - 1)->d <= d && d <= trajectory->temporal->at(i)->d) {
+				double r = unInterpolate(
+					trajectory->temporal->at(i - 1)->d,
+					trajectory->temporal->at(i)->d,
+					d);
+				return interpolate(trajectory->temporal->at(i - 1)->t, trajectory->temporal->at(i)->t, r);
+			}
+		}
 		
-		
-		return 0;
+		throw "never at this place";
 	}
 	
 	static double range(Graph* graph, RoadNetTrajectory* trajectory, double t1, double t2, MBR* range) {
