@@ -8,6 +8,7 @@
 // All global independent functions not included in specific classes should be put here
 
 #include "utility.h"
+#include "config.h"
 #include <vector>
 #include <cmath>
 #include <algorithm>
@@ -101,11 +102,11 @@ double bias(vector<EcldPoint*> geometry, EcldPoint* point) {
 			   y2 = geometry[i]->y - geometry[i - 1]->y;
 		double cross = x1 * y1 - x2 * y1,
 			   dot = x1 * x2 + y1 * y2;
-		if (fabs(cross) < 1e-5) {
+		if (fabs(cross) < Config::EBSILON) {
 			d += dot / ecldDistance(geometry[i - 1], geometry[i]);
-			break;
+			return d;
 		}
 		d += ecldDistance(geometry[i - 1], geometry[i]);
 	}
-	return d;
+	return Config::NULL_POINTER;
 }
