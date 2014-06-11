@@ -98,6 +98,18 @@ double unInterpolate(double x, double y, double a) {
 	return (a - x) / (y - x);
 }
 
+// y is within x
+bool vectorImply(vector<double> x, vector<double> y) {
+	if (x.size() != y.size()) return false;
+	if (x.size() == 0) return true;
+	double r = y[0] / x[0];
+	if (r < -Config::EBSILON) return false;
+	for (int i = 1; i < x.size(); ++i) {
+		if (fabs(y[i] / x[i] - r) > Config::EBSILON) return false;
+	}
+	return true;
+}
+
 // Return the distance bias from the start of a directed broken line
 double bias(vector<EcldPoint*> geometry, EcldPoint* point) {
 	double d = 0;

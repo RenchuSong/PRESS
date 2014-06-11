@@ -40,6 +40,9 @@ extern double interpolate(double x, double y, double t);
 // Uninterpolate value
 extern double unInterpolate(double x, double y, double a);
 
+// y is within x
+extern bool vectorImply(vector<double> x, vector<double> y);
+
 // Return the distance bias from the start of a directed broken line
 extern double bias(vector<EcldPoint*> geometry, EcldPoint* point);
 
