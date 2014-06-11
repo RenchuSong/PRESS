@@ -37,6 +37,9 @@ extern double angle(double x1, double y1, double x2, double y2);
 // Interpolate values
 extern double interpolate(double x, double y, double t);
 
+// Uninterpolate value
+extern double unInterpolate(double x, double y, double a);
+
 // Return the distance bias from the start of a directed broken line
 extern double bias(vector<EcldPoint*> geometry, EcldPoint* point);
 

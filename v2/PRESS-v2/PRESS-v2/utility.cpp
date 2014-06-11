@@ -92,6 +92,12 @@ double interpolate(double x, double y, double t) {
 	return x * (1 - t) + y * t;
 }
 
+// Uninterpolate value
+double unInterpolate(double x, double y, double a) {
+	if (x == y) throw "Infinite value";
+	return (a - x) / (y - x);
+}
+
 // Return the distance bias from the start of a directed broken line
 double bias(vector<EcldPoint*> geometry, EcldPoint* point) {
 	double d = 0;
