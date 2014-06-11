@@ -58,7 +58,10 @@ public:
 			double mid = 0;
 			Edge* edge = graph->getEdge(trajectory->spatial->at(i));
 			if (auxiliary->spMBR[edge->startNode->id][edge->endNode->id]->contain(queryLocation)) {
-				throw "Not Implemented Yet!";//TODO
+				mid = bias(edge->geometry, queryLocation);
+				if (mid != Config::NULL_POINTER) {
+					flag = true;
+				}
 			}
 			if (!flag) {
 				d += edge->len;
