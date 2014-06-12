@@ -28,7 +28,7 @@ double ecldDistance(EcldPoint* u, EcldPoint* v) {
 	return sqrt(x2GoundTruth(v->x, u->x) * x2GoundTruth(v->x, u->x) + y2GoundTruth(v->y, u->y) * y2GoundTruth(v->y, u->y));
 }
 
-// Calculate the Euclidean distance from one point to one interval
+// vector product of two vectors
 double vectorProduct(EcldPoint* u1, EcldPoint* u2, EcldPoint* v1, EcldPoint* v2) {
 	double x1 = x2GoundTruth(u1->x, u2->x);
 	double y1 = y2GoundTruth(u1->y, u2->y);
@@ -38,6 +38,7 @@ double vectorProduct(EcldPoint* u1, EcldPoint* u2, EcldPoint* v1, EcldPoint* v2)
 	return x1 * y2 - x2 * y1;
 }
 
+// scalar product of two vectors
 double scalarProduct(EcldPoint* u1, EcldPoint* u2, EcldPoint* v1, EcldPoint* v2) {
 	double x1 = x2GoundTruth(u1->x, u2->x);
 	double y1 = y2GoundTruth(u1->y, u2->y);
@@ -47,6 +48,12 @@ double scalarProduct(EcldPoint* u1, EcldPoint* u2, EcldPoint* v1, EcldPoint* v2)
 	return x1 * x2 + y1 * y2;
 }
 
+// judge if two vectors intersects
+bool vectorIntersect(EcldPoint* x1, EcldPoint* y1, EcldPoint* x1, EcldPoint* y2) {
+	throw "Unimplemented"
+}
+
+// Calculate the Euclidean distance from one point to one interval
 double point2IntervalDistance(EcldPoint* p, EcldPoint* pre, EcldPoint* scc) {
 	double result = min(ecldDistance(p, pre), ecldDistance(p, scc));
 	if (scalarProduct(pre, p, pre, scc) > 0 && scalarProduct(scc, p, scc, pre) > 0) {

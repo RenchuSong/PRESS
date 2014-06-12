@@ -10,6 +10,7 @@
 #define PRESS_v2_auxiliary_h
 
 #include "file_processor.h"
+#include "utility.h"
 
 // MBR class with four boundaries (x1, x2, y1, y2) defining the rectangle region in 2D euclidean space.
 class MBR {
@@ -48,6 +49,19 @@ public:
 	// Judge if a EcldPoint locates inside the MBR
 	bool contain(EcldPoint* point) {
 		return point->x >= this->x1 && point->x <=this->x2 && point->y >= this->y1 && point->y <= this->y2;
+	}
+	
+	// Judge if a line crosses the MBR
+	bool cross(EcldPoint* p1, EcldPoint* p2) {
+		EcldPoint* b1 = new EcldPoint(x1, y1);
+		EcldPoint* b2 = new EcldPoint(x2, y2);
+		EcldPoint* b3 = new EcldPoint(x1, y2);
+		EcldPoint* b4 = new EcldPoint(x2, y1);
+		throw "Unimplemented";
+		delete b1;
+		delete b2;
+		delete b3;
+		delete b4;
 	}
 };
 

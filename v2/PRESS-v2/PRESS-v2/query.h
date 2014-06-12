@@ -109,7 +109,7 @@ public:
 			}
 		}
 		
-		// 
+		// check if the interval of trajectory intersects the range at some point
 		
 		return false;
 	}

@@ -22,6 +22,12 @@ struct EcldPoint {
 	}
 };
 
+// vector product of two vectors
+extern double vectorProduct(EcldPoint* u1, EcldPoint* u2, EcldPoint* v1, EcldPoint* v2);
+
+// scalar product of two vectors
+extern double scalarProduct(EcldPoint* u1, EcldPoint* u2, EcldPoint* v1, EcldPoint* v2);
+
 // calculate the euclidean distance of two points
 extern double ecldDistance(EcldPoint*, EcldPoint*);
 
