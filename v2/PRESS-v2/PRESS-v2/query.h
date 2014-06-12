@@ -84,7 +84,32 @@ public:
 		throw "never at this place";
 	}
 	
-	static double range(Graph* graph, RoadNetTrajectory* trajectory, double t1, double t2, MBR* range) {
+	static double range(Graph* graph, Auxiliary* auxiliary, RoadNetTrajectory* trajectory, double t1, double t2, MBR* range) {
+		// Calculate d1 from given t1 at temporal component
+		double d1 = 0;
+		for (int i = 0; i < trajectory->temporalNumber; ++i) {
+			if (trajectory->temporal->at(i)->t > t1) {
+				d1 += (double)(t1 - trajectory->temporal->at(i - 1)->t) /
+				(trajectory->temporal->at(i)->t - trajectory->temporal->at(i - 1)->t) *
+				trajectory->temporal->at(i)->d;
+			} else {
+				d1 += trajectory->temporal->at(i)->d;
+			}
+		}
+		
+		// Calculate d2 from given t2 at temporal component
+		double d2 = 0;
+		for (int i = 0; i < trajectory->temporalNumber; ++i) {
+			if (trajectory->temporal->at(i)->t > t2) {
+				d2 += (double)(t2 - trajectory->temporal->at(i - 1)->t) /
+				(trajectory->temporal->at(i)->t - trajectory->temporal->at(i - 1)->t) *
+				trajectory->temporal->at(i)->d;
+			} else {
+				d2 += trajectory->temporal->at(i)->d;
+			}
+		}
+		
+		// 
 		
 		return false;
 	}
