@@ -113,7 +113,10 @@ public:
 		double d = 0;
 		for (int i = 0; i < trajectory->spatialNumber; ++i) {
 			if (d <d2 && d + graph->getEdge(trajectory->spatial->at(i))->len > d1) {
+				
 				// TODO: precisely cut the edge
+				// use interpolation
+				
 				Node* n1 = graph->getEdge(trajectory->spatial->at(i))->startNode;
 				Node* n2 = graph->getEdge(trajectory->spatial->at(i))->endNode;
 				if (range->cross(n1->location, n2->location)) return true;
