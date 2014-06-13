@@ -110,6 +110,14 @@ public:
 		}
 		
 		// check if the interval of trajectory intersects the range at some point
+		double d = 0;
+		for (int i = 1; i < trajectory->spatialNumber; ++i) {
+			if (d <d2 && d + graph->getEdge(trajectory->spatial->at(i))->len > d1) {
+				// Unimplemented
+				throw "Unimplemented";
+			}
+			d += graph->getEdge(trajectory->spatial->at(i))->len;
+		}
 		
 		return false;
 	}
