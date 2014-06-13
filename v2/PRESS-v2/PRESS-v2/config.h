@@ -12,6 +12,8 @@
 #ifndef PRESS_v2_config_h
 #define PRESS_v2_config_h
 
+using namespace std;
+
 class Config {
 public:
 	

@@ -8,12 +8,14 @@
 // All global independent functions not included in specific classes should be put here
 
 #include "utility.h"
-#include "config.h"
 #include <vector>
 #include <cmath>
 #include <algorithm>
 
 using namespace std;
+
+const double _NULL = -1;
+const double _EBSILON = 1e-8;
 
 double x2GoundTruth(double x1, double x2) {
 	return (x2 - x1) * 111195.19;
@@ -111,9 +113,9 @@ bool vectorImply(vector<double> x, vector<double> y) {
 	if (x.size() != y.size()) return false;
 	if (x.size() == 0) return true;
 	double r = y[0] / x[0];
-	if (r < -Config::EBSILON) return false;
+	if (r < -_EBSILON) return false;
 	for (int i = 1; i < x.size(); ++i) {
-		if (fabs(y[i] / x[i] - r) > Config::EBSILON) return false;
+		if (fabs(y[i] / x[i] - r) > _EBSILON) return false;
 	}
 	return true;
 }
@@ -128,11 +130,12 @@ double bias(vector<EcldPoint*> geometry, EcldPoint* point) {
 			   y2 = geometry[i]->y - geometry[i - 1]->y;
 		double cross = x1 * y1 - x2 * y1,
 			   dot = x1 * x2 + y1 * y2;
-		if (fabs(cross) < Config::EBSILON) {
+		if (fabs(cross) < _EBSILON) {
 			d += dot / ecldDistance(geometry[i - 1], geometry[i]);
 			return d;
 		}
 		d += ecldDistance(geometry[i - 1], geometry[i]);
 	}
-	return Config::NULL_POINTER;
+	return _NULL;
 }
+
