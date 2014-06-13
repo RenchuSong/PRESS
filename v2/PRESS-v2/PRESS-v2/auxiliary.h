@@ -57,11 +57,12 @@ public:
 		EcldPoint* b2 = new EcldPoint(x2, y2);
 		EcldPoint* b3 = new EcldPoint(x1, y2);
 		EcldPoint* b4 = new EcldPoint(x2, y1);
-		throw "Unimplemented";
+		bool result = vectorIntersect(p1, p2, b1, b2) || vectorIntersect(p1, p2, b3, b4);
 		delete b1;
 		delete b2;
 		delete b3;
 		delete b4;
+		return result;
 	}
 };
 

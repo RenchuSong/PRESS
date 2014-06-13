@@ -49,8 +49,9 @@ double scalarProduct(EcldPoint* u1, EcldPoint* u2, EcldPoint* v1, EcldPoint* v2)
 }
 
 // judge if two vectors intersects
-bool vectorIntersect(EcldPoint* x1, EcldPoint* y1, EcldPoint* x1, EcldPoint* y2) {
-	throw "Unimplemented"
+bool vectorIntersect(EcldPoint* u1, EcldPoint* u2, EcldPoint* v1, EcldPoint* v2) {
+	return vectorProduct(u1, u2, u1, v1) * vectorProduct(u1, u2, u1, v2) < 0 &&
+		   vectorProduct(v1, v2, v1, u1) * vectorProduct(v1, v2, v1, u2) < 0;
 }
 
 // Calculate the Euclidean distance from one point to one interval

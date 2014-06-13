@@ -31,6 +31,9 @@ extern double scalarProduct(EcldPoint* u1, EcldPoint* u2, EcldPoint* v1, EcldPoi
 // calculate the euclidean distance of two points
 extern double ecldDistance(EcldPoint*, EcldPoint*);
 
+// judge if two vectors intersects
+extern bool vectorIntersect(EcldPoint* u1, EcldPoint* u2, EcldPoint* v1, EcldPoint* v2);
+
 // calculate the distance from a point to an interval
 extern double point2IntervalDistance(EcldPoint*, EcldPoint*, EcldPoint*);
 
