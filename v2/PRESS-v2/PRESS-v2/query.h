@@ -111,10 +111,12 @@ public:
 		
 		// check if the interval of trajectory intersects the range at some point
 		double d = 0;
-		for (int i = 1; i < trajectory->spatialNumber; ++i) {
+		for (int i = 0; i < trajectory->spatialNumber; ++i) {
 			if (d <d2 && d + graph->getEdge(trajectory->spatial->at(i))->len > d1) {
-				// Unimplemented
-				throw "Unimplemented";
+				// TODO: precisely cut the edge
+				Node* n1 = graph->getEdge(trajectory->spatial->at(i))->startNode;
+				Node* n2 = graph->getEdge(trajectory->spatial->at(i))->endNode;
+				if (range->cross(n1->location, n2->location)) return true;
 			}
 			d += graph->getEdge(trajectory->spatial->at(i))->len;
 		}
