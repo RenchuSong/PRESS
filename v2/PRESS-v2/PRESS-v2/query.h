@@ -128,18 +128,18 @@ public:
 	}
 	
 	// ========== Query on Compressed Trajectory
-	static EcldPoint* whereAtOnCompressed(Graph* graph, ACAutomaton* ac, HuffmanTree* huffman, PRESSCompressedTrajectory* trajectory, int t) {
+	static EcldPoint* whereAtOnCompressed(Graph* graph, ACAutomaton* ac, HuffmanTree* huffman, Auxiliary* auxiliary, PRESSCompressedTrajectory* trajectory, int t) {
 		
 		EcldPoint* result = new EcldPoint(0, 0);
 		return result;
 	}
 	
-	static double whenAtOnCompressed(Graph* graph, ACAutomaton* ac, HuffmanTree* huffman, PRESSCompressedTrajectory* trajectory, EcldPoint* queryLocation) {
+	static double whenAtOnCompressed(Graph* graph, ACAutomaton* ac, HuffmanTree* huffman, Auxiliary* auxiliary, PRESSCompressedTrajectory* trajectory, EcldPoint* queryLocation) {
 		
 		return 0;
 	}
 	
-	static double rangeOnCompressed(Graph* graph, ACAutomaton* ac, HuffmanTree* huffman, PRESSCompressedTrajectory* trajectory, double t1, double t2, MBR* range) {
+	static double rangeOnCompressed(Graph* graph, ACAutomaton* ac, HuffmanTree* huffman, Auxiliary* auxiliary, PRESSCompressedTrajectory* trajectory, double t1, double t2, MBR* range) {
 		
 		return false;
 	}
