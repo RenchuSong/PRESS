@@ -129,9 +129,22 @@ public:
 	
 	// ========== Query on Compressed Trajectory
 	static EcldPoint* whereAtOnCompressed(Graph* graph, ACAutomaton* ac, HuffmanTree* huffman, Auxiliary* auxiliary, PRESSCompressedTrajectory* trajectory, int t) {
+		// Calculate d from given t at temporal component
+		double d = 0;
+		for (int i = 0; i < trajectory->temporal->size(); ++i) {
+			if (trajectory->temporal->at(i)->t > t) {
+				d += (double)(t - trajectory->temporal->at(i - 1)->t) /
+				(trajectory->temporal->at(i)->t - trajectory->temporal->at(i - 1)->t) *
+				trajectory->temporal->at(i)->d;
+			} else {
+				d += trajectory->temporal->at(i)->d;
+			}
+		}
 		
-		EcldPoint* result = new EcldPoint(0, 0);
-		return result;
+		// TODO: Get location from spatial component
+		
+		
+		throw "timestamp outside trajectory travel period";
 	}
 	
 	static double whenAtOnCompressed(Graph* graph, ACAutomaton* ac, HuffmanTree* huffman, Auxiliary* auxiliary, PRESSCompressedTrajectory* trajectory, EcldPoint* queryLocation) {
