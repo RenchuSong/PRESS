@@ -15,6 +15,7 @@
 #include "trajectory.h"
 #include "auxiliary.h"
 #include "utility.h"
+#include "press.h"
 
 using namespace std;
 
