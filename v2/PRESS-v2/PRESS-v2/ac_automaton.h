@@ -24,6 +24,8 @@ public:
 	int rightBrother;				// right brother in the same level
 	int fail;						// fail pointer in matching
 	int frequency;					// accur times in training dataset
+	// for query
+	int rootAncestor;				// the ancestor of the node which is the son of root
 	
 	ACNode(int id, int father, int value) {
 		this->id = id;
@@ -33,6 +35,7 @@ public:
 		this->father = father;
 		this->frequency = 1;
 		this->fail = 0;
+		this->rootAncestor = Config::NULL_POINTER;
 	}
 	
 	void display() {
@@ -43,6 +46,18 @@ public:
 };
 
 class ACAutomaton {
+private:
+	int getRootAncestor(int root, ACNode* node) {
+		if (node->rootAncestor != Config::NULL_POINTER) return node->rootAncestor;
+		if (node->id == root) return Config::NULL_POINTER;
+		ACNode* father = getNode(node->father);
+		if (father->father == root) {
+			node->rootAncestor = father->id;
+		}
+		node->rootAncestor = getRootAncestor(root, father);
+		return node->rootAncestor;
+	}
+	
 public:
 	int trieSize;
 	vector<ACNode*>* trie = new vector<ACNode*>();
@@ -186,6 +201,12 @@ public:
 				}
 				CounterTool::getInstance()->fstFrequency[len] += freq;
 			}
+		}
+	}
+	
+	void getRootAncestor() {
+		for (int i = 0; i < trieSize; ++i) {
+			getRootAncestor(0, trie->at(i));
 		}
 	}
 	

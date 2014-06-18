@@ -143,7 +143,7 @@ public:
 		}
 		
 		// TODO: Get location from spatial component
-		
+		vector<int>* fstList = PRESS::FSTComplement(graph, ac, huffman, trajectory->spatial);
 		
 		throw "timestamp outside trajectory travel period";
 	}
