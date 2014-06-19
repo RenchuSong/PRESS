@@ -130,6 +130,8 @@ public:
 	
 	// ========== Query on Compressed Trajectory
 	static EcldPoint* whereAtOnCompressed(Graph* graph, ACAutomaton* ac, HuffmanTree* huffman, Auxiliary* auxiliary, PRESSCompressedTrajectory* trajectory, int t) {
+		if (ac->rootAncestorInit == false) throw "Must first init root ancestor";
+		
 		// Calculate d from given t at temporal component
 		double d = 0;
 		for (int i = 0; i < trajectory->temporal->size(); ++i) {

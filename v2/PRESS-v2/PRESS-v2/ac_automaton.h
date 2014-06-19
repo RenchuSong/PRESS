@@ -60,6 +60,8 @@ private:
 	
 public:
 	int trieSize;
+	bool rootAncestorInit = false;
+	
 	vector<ACNode*>* trie = new vector<ACNode*>();
 
 	ACAutomaton(Graph* graph, vector<RoadNetTrajectory*>* spCompressedTrSet, int suffixMaxLength) {
@@ -208,6 +210,7 @@ public:
 		for (int i = 0; i < trieSize; ++i) {
 			getRootAncestor(0, trie->at(i));
 		}
+		this->rootAncestorInit = true;
 	}
 	
 	int containSon(int id, int value) {
