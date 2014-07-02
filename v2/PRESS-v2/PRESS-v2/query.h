@@ -144,8 +144,31 @@ public:
 			}
 		}
 		
+		double td = 0;
 		// TODO: Get location from spatial component
 		vector<int>* fstList = PRESS::FSTComplement(graph, ac, huffman, trajectory->spatial);
+		for (int i = 0; i < fstList->size(); ++i) {
+			int l = ac->getNode(fstList->at(i - 1))->value;
+			int r = ac->getNode(fstList->at(i - 1))->rootAncestor;
+			if (i > 0 && td + auxiliary->spLen[l][r] >= d) {
+				vector<int>* edgeList = PRESS::SPComplement(graph, new vector<int>{l, r});
+				for (int j = 1; j < edgeList->size() - 1; ++j) {
+					if (td + graph->getEdge(edgeList->at(j))->len < d) {
+						td += graph->getEdge(edgeList->at(j))->len;
+					} else {
+						Edge* edge = graph->getEdge(edgeList->at(j));
+						double ratio = (d - td) / edge->len;
+						EcldPoint* start = edge->startNode->location;
+						EcldPoint* end = edge->endNode->location;
+						EcldPoint* result = new EcldPoint(interpolate(start->x, end->x, ratio), interpolate(start->y, end->y, ratio));
+						return result;
+					}
+				}
+			}
+			if (td + auxiliary->fstLen[fstList->at(i)] >= d) {
+				// TODO: decompress into one fst.
+			}
+		}
 		
 		throw "timestamp outside trajectory travel period";
 	}
