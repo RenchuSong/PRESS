@@ -148,25 +148,75 @@ public:
 		// TODO: Get location from spatial component
 		vector<int>* fstList = PRESS::FSTComplement(graph, ac, huffman, trajectory->spatial);
 		for (int i = 0; i < fstList->size(); ++i) {
-			int l = ac->getNode(fstList->at(i - 1))->value;
-			int r = ac->getNode(fstList->at(i - 1))->rootAncestor;
-			if (i > 0 && td + auxiliary->spLen[l][r] >= d) {
-				vector<int>* edgeList = PRESS::SPComplement(graph, new vector<int>{l, r});
-				for (int j = 1; j < edgeList->size() - 1; ++j) {
-					if (td + graph->getEdge(edgeList->at(j))->len < d) {
-						td += graph->getEdge(edgeList->at(j))->len;
+			if (i > 0) {
+				int l = ac->getNode(fstList->at(i - 1))->rootAncestor;
+				int r = ac->getNode(fstList->at(i - 1))->value;
+				if (td + auxiliary->spLen[l][r] >= d) {
+					vector<int>* edgeList = PRESS::SPComplement(graph, new vector<int>{l, r});
+					for (int j = 1; j < edgeList->size() - 1; ++j) {
+						if (td + graph->getEdge(edgeList->at(j))->len < d) {
+							td += graph->getEdge(edgeList->at(j))->len;
+						} else {
+							Edge* edge = graph->getEdge(edgeList->at(j));
+							double ratio = (d - td) / edge->len;
+							EcldPoint* start = edge->startNode->location;
+							EcldPoint* end = edge->endNode->location;
+							EcldPoint* result = new EcldPoint(interpolate(start->x, end->x, ratio), interpolate(start->y, end->y, ratio));
+							return result;
+						}
+					}
+				}
+			}
+			if (td + auxiliary->fstLen[fstList->at(i)] >= d) {
+				// TODO: decompress into one fst.
+				vector<int> fst;
+				int node = fstList->at(i);
+				while (node != -1) {
+					fst.push_back(ac->getNode(node)->value);
+					node = ac->getNode(node)->father;
+				}
+				reverse(fst.begin(), fst.end());
+				for (int j = 0; j < fst.size(); ++j) {
+					if (td + graph->getEdge(fst[j])->len < d) {
+						td += graph->getEdge(fst[j])->len;
 					} else {
-						Edge* edge = graph->getEdge(edgeList->at(j));
+						Edge* edge = graph->getEdge(fst[j]);
 						double ratio = (d - td) / edge->len;
 						EcldPoint* start = edge->startNode->location;
 						EcldPoint* end = edge->endNode->location;
 						EcldPoint* result = new EcldPoint(interpolate(start->x, end->x, ratio), interpolate(start->y, end->y, ratio));
 						return result;
 					}
+					if (j < fst.size() - 1) {
+						int l = fst[j];
+						int r = fst[j + 1];
+						if (td + auxiliary->spLen[l][r] >= d) {
+							vector<int>* edgeList = PRESS::SPComplement(graph, new vector<int>{l, r});
+							for (int j = 1; j < edgeList->size() - 1; ++j) {
+								if (td + graph->getEdge(edgeList->at(j))->len < d) {
+									td += graph->getEdge(edgeList->at(j))->len;
+								} else {
+									Edge* edge = graph->getEdge(edgeList->at(j));
+									double ratio = (d - td) / edge->len;
+									EcldPoint* start = edge->startNode->location;
+									EcldPoint* end = edge->endNode->location;
+									EcldPoint* result = new EcldPoint(interpolate(start->x, end->x, ratio), interpolate(start->y, end->y, ratio));
+									return result;
+								}
+							}
+						}
+					}
 				}
-			}
-			if (td + auxiliary->fstLen[fstList->at(i)] >= d) {
-				// TODO: decompress into one fst.
+				Edge* edge = graph->getEdge(fst[fst.size() - 1]);
+				if (td + edge->len < d) {
+					td += edge->len;
+				} else {
+					double ratio = (d - td) / edge->len;
+					EcldPoint* start = edge->startNode->location;
+					EcldPoint* end = edge->endNode->location;
+					EcldPoint* result = new EcldPoint(interpolate(start->x, end->x, ratio), interpolate(start->y, end->y, ratio));
+					return result;
+				}
 			}
 		}
 		
