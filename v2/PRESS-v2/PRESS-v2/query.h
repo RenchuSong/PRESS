@@ -85,7 +85,7 @@ public:
 		throw "never at this place";
 	}
 	
-	static double range(Graph* graph, Auxiliary* auxiliary, RoadNetTrajectory* trajectory, double t1, double t2, MBR* range) {
+	static bool range(Graph* graph, Auxiliary* auxiliary, RoadNetTrajectory* trajectory, double t1, double t2, MBR* range) {
 		// Calculate d1 from given t1 at temporal component
 		double d1 = 0;
 		for (int i = 0; i < trajectory->temporalNumber; ++i) {
@@ -145,7 +145,6 @@ public:
 		}
 		
 		double td = 0;
-		// TODO: Get location from spatial component
 		vector<int>* fstList = PRESS::FSTComplement(graph, ac, huffman, trajectory->spatial);
 		for (int i = 0; i < fstList->size(); ++i) {
 			if (i > 0) {
@@ -168,7 +167,6 @@ public:
 				}
 			}
 			if (td + auxiliary->fstLen[fstList->at(i)] >= d) {
-				// TODO: decompress into one fst.
 				vector<int> fst;
 				int node = fstList->at(i);
 				while (node != -1) {
@@ -228,7 +226,7 @@ public:
 		return 0;
 	}
 	
-	static double rangeOnCompressed(Graph* graph, ACAutomaton* ac, HuffmanTree* huffman, Auxiliary* auxiliary, PRESSCompressedTrajectory* trajectory, double t1, double t2, MBR* range) {
+	static bool rangeOnCompressed(Graph* graph, ACAutomaton* ac, HuffmanTree* huffman, Auxiliary* auxiliary, PRESSCompressedTrajectory* trajectory, double t1, double t2, MBR* range) {
 		
 		return false;
 	}
