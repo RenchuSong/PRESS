@@ -224,7 +224,14 @@ public:
 	static double whenAtOnCompressed(Graph* graph, ACAutomaton* ac, HuffmanTree* huffman, Auxiliary* auxiliary, PRESSCompressedTrajectory* trajectory, EcldPoint* queryLocation) {
 		vector<int>* fstList = PRESS::FSTComplement(graph, ac, huffman, trajectory->spatial);
 		for (int i = 0; i < fstList->size(); ++i) {
-			
+			// MBR of fst
+			if (auxiliary->fstMBR[fstList->at(i)]->contain(queryLocation)) {
+				
+			}
+			// MBR of link SP segment
+			if (i > 0 && auxiliary->spMBR[ac->getNode(fstList->at(i - 1))->value][ac->getNode(fstList->at(i))->rootAncestor]->contain(queryLocation)) {
+				
+			}
 		}
 		return 0;
 	}
