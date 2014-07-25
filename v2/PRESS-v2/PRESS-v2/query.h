@@ -222,7 +222,10 @@ public:
 	}
 	
 	static double whenAtOnCompressed(Graph* graph, ACAutomaton* ac, HuffmanTree* huffman, Auxiliary* auxiliary, PRESSCompressedTrajectory* trajectory, EcldPoint* queryLocation) {
-		
+		vector<int>* fstList = PRESS::FSTComplement(graph, ac, huffman, trajectory->spatial);
+		for (int i = 0; i < fstList->size(); ++i) {
+			
+		}
 		return 0;
 	}
 	
