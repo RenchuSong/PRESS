@@ -233,7 +233,7 @@ public:
 				
 			}
 		}
-		return 0;
+		throw "location outside trajectory travel path";
 	}
 	
 	static bool rangeOnCompressed(Graph* graph, ACAutomaton* ac, HuffmanTree* huffman, Auxiliary* auxiliary, PRESSCompressedTrajectory* trajectory, double t1, double t2, MBR* range) {
