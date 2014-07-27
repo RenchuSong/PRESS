@@ -112,9 +112,25 @@ double unInterpolate(double x, double y, double a) {
 bool vectorImply(vector<double> x, vector<double> y) {
 	if (x.size() != y.size()) return false;
 	if (x.size() == 0) return true;
-	double r = y[0] / x[0];
+	bool flag = false;
+	double r = 0;
+	for (int i = 0; i < x.size(); ++i) {
+		if (x[i] != 0) {
+			r = y[i] / x[i];
+			flag = true;
+			break;
+		}
+	}
+	if (!flag) {
+		for (int i = 0; i < x.size(); ++i) {
+			if (y[i] != 0) return false;
+		}
+		return true;
+	}
+	if (r > 1) return false;
 	if (r < -_EBSILON) return false;
-	for (int i = 1; i < x.size(); ++i) {
+	for (int i = 0; i < x.size(); ++i) {
+		if (y[i] == 0 && x[i] == 0) continue;
 		if (fabs(y[i] / x[i] - r) > _EBSILON) return false;
 	}
 	return true;
