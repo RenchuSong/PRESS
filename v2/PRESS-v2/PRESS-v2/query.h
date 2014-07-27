@@ -284,6 +284,11 @@ public:
 	}
 	
 	static bool rangeOnCompressed(Graph* graph, ACAutomaton* ac, HuffmanTree* huffman, Auxiliary* auxiliary, PRESSCompressedTrajectory* trajectory, double t1, double t2, MBR* range) {
+		// Get t1 bias
+		
+		// Get t2 bias
+		
+		// Scan MBR
 		
 		return false;
 	}
