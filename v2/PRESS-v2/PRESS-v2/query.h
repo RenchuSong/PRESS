@@ -223,16 +223,59 @@ public:
 	
 	static double whenAtOnCompressed(Graph* graph, ACAutomaton* ac, HuffmanTree* huffman, Auxiliary* auxiliary, PRESSCompressedTrajectory* trajectory, EcldPoint* queryLocation) {
 		vector<int>* fstList = PRESS::FSTComplement(graph, ac, huffman, trajectory->spatial);
+		int d = 0;
+		bool flag = false;
 		for (int i = 0; i < fstList->size(); ++i) {
 			// MBR of fst
 			if (auxiliary->fstMBR[fstList->at(i)]->contain(queryLocation)) {
-				
+				vector<int> fst;
+				int node = fstList->at(i);
+				while (node != -1) {
+					fst.push_back(ac->getNode(node)->value);
+					node = ac->getNode(node)->father;
+				}
+				reverse(fst.begin(), fst.end());
+				for (int j = 0; i < fst.size(); ++j) {
+					double dist = bias(graph->getEdge(fst[j])->geometry, queryLocation);
+					if (dist != Config::NULL_POINTER) {
+						d += dist;
+						flag = true;
+						break;
+					} else d += graph->getEdge(fst[j])->len;
+					if (j < fst.size() - 1) {
+						vector<int>* edgeList = PRESS::SPComplement(graph, new vector<int>{fst[j], fst[j + 1]});
+						for (int k = 0; k < edgeList->size(); ++k) {
+							double dist = bias(graph->getEdge(edgeList->at(k))->geometry, queryLocation);
+							if (dist != Config::NULL_POINTER) {
+								d += dist;
+								flag = true;
+								break;
+							} else d += graph->getEdge(edgeList->at(k))->len;
+						}
+					}
+					if (flag) break;
+				}
 			}
+			if (flag) break;
 			// MBR of link SP segment
 			if (i > 0 && auxiliary->spMBR[ac->getNode(fstList->at(i - 1))->value][ac->getNode(fstList->at(i))->rootAncestor]->contain(queryLocation)) {
-				
+				vector<int>* edgeList = PRESS::SPComplement(graph, new vector<int>{ac->getNode(fstList->at(i - 1))->value, ac->getNode(fstList->at(i))->rootAncestor});
+				for (int k = 0; k < edgeList->size(); ++k) {
+					double dist = bias(graph->getEdge(edgeList->at(k))->geometry, queryLocation);
+					if (dist != Config::NULL_POINTER) {
+						d += dist;
+						flag = true;
+						break;
+					} else d += graph->getEdge(edgeList->at(k))->len;
+				}
 			}
+			if (flag) break;
 		}
+		
+		if (flag) {
+			
+		}
+		
 		throw "location outside trajectory travel path";
 	}
 	
