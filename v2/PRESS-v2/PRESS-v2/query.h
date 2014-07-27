@@ -273,7 +273,11 @@ public:
 		}
 		
 		if (flag) {
-			
+			for (int i = 0; i < trajectory->temporal->size() - 1; ++i) {
+				if (trajectory->temporal->at(i + 1)->d > d) {
+					return interpolate(trajectory->temporal->at(i)->t, trajectory->temporal->at(i + 1)->t, unInterpolate(trajectory->temporal->at(i)->d, trajectory->temporal->at(i + 1)->d, d));
+				}
+			}
 		}
 		
 		throw "location outside trajectory travel path";
