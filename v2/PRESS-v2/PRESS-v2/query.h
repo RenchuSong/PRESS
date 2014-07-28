@@ -284,7 +284,17 @@ public:
 	}
 	
 	static bool rangeOnCompressed(Graph* graph, ACAutomaton* ac, HuffmanTree* huffman, Auxiliary* auxiliary, PRESSCompressedTrajectory* trajectory, double t1, double t2, MBR* range) {
-		// Get t1 bias
+		// Calculate d1 from given t1 at temporal component
+		double d1 = 0;
+		for (int i = 0; i < trajectory->temporal->size(); ++i) {
+			if (trajectory->temporal->at(i)->t > t1) {
+				d1 += (double)(t1 - trajectory->temporal->at(i - 1)->t) /
+				(trajectory->temporal->at(i)->t - trajectory->temporal->at(i - 1)->t) *
+				trajectory->temporal->at(i)->d;
+			} else {
+				d1 += trajectory->temporal->at(i)->d;
+			}
+		}
 		
 		// Get t2 bias
 		
