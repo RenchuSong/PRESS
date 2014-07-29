@@ -309,6 +309,10 @@ public:
 		}
 
 		// Scan MBR
+		vector<int>* fstList = PRESS::FSTComplement(graph, ac, huffman, trajectory->spatial);
+		for (int i = 0; i < fstList->size(); ++i) {
+			
+		}
 		
 		return false;
 	}
