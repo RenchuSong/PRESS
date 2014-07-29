@@ -296,8 +296,18 @@ public:
 			}
 		}
 		
-		// Get t2 bias
-		
+		// Calculate d2 from given t2 at temporal component
+		double d2 = 0;
+		for (int i = 0; i < trajectory->temporal->size(); ++i) {
+			if (trajectory->temporal->at(i)->t > t2) {
+				d2 += (double)(t2 - trajectory->temporal->at(i - 1)->t) /
+				(trajectory->temporal->at(i)->t - trajectory->temporal->at(i - 1)->t) *
+				trajectory->temporal->at(i)->d;
+			} else {
+				d2 += trajectory->temporal->at(i)->d;
+			}
+		}
+
 		// Scan MBR
 		
 		return false;
