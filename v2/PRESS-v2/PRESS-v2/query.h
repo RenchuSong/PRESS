@@ -307,10 +307,25 @@ public:
 				d2 += trajectory->temporal->at(i)->d;
 			}
 		}
-
+		
 		// Scan MBR
+		int d = 0;
 		vector<int>* fstList = PRESS::FSTComplement(graph, ac, huffman, trajectory->spatial);
-		for (int i = 0; i < fstList->size(); ++i) {
+		for (int i = 0; i < fstList->size() && d < d2; ++i) {
+			// MBR of fst
+			if (d + auxiliary->fstLen[fstList->at(i)] > d1 && auxiliary->fstMBR[fstList->at(i)]->intersect(range)) {
+				vector<int> fst;
+				int node = fstList->at(i);
+				while (node != -1) {
+					fst.push_back(ac->getNode(node)->value);
+					node = ac->getNode(node)->father;
+				}
+				reverse(fst.begin(), fst.end());
+				for (int j = 0; i < fst.size(); ++j) {
+					
+				}
+			}
+			d += auxiliary->fstLen[fstList->at(i)];
 			
 		}
 		
