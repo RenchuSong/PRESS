@@ -326,7 +326,13 @@ public:
 				}
 			}
 			d += auxiliary->fstLen[fstList->at(i)];
-			
+			if (i > 0 && d + auxiliary->spLen[ac->getNode(fstList->at(i - 1))->value][ac->getNode(fstList->at(i))->rootAncestor] > d1 && auxiliary->spMBR[ac->getNode(fstList->at(i - 1))->value][ac->getNode(fstList->at(i))->rootAncestor]->intersect(range)) {
+				vector<int>* edgeList = PRESS::SPComplement(graph, new vector<int>{ac->getNode(fstList->at(i - 1))->value, ac->getNode(fstList->at(i))->rootAncestor});
+				for (int k = 0; k < edgeList->size(); ++k) {
+					
+				}
+				d += auxiliary->spLen[ac->getNode(fstList->at(i - 1))->value][ac->getNode(fstList->at(i))->rootAncestor];
+			}
 		}
 		
 		return false;
