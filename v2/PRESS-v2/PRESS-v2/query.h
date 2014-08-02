@@ -244,7 +244,7 @@ public:
 					} else d += graph->getEdge(fst[j])->len;
 					if (j < fst.size() - 1) {
 						vector<int>* edgeList = PRESS::SPComplement(graph, new vector<int>{fst[j], fst[j + 1]});
-						for (int k = 0; k < edgeList->size(); ++k) {
+						for (int k = 1; k < edgeList->size() - 1; ++k) {
 							double dist = bias(graph->getEdge(edgeList->at(k))->geometry, queryLocation);
 							if (dist != Config::NULL_POINTER) {
 								d += dist;
@@ -260,7 +260,7 @@ public:
 			// MBR of link SP segment
 			if (i > 0 && auxiliary->spMBR[ac->getNode(fstList->at(i - 1))->value][ac->getNode(fstList->at(i))->rootAncestor]->contain(queryLocation)) {
 				vector<int>* edgeList = PRESS::SPComplement(graph, new vector<int>{ac->getNode(fstList->at(i - 1))->value, ac->getNode(fstList->at(i))->rootAncestor});
-				for (int k = 0; k < edgeList->size(); ++k) {
+				for (int k = 1; k < edgeList->size() - 1; ++k) {
 					double dist = bias(graph->getEdge(edgeList->at(k))->geometry, queryLocation);
 					if (dist != Config::NULL_POINTER) {
 						d += dist;
@@ -325,8 +325,25 @@ public:
 					node = ac->getNode(node)->father;
 				}
 				reverse(fst.begin(), fst.end());
+				int acc = 0;
 				for (int j = 0; i < fst.size(); ++j) {
-					
+					if (d + acc < d2 && d + acc + graph->getEdge(fst[j])->len > d1) {
+						Node* n1 = graph->getEdge(fst[j])->startNode;
+						Node* n2 = graph->getEdge(fst[j])->endNode;
+						if (range->cross(n1->location, n2->location)) return true;
+					}
+					acc += graph->getEdge(fst[j])->len;
+					if (j < fst.size() - 1) {
+						vector<int>* edgeList = PRESS::SPComplement(graph, new vector<int>{fst[j], fst[j + 1]});
+						for (int k = 1; k < edgeList->size() - 1; ++k) {
+							if (d + acc < d2 && d + acc + graph->getEdge(edgeList->at(k))->len > d1) {
+								Node* n1 = graph->getEdge(edgeList->at(k))->startNode;
+								Node* n2 = graph->getEdge(edgeList->at(k))->endNode;
+								if (range->cross(n1->location, n2->location)) return true;
+							}
+							acc += graph->getEdge(edgeList->at(k))->len;
+						}
+					}
 				}
 			}
 			d += auxiliary->fstLen[fstList->at(i)];
@@ -334,9 +351,8 @@ public:
 				if (d + auxiliary->spLen[ac->getNode(fstList->at(i - 1))->value][ac->getNode(fstList->at(i))->rootAncestor] > d1 && auxiliary->spMBR[ac->getNode(fstList->at(i - 1))->value][ac->getNode(fstList->at(i))->rootAncestor]->intersect(range)) {
 					int acc = 0;
 					vector<int>* edgeList = PRESS::SPComplement(graph, new vector<int>{ac->getNode(fstList->at(i - 1))->value, ac->getNode(fstList->at(i))->rootAncestor});
-					for (int k = 0; k < edgeList->size(); ++k) {
+					for (int k = 1; k < edgeList->size() - 1; ++k) {
 						if (d + acc < d2 && d + acc + graph->getEdge(edgeList->at(k))->len > d1) {
-							
 							Node* n1 = graph->getEdge(edgeList->at(k))->startNode;
 							Node* n2 = graph->getEdge(edgeList->at(k))->endNode;
 							if (range->cross(n1->location, n2->location)) return true;
