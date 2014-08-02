@@ -312,6 +312,10 @@ public:
 		int d = 0;
 		vector<int>* fstList = PRESS::FSTComplement(graph, ac, huffman, trajectory->spatial);
 		for (int i = 0; i < fstList->size() && d < d2; ++i) {
+			
+			// TODO: precisely cut the edge
+			// use interpolation
+			
 			// MBR of fst
 			if (d + auxiliary->fstLen[fstList->at(i)] > d1 && auxiliary->fstMBR[fstList->at(i)]->intersect(range)) {
 				vector<int> fst;
@@ -328,9 +332,16 @@ public:
 			d += auxiliary->fstLen[fstList->at(i)];
 			if (i > 0) {
 				if (d + auxiliary->spLen[ac->getNode(fstList->at(i - 1))->value][ac->getNode(fstList->at(i))->rootAncestor] > d1 && auxiliary->spMBR[ac->getNode(fstList->at(i - 1))->value][ac->getNode(fstList->at(i))->rootAncestor]->intersect(range)) {
+					int acc = 0;
 					vector<int>* edgeList = PRESS::SPComplement(graph, new vector<int>{ac->getNode(fstList->at(i - 1))->value, ac->getNode(fstList->at(i))->rootAncestor});
 					for (int k = 0; k < edgeList->size(); ++k) {
-						
+						if (d + acc < d2 && d + acc + graph->getEdge(edgeList->at(k))->len > d1) {
+							
+							Node* n1 = graph->getEdge(edgeList->at(k))->startNode;
+							Node* n2 = graph->getEdge(edgeList->at(k))->endNode;
+							if (range->cross(n1->location, n2->location)) return true;
+						}
+						acc += graph->getEdge(edgeList->at(k))->len;
 					}
 				}
 				d += auxiliary->spLen[ac->getNode(fstList->at(i - 1))->value][ac->getNode(fstList->at(i))->rootAncestor];
