@@ -26,6 +26,8 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		2B1FDFCE198FD2C20029E246 /* test_base.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = test_base.h; sourceTree = "<group>"; };
+		2B1FDFCF198FD8B20029E246 /* test.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = test.h; sourceTree = "<group>"; };
 		2B22520618D970CF00CCFD4D /* press.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = press.h; sourceTree = "<group>"; };
 		2B289F0718F13B1700D349C2 /* query.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = query.h; sourceTree = "<group>"; };
 		2B32A03518DAD13200609629 /* ac_automaton.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ac_automaton.h; sourceTree = "<group>"; };
@@ -93,6 +95,8 @@
 				2BAE85AC18E95C8600162BCF /* counter_tool.h */,
 				2B289F0718F13B1700D349C2 /* query.h */,
 				2B519AEF193DA48100B29393 /* auxiliary.h */,
+				2B1FDFCE198FD2C20029E246 /* test_base.h */,
+				2B1FDFCF198FD8B20029E246 /* test.h */,
 			);
 			path = "PRESS-v2";
 			sourceTree = "<group>";
