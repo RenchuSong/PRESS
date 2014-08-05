@@ -9,6 +9,17 @@
 #ifndef PRESS_v2_test_base_h
 #define PRESS_v2_test_base_h
 
+template <typename T>
+void assert(T value, void* matcher) {
+	try {
+		matcher(value);
+	} catch (e) {
+		throw "Assertion Failed: " + e;
+	}
+}
 
+void isTrue(bool value) {
+	if (value != true) throw "Expected true, false given.";
+}
 
 #endif
