@@ -22,4 +22,9 @@ void isTrue(bool value) {
 	if (value != true) throw "Expected true, false given.";
 }
 
+
+void isFalse(bool value) {
+	if (value != false) throw "Expected false, true given.";
+}
+
 #endif
