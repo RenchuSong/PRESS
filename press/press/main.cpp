@@ -7,9 +7,11 @@
 //
 
 #include <iostream>
+#include "utility/filereader.h"
 
 int main(int argc, const char * argv[]) {
-    // insert code here...
-    std::cout << "Hello, World!\n";
-    return 0;
+  auto f = std::make_shared<FileReader>("/Users/songrenchu/Develop/PRESS/press/press/test/file1.txt", false);
+  std::cout << f->EndOfFile() << std::endl;
+  std::cout << f->NextChar() << " " << f->NextShort() << " " << f->NextInt() << " " << f->NextDouble() << std::endl;
+  return 0;
 }
