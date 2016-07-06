@@ -13,5 +13,6 @@ int main(int argc, const char * argv[]) {
   auto f = std::make_shared<FileReader>("/Users/songrenchu/Develop/PRESS/press/press/test/file1.txt", false);
   std::cout << f->EndOfFile() << std::endl;
   std::cout << f->NextChar() << " " << f->NextShort() << " " << f->NextInt() << " " << f->NextDouble() << std::endl;
+  std::cout << f->EndOfFile() << std::endl;
   return 0;
 }

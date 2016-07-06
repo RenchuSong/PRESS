@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		2B2804921D2376D400974E6E /* filereader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2B28048F1D2376D400974E6E /* filereader.cpp */; };
+		2B2804981D2C966B00974E6E /* filewriter.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2B2804961D2C966B00974E6E /* filewriter.cpp */; };
 		2BEA8D521C4CC728008FDD9A /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2BEA8D511C4CC728008FDD9A /* main.cpp */; };
 /* End PBXBuildFile section */
 
@@ -29,6 +30,8 @@
 		2B2804901D2376D400974E6E /* filereader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = filereader.h; sourceTree = "<group>"; };
 		2B2804931D23773B00974E6E /* test.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = test.h; sourceTree = "<group>"; };
 		2B2804941D2379A500974E6E /* file1.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = file1.txt; sourceTree = "<group>"; };
+		2B2804951D2C953300974E6E /* filewriter.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = filewriter.h; sourceTree = "<group>"; };
+		2B2804961D2C966B00974E6E /* filewriter.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = filewriter.cpp; sourceTree = "<group>"; };
 		2BEA8D4E1C4CC728008FDD9A /* press */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = press; sourceTree = BUILT_PRODUCTS_DIR; };
 		2BEA8D511C4CC728008FDD9A /* main.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -59,6 +62,8 @@
 				2B28048E1D2376D400974E6E /* binary.h */,
 				2B28048F1D2376D400974E6E /* filereader.cpp */,
 				2B2804901D2376D400974E6E /* filereader.h */,
+				2B2804951D2C953300974E6E /* filewriter.h */,
+				2B2804961D2C966B00974E6E /* filewriter.cpp */,
 			);
 			path = utility;
 			sourceTree = "<group>";
@@ -155,6 +160,7 @@
 			files = (
 				2B2804921D2376D400974E6E /* filereader.cpp in Sources */,
 				2BEA8D521C4CC728008FDD9A /* main.cpp in Sources */,
+				2B2804981D2C966B00974E6E /* filewriter.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
