@@ -2,6 +2,7 @@ PRESS
 =====
 
 PRESS is a novel framework of trajectory compression in road networks.
+
 Please refer to more detail from our [paper at VLDB2014](http://www.vldb.org/pvldb/vol7/p661-song.pdf)
 
 ## Authors
