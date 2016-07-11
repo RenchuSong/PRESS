@@ -11,6 +11,8 @@
 
 #include <iostream>
 
+#include "binary.h"
+
 /**
  * The class wrapper for reading data from file
  * - fp:                              file pointer
@@ -30,6 +32,10 @@ class FileReader {
 private:
   FILE* fp;
   bool isBinary;
+  union Char2Binary char2Binary;
+  union Short2Binary short2Binary;
+  union Int2Binary int2Binary;
+  union Double2Binary double2Binary;
   
 public:
   FileReader (std::string fileName, bool isBinary);

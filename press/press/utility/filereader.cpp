@@ -7,7 +7,6 @@
 //
 
 #include "filereader.h"
-#include "binary.h"
 
 // Construct file reader
 FileReader::FileReader (std::string fileName, bool isBinary) {

@@ -9,6 +9,8 @@
 #ifndef filewriter_h
 #define filewriter_h
 
+#include "binary.h"
+
 /**
  * The class wrapper for writing data to file
  * - fp:                              file pointer
@@ -26,6 +28,10 @@ class FileWriter {
 private:
   FILE* fp;
   bool isBinary;
+  union Char2Binary char2Binary;
+  union Short2Binary short2Binary;
+  union Int2Binary int2Binary;
+  union Double2Binary double2Binary;
   
 public:
   FileWriter (std::string fileName, bool isBinary);
