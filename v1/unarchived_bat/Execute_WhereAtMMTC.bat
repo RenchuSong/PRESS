@@ -1,1 +1,0 @@
-WhereAtMMTC ./ ./SpatioTemporalMMTC2.txt ./WhereAt/MMTCWhereAt.txt

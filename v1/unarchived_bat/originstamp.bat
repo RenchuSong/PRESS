@@ -1,1 +1,0 @@
-MMTC-OriginStamp ./ ./MapMatchedTrajectory/DBTrajectory_Spatial_001.txt ./MapMatchedTrajectory/DBTrajectory_SpatialWithDist_001.txt

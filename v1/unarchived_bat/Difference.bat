@@ -1,1 +1,0 @@
-gcc -O3 Difference.c file.c define2.c -o Difference

@@ -1,1 +1,0 @@
-gcc -O3 MMTC-Street.c file.c define2.c -o MMTC-Street

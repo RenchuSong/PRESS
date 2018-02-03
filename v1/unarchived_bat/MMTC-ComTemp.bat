@@ -1,1 +1,0 @@
-gcc -O3 MMTC-CompTemporal.c file.c define2.c -o MMTC-CompTemporal

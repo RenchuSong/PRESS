@@ -1,1 +1,0 @@
-WhenAtMMTC ./ ./SpatioTemporalMMTC2.txt ./1

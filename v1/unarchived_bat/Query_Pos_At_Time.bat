@@ -1,1 +1,0 @@
-gcc -O3 Query_Pos_At_Time.c file.c define2.c -o Query_Pos_At_Time
