@@ -25,5 +25,6 @@ int main(int argc, const char * argv[]) {
   std::cout << fp.nextChar() << std::endl;
   std::cout << fp.nextString(1024) << std::endl;
   
+  
   return 0;
 }
