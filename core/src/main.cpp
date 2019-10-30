@@ -7,11 +7,10 @@
 //
 
 #include <iostream>
-#include "file_reader.hpp"
+#include "utils/file_reader.hpp"
 
 int main(int argc, const char * argv[]) {
   // insert code here...
-  std::cout << "Hello, World!\n";
   FileReader fp("/Users/songrenchu/Develop/test.txt", false);
   std::cout << fp.isBinary() << std::endl;
   std::cout << fp.fileOpened() << std::endl;
