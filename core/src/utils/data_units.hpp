@@ -6,8 +6,8 @@
 //  Copyright © 2019 Renc. All rights reserved.
 //
 
-#ifndef data_units_h
-#define data_units_h
+#ifndef data_units_hpp
+#define data_units_hpp
 
 // Convert between char and binary.
 union Char2Binary {
@@ -51,4 +51,4 @@ union Double2Binary {
 };
 union Double2Binary double2Binary;
 
-#endif /* data_units_h */
+#endif /* data_units_hpp */
