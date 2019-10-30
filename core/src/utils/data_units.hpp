@@ -51,4 +51,4 @@ union Double2Binary {
 };
 union Double2Binary double2Binary;
 
-#endif /* data_units_hpp */
+#endif /* data_units_h */
