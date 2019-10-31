@@ -10,7 +10,7 @@
 
 #include "graph.hpp"
 
-// Constructor.
+// Node constructor.
 Node::Node(double x, double y): position(x, y), edgeNumber(0) { }
 
 // Add one edge to the node edge list.
@@ -32,7 +32,9 @@ int Node::getEdgeId(size_t index) {
 
 // Print the for debug.
 void Node::print() {
-  std::cout << "position (" << position.x << ", " << position.y << ")" << std::endl;
+  std::cout << "position ";
+  position.print();
+  std::cout << std::endl;
   std::cout << "edge list: " << std::endl;
   for (auto eid : edges) {
     std::cout << eid << ", ";

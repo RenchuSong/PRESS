@@ -9,12 +9,17 @@
 #ifndef auxiliaries_hpp
 #define auxiliaries_hpp
 
+#include <iostream>
+
 // A 2D point.
 struct Point2D {
   double x;
   double y;
   
   Point2D(double x, double y): x(x), y(y) { }
+  void print() {
+    std::cout << "(" << x << ", " << y << ")";
+  }
 };
 
 #endif /* auxiliaries_hpp */
