@@ -9,7 +9,7 @@
 #include <iostream>
 #include "io/file_reader.hpp"
 #include "io/file_writer.hpp"
-
+#include "topology/graph.hpp"
 
 int main(int argc, const char * argv[]) {
 //  FileWriter fw("/Users/songrenchu/Develop/test2.txt", true);
@@ -30,15 +30,30 @@ int main(int argc, const char * argv[]) {
 //  
 //
   
-  FileReader fr("/Users/songrenchu/Develop/test2.txt", true);
-  std::cout << fr.nextChar() << std::endl;
-  std::cout << fr.nextInt() << std::endl;
-  std::cout << fr.nextString() << std::endl;
-  std::cout << fr.nextDouble() << std::endl;
-  std::cout << fr.nextChar() << std::endl;
-  std::cout << fr.nextLong() << std::endl;
-  std::cout << fr.nextChar() << std::endl;
-  std::cout << fr.nextShort() << std::endl;
+//  FileReader fr("/Users/songrenchu/Develop/test2.txt", true);
+//  std::cout << fr.nextChar() << std::endl;
+//  std::cout << fr.nextInt() << std::endl;
+//  std::cout << fr.nextString() << std::endl;
+//  std::cout << fr.nextDouble() << std::endl;
+//  std::cout << fr.nextChar() << std::endl;
+//  std::cout << fr.nextLong() << std::endl;
+//  std::cout << fr.nextChar() << std::endl;
+//  std::cout << fr.nextShort() << std::endl;
+  
+  Node n(10, 20);
+  
+  n.print();
+  
+  n.addEdge(1);
+  n.addEdge(5);
+  n.addEdge(6);
+  n.addEdge(4);
+  
+  n.print();
+  std::cout << n.getEdgeNumber() << std::endl;
+  std::cout << n.getEdgeId(1) << std::endl;
+  std::cout << n.getEdgeId(3) << std::endl;
+  std::cout << n.getEdgeId(5) << std::endl;
   
   
   
