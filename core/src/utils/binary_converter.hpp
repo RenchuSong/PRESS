@@ -1,13 +1,13 @@
 //
-//  data_units.hpp
+//  binary_converter.hpp
 //  press-v3
 //
 //  Created by Renchu Song on 10/28/19.
 //  Copyright © 2019 Renc. All rights reserved.
 //
 
-#ifndef data_units_hpp
-#define data_units_hpp
+#ifndef binary_converter_hpp
+#define binary_converter_hpp
 
 // Convert between char and binary.
 union Char2Binary {
@@ -46,4 +46,4 @@ union Double2Binary {
   unsigned char data[8];
 };
 
-#endif /* data_units_h */
+#endif /* binary_converter_hpp */

@@ -6,8 +6,8 @@
 //  Copyright © 2019 Renc. All rights reserved.
 //
 
+#include "binary_converter.hpp"
 #include "file_writer.hpp"
-#include "data_units.hpp"
 
 extern union Char2Binary char2Binary;
 extern union Short2Binary short2Binary;
@@ -121,4 +121,3 @@ bool FileWriter::isBinary() {
 FileWriter::~FileWriter() {
   fclose(fp);
 }
-
