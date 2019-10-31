@@ -15,10 +15,13 @@ int main(int argc, const char * argv[]) {
   FileWriter fw("/Users/songrenchu/Develop/test2.txt", false);
   fw.writeChar('a');
   fw.writeInt(123);
-//  char a[4];
-//  a = "ABC";
-//  a[3] = '\0';
-//  fw.writeString(a);
+  char* a = new char[4];
+  a[0] = 'A';
+  a[1] = 'B';
+  a[2] = 'C';
+  a[3] = '\0';
+  const char* b = a;
+  fw.writeString(b);
   fw.writeDouble(3.456);
   fw.writeChar(',');
   fw.writeLong(23423);

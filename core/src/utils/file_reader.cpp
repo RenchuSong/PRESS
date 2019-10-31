@@ -9,6 +9,13 @@
 #include "file_reader.hpp"
 #include "data_units.hpp"
 
+extern union Char2Binary char2Binary;
+extern union Short2Binary short2Binary;
+extern union Int2Binary int2Binary;
+extern union Long2Binary long2Binary;
+extern union Float2Binary float2Binary;
+extern union Double2Binary double2Binary;
+
 FileReader::FileReader(char* fileName, bool binary) {
   this->binary = binary;
   fp = fopen(fileName, binary ? "rb" : "r");
