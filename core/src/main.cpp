@@ -7,8 +7,8 @@
 //
 
 #include <iostream>
-#include "utils/file_reader.hpp"
-#include "utils/file_writer.hpp"
+#include "io/file_reader.hpp"
+#include "io/file_writer.hpp"
 
 
 int main(int argc, const char * argv[]) {
