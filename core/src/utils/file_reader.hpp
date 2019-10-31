@@ -25,7 +25,7 @@ public:
   long long nextLong();
   float nextFloat();
   double nextDouble();
-  char* nextString(int maxLen);
+  char* nextString(int maxLen = 256);
   bool isBinary();
   ~FileReader();
 };

@@ -105,7 +105,7 @@ bool FileWriter::writeDouble(const double& value) {
 
 // Write a string.
 bool FileWriter::writeString(const char*& value) {
-  for (auto i = 0; i < strlen(value); i++) {
+  for (auto i = 0; i <= strlen(value); i++) {
     if (!writeChar(value[i])) {
       return false;
     }
