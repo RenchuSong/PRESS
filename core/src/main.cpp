@@ -53,8 +53,22 @@ int main(int argc, const char * argv[]) {
   std::cout << n.getEdgeNumber() << std::endl;
   std::cout << n.getEdgeId(1) << std::endl;
   std::cout << n.getEdgeId(3) << std::endl;
-  std::cout << n.getEdgeId(5) << std::endl;
+//  std::cout << n.getEdgeId(5) << std::endl;
   
+  Edge e(3, 5);
+  e.addPosition(0, 0);
+  e.addPosition(1, 1);
+  e.addPosition(3, 1);
+  std::cout << e.getSourceId() << std::endl;
+  std::cout << e.getTargetId() << std::endl;
+  std::cout << e.getGeoSize() << std::endl;
+  std::cout << e.getDistance() << std::endl;
+  e.print();
+  const std::vector<Point2D>& sp = e.getShape();
+  for (auto s : sp) {
+    s.print();
+  }
+  std::cout << std::endl;
   
   
   

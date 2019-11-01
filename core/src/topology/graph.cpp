@@ -9,6 +9,7 @@
 #include <cassert>
 
 #include "graph.hpp"
+#include "../util/helper.hpp"
 
 // Node constructor.
 Node::Node(double x, double y): position(x, y), edgeNumber(0) { }
@@ -30,7 +31,7 @@ int Node::getEdgeId(size_t index) {
   return edges[index];
 }
 
-// Print the for debug.
+// Print the node for debug.
 void Node::print() {
   std::cout << "position ";
   position.print();
@@ -43,3 +44,58 @@ void Node::print() {
 }
 
 Node::~Node() { }
+
+// Edge constructor.
+Edge::Edge(int srcId, int tgtId): sourceId(srcId), targetId(tgtId), geoSize(0), distance(0) { }
+
+// Add one position in the shape.
+size_t Edge::addPosition(double x, double y) {
+  geoSize++;
+  Point2D point(x, y);
+  if (shape.size() > 0) {
+    distance += euclideanDistance(shape.back(), point);
+  }
+  shape.push_back(point);
+  return geoSize;
+}
+
+// Get the source node id.
+int Edge::getSourceId() {
+  return sourceId;
+}
+
+// Get the target node id.
+int Edge::getTargetId() {
+  return targetId;
+}
+
+// Get the geo size.
+size_t Edge::getGeoSize() {
+  return geoSize;
+}
+
+// Get the shape of the edge.
+const std::vector<Point2D>& Edge::getShape() {
+  return shape;
+}
+
+// Get the distance of the edge.
+double Edge::getDistance() {
+  return distance;
+}
+
+// Print the edge for debug.
+void Edge::print() {
+  std::cout << "srcId: " << sourceId << std::endl;
+  std::cout << "tgtId: " << targetId << std::endl;
+  std::cout << "geoSize: " << geoSize << std::endl;
+  std::cout << "shape: " << std::endl;
+  for (auto pt : shape) {
+    pt.print();
+  }
+  std::cout << std::endl;
+  std::cout << "distance: " << distance << std::endl;
+  std::cout << std::endl;
+}
+
+Edge::~Edge() { }
