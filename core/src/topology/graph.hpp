@@ -57,19 +57,23 @@ public:
 // Graph represents the road network.
 class Graph {
 private:
-  int nodeNumber;
+  size_t nodeNumber;
   std::vector<Node> nodeList;
   std::unordered_map<int, int> nodeId2Index;
-  int edgeNumber;
+  size_t edgeNumber;
   std::vector<Edge> edgeList;
   std::unordered_map<int, int> edgeId2Index;
 
 public:
   Graph(FileReader& nodeReader, FileReader& edgeReader, FileReader& geoReader);
+  size_t getNodeNumber();
   const Node& getNodeById(int id);
   const Node& getNodeByIndex(size_t index);
+  const std::vector<Node>& getNodeList();
+  size_t getEdgeNumber();
   const Edge& getEdgeById(int id);
   const Edge& getEdgeByIndex(size_t index);
+  const std::vector<Edge>& getEdgeList();
   void print();
   ~Graph();
 };
