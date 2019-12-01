@@ -10,6 +10,9 @@
 #include "io/file_reader.hpp"
 #include "io/file_writer.hpp"
 #include "topology/graph.hpp"
+#include "topology/trajectory.hpp"
+#include "topology/auxiliaries.hpp"
+#include <vector>
 
 int main(int argc, const char * argv[]) {
 //  FileWriter fw("/Users/songrenchu/Develop/test2.txt", true);
@@ -40,35 +43,35 @@ int main(int argc, const char * argv[]) {
 //  std::cout << fr.nextChar() << std::endl;
 //  std::cout << fr.nextShort() << std::endl;
   
-  Node n(10, 20);
-  
-  n.print();
-  
-  n.addEdge(1);
-  n.addEdge(5);
-  n.addEdge(6);
-  n.addEdge(4);
-  
-  n.print();
-  std::cout << n.getEdgeNumber() << std::endl;
-  std::cout << n.getEdgeId(1) << std::endl;
-  std::cout << n.getEdgeId(3) << std::endl;
-//  std::cout << n.getEdgeId(5) << std::endl;
-  
-  Edge e(3, 5);
-  e.addPosition(0, 0);
-  e.addPosition(1, 1);
-  e.addPosition(3, 1);
-  std::cout << e.getSourceId() << std::endl;
-  std::cout << e.getTargetId() << std::endl;
-  std::cout << e.getGeoSize() << std::endl;
-  std::cout << e.getDistance() << std::endl;
-  e.print();
-  const std::vector<Point2D>& sp = e.getShape();
-  for (auto s : sp) {
-    s.print();
-  }
-  std::cout << std::endl;
+//  Node n(10, 20);
+//  
+//  n.print();
+//  
+//  n.addEdge(1);
+//  n.addEdge(5);
+//  n.addEdge(6);
+//  n.addEdge(4);
+//  
+//  n.print();
+//  std::cout << n.getEdgeNumber() << std::endl;
+//  std::cout << n.getEdgeId(1) << std::endl;
+//  std::cout << n.getEdgeId(3) << std::endl;
+////  std::cout << n.getEdgeId(5) << std::endl;
+//  
+//  Edge e(3, 5);
+//  e.addPosition(0, 0);
+//  e.addPosition(1, 1);
+//  e.addPosition(3, 1);
+//  std::cout << e.getSourceId() << std::endl;
+//  std::cout << e.getTargetId() << std::endl;
+//  std::cout << e.getGeoSize() << std::endl;
+//  std::cout << e.getDistance() << std::endl;
+//  e.print();
+//  const std::vector<Point2D>& sp = e.getShape();
+//  for (auto s : sp) {
+//    s.print();
+//  }
+//  std::cout << std::endl;
   
   
   
@@ -85,6 +88,35 @@ int main(int argc, const char * argv[]) {
 //  std::cout << fp.nextDouble() << std::endl;
 //  std::cout << fp.nextChar() << std::endl;
 //  std::cout << fp.nextString(1024) << std::endl;
+
+  std::vector<GPSPoint> trajectory;
+  trajectory.emplace_back(GPSPoint(1, 2.0, 3.0));
+  trajectory.emplace_back(GPSPoint(2, 2.1, 3.2));
+  trajectory.emplace_back(GPSPoint(3, 2.2, 3.3));
+  trajectory.emplace_back(GPSPoint(4, 2.3, 3.3));
+  trajectory.emplace_back(GPSPoint(5, 2.4, 3.2));
+  trajectory.emplace_back(GPSPoint(6, 2.5, 3.0));
+  
+  GPSTrajectory traj(trajectory);
+  traj.print();
+  std::cout << std::endl;
+  std::cout << traj.getLength() << std::endl;
+  traj.getGPSPoint(0).print();
+  
+//  FileWriter fw0("/Users/songrenchu/Develop/traj.txt", true);
+//  traj.store(fw0);
+
+  FileReader fw1("/Users/songrenchu/Develop/traj.txt", true);
+  FileReader fw2("/Users/songrenchu/Develop/traj2.txt", false);
+  
+  std::cout << std::endl;
+  GPSTrajectory traj1(fw1);
+  traj1.print();
+  std::cout << std::endl;
+  GPSTrajectory traj2(fw2);
+  traj2.print();
+  std::cout << std::endl;
+  
   
   
   return 0;

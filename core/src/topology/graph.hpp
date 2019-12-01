@@ -67,12 +67,12 @@ private:
 public:
   Graph(const FileReader& nodeReader, const FileReader& edgeReader, const FileReader& geoReader);
   size_t getNodeNumber();
-  const Node& getNodeById(int id);
-  const Node& getNodeByIndex(size_t index);
+  Node& getNodeById(int id);
+  Node& getNodeByIndex(size_t index);
   const std::vector<Node>& getNodeList();
   size_t getEdgeNumber();
-  const Edge& getEdgeById(int id);
-  const Edge& getEdgeByIndex(size_t index);
+  Edge& getEdgeById(int id);
+  Edge& getEdgeByIndex(size_t index);
   const std::vector<Edge>& getEdgeList();
   void print();
   ~Graph();

@@ -114,12 +114,12 @@ size_t Graph::getNodeNumber() {
 }
 
 // Get the node with given id.
-const Node& Graph::getNodeById(int id) {
+Node& Graph::getNodeById(int id) {
   return nodeList[nodeId2Index.at(id)];
 }
 
 // Get the node by index.
-const Node& Graph::getNodeByIndex(size_t index) {
+Node& Graph::getNodeByIndex(size_t index) {
   return nodeList[index];
 }
 
@@ -134,12 +134,12 @@ size_t Graph::getEdgeNumber() {
 }
 
 // Get the edge with given id.
-const Edge& Graph::getEdgeById(int id) {
+Edge& Graph::getEdgeById(int id) {
   return edgeList[edgeId2Index.at(id)];
 }
 
 // Get the edge by index.
-const Edge& Graph::getEdgeByIndex(size_t index) {
+Edge& Graph::getEdgeByIndex(size_t index) {
   return edgeList[index];
 }
 

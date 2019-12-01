@@ -36,8 +36,8 @@ union Long2Binary {
 
 // Convert between float and binary.
 union Float2Binary {
-  double value;
-  unsigned char data[8];
+  float value;
+  unsigned char data[4];
 };
 
 // Convert between double and binary.

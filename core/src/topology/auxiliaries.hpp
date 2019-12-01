@@ -22,4 +22,26 @@ struct Point2D {
   }
 };
 
+// A GPS point.
+struct GPSPoint {
+  int t;
+  float latitude, longitude;
+  
+  GPSPoint(int t, float lat, float lng): t(t), latitude(lat), longitude(lng) { }
+  void print() {
+    std::cout << "(" << t << ": " << latitude << ", " << longitude << ")";
+  }
+};
+
+// A temporal pair (t, d).
+struct TemporalPair {
+  int t;
+  float dist;
+  
+  TemporalPair(int t, float dist): t(t), dist(dist) { }
+  void print() {
+    std::cout << "(" << t << ": " << dist << ")";
+  }
+};
+
 #endif /* auxiliaries_hpp */
