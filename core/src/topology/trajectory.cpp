@@ -73,3 +73,79 @@ void GPSTrajectory::print() {
 
 GPSTrajectory::~GPSTrajectory() { }
 
+// Read a PRESS trajectory from files.
+PRESSTrajectory::PRESSTrajectory(FileReader& spatialReader, FileReader& temporalReader) {
+  // Read spatial component.
+  spatialLength = spatialReader.nextInt();
+  for (auto i = 0; i < spatialLength; i++) {
+    spatialComponent.emplace_back(spatialReader.nextInt());
+  }
+  // Read temporal component.
+  temporalLength = temporalReader.nextInt();
+  for (auto i = 0; i < temporalLength; i++) {
+    temporalComponent.emplace_back(
+      TemporalPair(temporalReader.nextInt(), temporalReader.nextFloat())
+    );
+  }
+}
+
+// Construct a trajectory from spatial and temporal vector.
+PRESSTrajectory::PRESSTrajectory(const std::vector<int>& spatial, const std::vector<TemporalPair>& temporal) {
+  spatialLength = spatial.size();
+  spatialComponent = spatial;
+  temporalLength = temporal.size();
+  temporalComponent = temporal;
+}
+
+// Write a PRESS trajectory to the files.
+void PRESSTrajectory::store(FileWriter& spatialWriter, FileWriter& temporalWriter) {
+  // Write the spatial compoennt to file.
+  if (spatialWriter.isBinary()) {
+    spatialWriter.writeInt((int)spatialLength);
+    for (auto nodeId: spatialComponent) {
+      spatialWriter.writeInt(nodeId);
+    }
+  } else {
+    spatialWriter.writeInt((int)spatialLength);
+    for (auto nodeId: spatialComponent) {
+      spatialWriter.writeChar(' ');
+      spatialWriter.writeInt(nodeId);
+    }
+    spatialWriter.writeChar('\n');
+  }
+  // Write the temporal component to file.
+  if (temporalWriter.isBinary()) {
+    temporalWriter.writeInt((int)temporalLength);
+    for (auto temporalPair: temporalComponent) {
+      temporalWriter.writeInt(temporalPair.t);
+      temporalWriter.writeFloat(temporalPair.dist);
+    }
+  } else {
+    temporalWriter.writeInt((int)temporalLength);
+    for (auto temporalPair: temporalComponent) {
+      temporalWriter.writeChar(' ');
+      temporalWriter.writeInt(temporalPair.t);
+      temporalWriter.writeChar(' ');
+      temporalWriter.writeFloat(temporalPair.dist);
+    }
+    temporalWriter.writeChar('\n');
+  }
+}
+
+// Print the PRESS trajectory for debug.
+void PRESSTrajectory::print() {
+  std::cout << "Spatial: ";
+  std::cout << spatialLength;
+  for (auto nodeId: spatialComponent) {
+    std::cout << " " << nodeId;
+  }
+  std::cout << std::endl;
+  std::cout << "Temporal: ";
+  std::cout << temporalLength;
+  for (auto temporalPair: temporalComponent) {
+    temporalPair.print();
+  }
+  std::cout << std::endl;
+}
+
+PRESSTrajectory::~PRESSTrajectory() { }

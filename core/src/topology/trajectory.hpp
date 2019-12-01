@@ -44,10 +44,10 @@ private:
   
 public:
   // Read a PRESS trajectory from files.
-  PRESSTrajectory(const FileReader& spatialReader, const FileReader& temporalReader);
+  PRESSTrajectory(FileReader& spatialReader, FileReader& temporalReader);
   // Construct an in-memory PRESS trajectory.
   PRESSTrajectory(const std::vector<int>& spatial, const std::vector<TemporalPair>& temporal);
-  void store(const FileWriter& spatialWriter, const FileWriter& temporalWriter);
+  void store(FileWriter& spatialWriter, FileWriter& temporalWriter);
   void print();
   ~PRESSTrajectory();
 };
