@@ -99,3 +99,58 @@ void Edge::print() {
 }
 
 Edge::~Edge() { }
+
+
+// Construct graph from the files.
+Graph::Graph(const FileReader& nodeReader,
+             const FileReader& edgeReader,
+             const FileReader& geoReader) {
+  // TODO: read graph from file.
+}
+
+// Get node number in the graph.
+size_t Graph::getNodeNumber() {
+  return nodeNumber;
+}
+
+// Get the node with given id.
+const Node& Graph::getNodeById(int id) {
+  return nodeList[nodeId2Index.at(id)];
+}
+
+// Get the node by index.
+const Node& Graph::getNodeByIndex(size_t index) {
+  return nodeList[index];
+}
+
+// Get the node list.
+const std::vector<Node>& Graph::getNodeList() {
+  return nodeList;
+}
+
+// Get edge number in the graph.
+size_t Graph::getEdgeNumber() {
+  return edgeNumber;
+}
+
+// Get the edge with given id.
+const Edge& Graph::getEdgeById(int id) {
+  return edgeList[edgeId2Index.at(id)];
+}
+
+// Get the edge by index.
+const Edge& Graph::getEdgeByIndex(size_t index) {
+  return edgeList[index];
+}
+
+// Get the edge list.
+const std::vector<Edge>& Graph::getEdgeList() {
+  return edgeList;
+}
+
+// Print the graph for debug.
+void Graph::print() {
+  // TODO
+}
+
+Graph::~Graph() { }

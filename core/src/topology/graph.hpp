@@ -65,7 +65,7 @@ private:
   std::unordered_map<int, int> edgeId2Index;
 
 public:
-  Graph(FileReader& nodeReader, FileReader& edgeReader, FileReader& geoReader);
+  Graph(const FileReader& nodeReader, const FileReader& edgeReader, const FileReader& geoReader);
   size_t getNodeNumber();
   const Node& getNodeById(int id);
   const Node& getNodeByIndex(size_t index);
