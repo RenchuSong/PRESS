@@ -28,6 +28,7 @@ public:
   GPSTrajectory(std::vector<GPSPoint>& sequence);
   size_t getLength();
   GPSPoint& getGPSPoint(size_t index);
+  const std::vector<GPSPoint>& getTrajectory();
   void store(FileWriter& gpsWriter);
   void print();
   ~GPSTrajectory();
@@ -48,6 +49,10 @@ public:
   // Construct an in-memory PRESS trajectory.
   PRESSTrajectory(const std::vector<int>& spatial, const std::vector<TemporalPair>& temporal);
   void store(FileWriter& spatialWriter, FileWriter& temporalWriter);
+  size_t getSpatialLength();
+  const std::vector<int>& getSpatialComponent();
+  size_t getTemporalLength();
+  const std::vector<TemporalPair>& getTemporalComponent();
   void print();
   ~PRESSTrajectory();
 };

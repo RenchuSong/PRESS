@@ -89,35 +89,94 @@ int main(int argc, const char * argv[]) {
 //  std::cout << fp.nextChar() << std::endl;
 //  std::cout << fp.nextString(1024) << std::endl;
 
-  std::vector<GPSPoint> trajectory;
-  trajectory.emplace_back(GPSPoint(1, 2.0, 3.0));
-  trajectory.emplace_back(GPSPoint(2, 2.1, 3.2));
-  trajectory.emplace_back(GPSPoint(3, 2.2, 3.3));
-  trajectory.emplace_back(GPSPoint(4, 2.3, 3.3));
-  trajectory.emplace_back(GPSPoint(5, 2.4, 3.2));
-  trajectory.emplace_back(GPSPoint(6, 2.5, 3.0));
+//  std::vector<GPSPoint> trajectory;
+//  trajectory.emplace_back(GPSPoint(1, 2.0, 3.0));
+//  trajectory.emplace_back(GPSPoint(2, 2.1, 3.2));
+//  trajectory.emplace_back(GPSPoint(3, 2.2, 3.3));
+//  trajectory.emplace_back(GPSPoint(4, 2.3, 3.3));
+//  trajectory.emplace_back(GPSPoint(5, 2.4, 3.2));
+//  trajectory.emplace_back(GPSPoint(6, 2.5, 3.0));
+//  
+//  GPSTrajectory traj(trajectory);
+//  traj.print();
+//  std::cout << std::endl;
+//  std::cout << traj.getLength() << std::endl;
+//  traj.getGPSPoint(0).print();
+//  
+////  FileWriter fw0("/Users/songrenchu/Develop/traj.txt", true);
+////  traj.store(fw0);
+//
+//  FileReader fw1("/Users/songrenchu/Develop/traj.txt", true);
+//  FileReader fw2("/Users/songrenchu/Develop/traj2.txt", false);
+//  
+//  std::cout << std::endl;
+//  GPSTrajectory traj1(fw1);
+//  traj1.print();
+//  std::cout << std::endl;
+//  for (auto gps: traj1.getTrajectory()) {
+//    gps.print();
+//  }
+//  std::cout << std::endl;
+//  GPSTrajectory traj2(fw2);
+//  traj2.print();
+//  std::cout << std::endl;
+//  for (auto gps: traj2.getTrajectory()) {
+//    gps.print();
+//  }
+//  std::cout << std::endl;
   
-  GPSTrajectory traj(trajectory);
-  traj.print();
-  std::cout << std::endl;
-  std::cout << traj.getLength() << std::endl;
-  traj.getGPSPoint(0).print();
+  std::vector<int> spatial;
+  std::vector<TemporalPair> temporal;
+  spatial.emplace_back(1);
+  spatial.emplace_back(3);
+  spatial.emplace_back(2);
+  spatial.emplace_back(5);
+  temporal.emplace_back(TemporalPair(0, 0));
+  temporal.emplace_back(TemporalPair(1, 1.5));
+  temporal.emplace_back(TemporalPair(2, 2));
+  temporal.emplace_back(TemporalPair(3, 5));
+  temporal.emplace_back(TemporalPair(4, 5.1));
   
-//  FileWriter fw0("/Users/songrenchu/Develop/traj.txt", true);
-//  traj.store(fw0);
+  PRESSTrajectory pTraj(spatial, temporal);
+  pTraj.print();
+  std::cout << pTraj.getSpatialLength() << std::endl;
+  std::cout << pTraj.getTemporalLength() << std::endl;
+//  FileWriter fw0("/Users/songrenchu/Develop/ptraj1.txt", true);
+//  FileWriter fw1("/Users/songrenchu/Develop/ptraj2.txt", true);
+//  FileWriter fw2("/Users/songrenchu/Develop/ptraj3.txt", false);
+//  FileWriter fw3("/Users/songrenchu/Develop/ptraj4.txt", false);
+//  pTraj.store(fw0,fw1);
+//  pTraj.store(fw2,fw3);
+  FileReader fr0("/Users/songrenchu/Develop/ptraj1.txt", true);
+  FileReader fr1("/Users/songrenchu/Develop/ptraj2.txt", true);
+  FileReader fr2("/Users/songrenchu/Develop/ptraj3.txt", false);
+  FileReader fr3("/Users/songrenchu/Develop/ptraj4.txt", false);
 
-  FileReader fw1("/Users/songrenchu/Develop/traj.txt", true);
-  FileReader fw2("/Users/songrenchu/Develop/traj2.txt", false);
-  
+  PRESSTrajectory pTraj1(fr0, fr1);
+  pTraj1.print();
+  std::cout << pTraj1.getSpatialLength() << std::endl;
+  std::cout << pTraj1.getTemporalLength() << std::endl;
+  for (auto id: pTraj1.getSpatialComponent()) {
+    std::cout << id << " ";
+  }
   std::cout << std::endl;
-  GPSTrajectory traj1(fw1);
-  traj1.print();
-  std::cout << std::endl;
-  GPSTrajectory traj2(fw2);
-  traj2.print();
+  for (auto tp: pTraj1.getTemporalComponent()) {
+    tp.print();
+  }
   std::cout << std::endl;
   
-  
+  PRESSTrajectory pTraj2(fr2, fr3);
+  pTraj2.print();
+  std::cout << pTraj2.getSpatialLength() << std::endl;
+  std::cout << pTraj2.getTemporalLength() << std::endl;
+  for (auto id: pTraj2.getSpatialComponent()) {
+    std::cout << id << " ";
+  }
+  std::cout << std::endl;
+  for (auto tp: pTraj2.getTemporalComponent()) {
+    tp.print();
+  }
+  std::cout << std::endl;
   
   return 0;
 }
