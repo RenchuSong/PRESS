@@ -9,6 +9,7 @@
 #include <iostream>
 #include "io/file_reader.hpp"
 #include "io/file_writer.hpp"
+#include "io/binary.hpp"
 #include "topology/graph.hpp"
 #include "topology/trajectory.hpp"
 #include "topology/auxiliaries.hpp"
@@ -125,58 +126,121 @@ int main(int argc, const char * argv[]) {
 //  }
 //  std::cout << std::endl;
   
-  std::vector<int> spatial;
-  std::vector<TemporalPair> temporal;
-  spatial.emplace_back(1);
-  spatial.emplace_back(3);
-  spatial.emplace_back(2);
-  spatial.emplace_back(5);
-  temporal.emplace_back(TemporalPair(0, 0));
-  temporal.emplace_back(TemporalPair(1, 1.5));
-  temporal.emplace_back(TemporalPair(2, 2));
-  temporal.emplace_back(TemporalPair(3, 5));
-  temporal.emplace_back(TemporalPair(4, 5.1));
+//  std::vector<int> spatial;
+//  std::vector<TemporalPair> temporal;
+//  spatial.emplace_back(1);
+//  spatial.emplace_back(3);
+//  spatial.emplace_back(2);
+//  spatial.emplace_back(5);
+//  temporal.emplace_back(TemporalPair(0, 0));
+//  temporal.emplace_back(TemporalPair(1, 1.5));
+//  temporal.emplace_back(TemporalPair(2, 2));
+//  temporal.emplace_back(TemporalPair(3, 5));
+//  temporal.emplace_back(TemporalPair(4, 5.1));
+//  
+//  PRESSTrajectory pTraj(spatial, temporal);
+//  pTraj.print();
+//  std::cout << pTraj.getSpatialLength() << std::endl;
+//  std::cout << pTraj.getTemporalLength() << std::endl;
+////  FileWriter fw0("/Users/songrenchu/Develop/ptraj1.txt", true);
+////  FileWriter fw1("/Users/songrenchu/Develop/ptraj2.txt", true);
+////  FileWriter fw2("/Users/songrenchu/Develop/ptraj3.txt", false);
+////  FileWriter fw3("/Users/songrenchu/Develop/ptraj4.txt", false);
+////  pTraj.store(fw0,fw1);
+////  pTraj.store(fw2,fw3);
+//  FileReader fr0("/Users/songrenchu/Develop/ptraj1.txt", true);
+//  FileReader fr1("/Users/songrenchu/Develop/ptraj2.txt", true);
+//  FileReader fr2("/Users/songrenchu/Develop/ptraj3.txt", false);
+//  FileReader fr3("/Users/songrenchu/Develop/ptraj4.txt", false);
+//
+//  PRESSTrajectory pTraj1(fr0, fr1);
+//  pTraj1.print();
+//  std::cout << pTraj1.getSpatialLength() << std::endl;
+//  std::cout << pTraj1.getTemporalLength() << std::endl;
+//  for (auto id: pTraj1.getSpatialComponent()) {
+//    std::cout << id << " ";
+//  }
+//  std::cout << std::endl;
+//  for (auto tp: pTraj1.getTemporalComponent()) {
+//    tp.print();
+//  }
+//  std::cout << std::endl;
+//  
+//  PRESSTrajectory pTraj2(fr2, fr3);
+//  pTraj2.print();
+//  std::cout << pTraj2.getSpatialLength() << std::endl;
+//  std::cout << pTraj2.getTemporalLength() << std::endl;
+//  for (auto id: pTraj2.getSpatialComponent()) {
+//    std::cout << id << " ";
+//  }
+//  std::cout << std::endl;
+//  for (auto tp: pTraj2.getTemporalComponent()) {
+//    tp.print();
+//  }
+//  std::cout << std::endl;
   
-  PRESSTrajectory pTraj(spatial, temporal);
-  pTraj.print();
-  std::cout << pTraj.getSpatialLength() << std::endl;
-  std::cout << pTraj.getTemporalLength() << std::endl;
-//  FileWriter fw0("/Users/songrenchu/Develop/ptraj1.txt", true);
-//  FileWriter fw1("/Users/songrenchu/Develop/ptraj2.txt", true);
-//  FileWriter fw2("/Users/songrenchu/Develop/ptraj3.txt", false);
-//  FileWriter fw3("/Users/songrenchu/Develop/ptraj4.txt", false);
-//  pTraj.store(fw0,fw1);
-//  pTraj.store(fw2,fw3);
-  FileReader fr0("/Users/songrenchu/Develop/ptraj1.txt", true);
-  FileReader fr1("/Users/songrenchu/Develop/ptraj2.txt", true);
-  FileReader fr2("/Users/songrenchu/Develop/ptraj3.txt", false);
-  FileReader fr3("/Users/songrenchu/Develop/ptraj4.txt", false);
-
-  PRESSTrajectory pTraj1(fr0, fr1);
-  pTraj1.print();
-  std::cout << pTraj1.getSpatialLength() << std::endl;
-  std::cout << pTraj1.getTemporalLength() << std::endl;
-  for (auto id: pTraj1.getSpatialComponent()) {
-    std::cout << id << " ";
-  }
-  std::cout << std::endl;
-  for (auto tp: pTraj1.getTemporalComponent()) {
-    tp.print();
+  std::vector<bool> bitArr;
+  
+//  std::vector<bool> b1;
+//  b1.push_back(true);
+//  b1.push_back(true);
+//  b1.push_back(true);
+//  b1.push_back(true);
+//  b1.push_back(true);
+//  b1.push_back(false);
+//  b1.push_back(true);
+//  b1.push_back(true);
+//  b1.push_back(false);
+//  b1.push_back(true);
+//  b1.push_back(false);
+//  b1.push_back(true);
+//  b1.push_back(true);
+//  b1.push_back(false);
+//  b1.push_back(true);
+//  b1.push_back(true);
+//  b1.push_back(false);
+//  b1.push_back(true);
+//  b1.push_back(false);
+//  
+//  Binary bin1(b1);
+//  bin1.print();
+//  std::cout << bin1.getLength() << std::endl;
+//  for (auto c: bin1.getBinary()) {
+//    std::cout << "(" << (int)c << ")";
+//  }
+//  std::cout << std::endl;
+//  FileWriter fw0("/Users/songrenchu/Develop/bin1.txt", true);
+//  bin1.store(fw0);
+  
+  FileReader fr0("/Users/songrenchu/Develop/bin1.txt", true);
+  Binary bin2(fr0);
+  bin2.print();
+  std::cout << bin2.getLength() << std::endl;
+  for (auto c: bin2.getBinary()) {
+    std::cout << "(" << (int)c << ")";
   }
   std::cout << std::endl;
   
-  PRESSTrajectory pTraj2(fr2, fr3);
-  pTraj2.print();
-  std::cout << pTraj2.getSpatialLength() << std::endl;
-  std::cout << pTraj2.getTemporalLength() << std::endl;
-  for (auto id: pTraj2.getSpatialComponent()) {
-    std::cout << id << " ";
-  }
-  std::cout << std::endl;
-  for (auto tp: pTraj2.getTemporalComponent()) {
-    tp.print();
+  Binary bin3(bin2.getLength(), bin2.getBinary());
+  bin3.print();
+  std::cout << bin3.getLength() << std::endl;
+  for (auto c: bin3.getBinary()) {
+    std::cout << "(" << (int)c << ")";
   }
   std::cout << std::endl;
   
+  Binary bin4 = bin3;
+  
+  bin4.print();
+  std::cout << bin4.getLength() << std::endl;
+  for (auto c: bin4.getBinary()) {
+    std::cout << "(" << (int)c << ")";
+  }
+  std::cout << std::endl;
+  bin4.getBitArray(bitArr);
+  for (auto c: bitArr) {
+    std::cout << c << " ";
+  }
+  std::cout << std::endl;
   return 0;
 }
