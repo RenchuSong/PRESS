@@ -13,6 +13,7 @@
 #include "topology/graph.hpp"
 #include "topology/trajectory.hpp"
 #include "topology/auxiliaries.hpp"
+#include "util/timer.hpp"
 #include <vector>
 
 int main(int argc, const char * argv[]) {
@@ -212,35 +213,61 @@ int main(int argc, const char * argv[]) {
 //  FileWriter fw0("/Users/songrenchu/Develop/bin1.txt", true);
 //  bin1.store(fw0);
   
-  FileReader fr0("/Users/songrenchu/Develop/bin1.txt", true);
-  Binary bin2(fr0);
-  bin2.print();
-  std::cout << bin2.getLength() << std::endl;
-  for (auto c: bin2.getBinary()) {
-    std::cout << "(" << (int)c << ")";
-  }
-  std::cout << std::endl;
+//  FileReader fr0("/Users/songrenchu/Develop/bin1.txt", true);
+//  Binary bin2(fr0);
+//  bin2.print();
+//  std::cout << bin2.getLength() << std::endl;
+//  for (auto c: bin2.getBinary()) {
+//    std::cout << "(" << (int)c << ")";
+//  }
+//  std::cout << std::endl;
+//  
+//  Binary bin3(bin2.getLength(), bin2.getBinary());
+//  bin3.print();
+//  std::cout << bin3.getLength() << std::endl;
+//  for (auto c: bin3.getBinary()) {
+//    std::cout << "(" << (int)c << ")";
+//  }
+//  std::cout << std::endl;
+//  
+//  Binary bin4 = bin3;
+//  
+//  bin4.print();
+//  std::cout << bin4.getLength() << std::endl;
+//  for (auto c: bin4.getBinary()) {
+//    std::cout << "(" << (int)c << ")";
+//  }
+//  std::cout << std::endl;
+//  bin4.getBitArray(bitArr);
+//  for (auto c: bitArr) {
+//    std::cout << c << " ";
+//  }
+//  std::cout << std::endl;
   
-  Binary bin3(bin2.getLength(), bin2.getBinary());
-  bin3.print();
-  std::cout << bin3.getLength() << std::endl;
-  for (auto c: bin3.getBinary()) {
-    std::cout << "(" << (int)c << ")";
+  Timer t1, t2;
+  t1.start(); t2.start();
+  for (int i = 0; i < 100000000; i++) {
+    
   }
-  std::cout << std::endl;
+  t1.resume();
+
+  t2.pause();
+  for (int i = 0; i < 100000000; i++) {
+    
+  }
+
+  t2.resume();
+  for (int i = 0; i < 100000000; i++) {
+    
+  }
   
-  Binary bin4 = bin3;
+  std::cout << t1.getMilliSeconds() << std::endl;
+  std::cout << t1.getSeconds() << std::endl;
+  std::cout << t1.getSystemClockDuration() << std::endl;
   
-  bin4.print();
-  std::cout << bin4.getLength() << std::endl;
-  for (auto c: bin4.getBinary()) {
-    std::cout << "(" << (int)c << ")";
-  }
-  std::cout << std::endl;
-  bin4.getBitArray(bitArr);
-  for (auto c: bitArr) {
-    std::cout << c << " ";
-  }
-  std::cout << std::endl;
+  std::cout << t2.getMilliSeconds() << std::endl;
+  std::cout << t2.getSeconds() << std::endl;
+  std::cout << t2.getSystemClockDuration() << std::endl;
+  
   return 0;
 }
