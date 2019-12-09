@@ -13,6 +13,7 @@
 
 #include "../io/file_reader.hpp"
 #include "../io/file_writer.hpp"
+#include "../io/binary.hpp"
 #include "auxiliaries.hpp"
 
 // GPS trajectory.
@@ -34,6 +35,7 @@ public:
   ~GPSTrajectory();
 };
 
+// Raw PRESS trajectory.
 class PRESSTrajectory {
 private:
   size_t spatialLength;
@@ -55,6 +57,26 @@ public:
   const std::vector<TemporalPair>& getTemporalComponent();
   void print();
   ~PRESSTrajectory();
+};
+
+// Compressed PRESS trajectory.
+class PRESSCompressedTrajectory {
+private:
+  Binary spatial;
+  size_t temporalLength;
+  std::vector<TemporalPair> temporal;
+
+public:
+  // Read a compressed PRESS trajectory from files.
+  PRESSCompressedTrajectory(FileReader& spatialReader, FileReader& temporalReader);
+  // Construct an in-memory compressed PRESS trajectory.
+  PRESSCompressedTrajectory(const Binary& spatial, const std::vector<TemporalPair>& temporal);
+  void store(FileWriter& spatialWriter, FileWriter& temporalWriter);
+  Binary& getSpatialComponent();
+  size_t getTemporalLength();
+  const std::vector<TemporalPair>& getTemporalComponent();
+  void print();
+  ~PRESSCompressedTrajectory();
 };
 
 #endif /* trajectory_hpp */

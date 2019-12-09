@@ -174,3 +174,73 @@ void PRESSTrajectory::print() {
 }
 
 PRESSTrajectory::~PRESSTrajectory() { }
+
+// Read a compressed PRESS trajectory from files.
+PRESSCompressedTrajectory::PRESSCompressedTrajectory(
+  FileReader& spatialReader, FileReader& temporalReader
+): spatial(Binary(spatialReader)) {
+  temporalLength = temporalReader.nextInt();
+  for (auto i = 0; i < temporalLength; i++) {
+    temporal.emplace_back(
+      TemporalPair(temporalReader.nextInt(), temporalReader.nextFloat())
+    );
+  }
+}
+
+// Construct a compressed PRESS trajectory from in-memory objects.
+PRESSCompressedTrajectory::PRESSCompressedTrajectory(
+  const Binary& spatial, const std::vector<TemporalPair>& temporal
+): spatial(spatial) {
+  temporalLength = temporal.size();
+  this->temporal = temporal;
+}
+
+// Write a compressed PRESS trajectory to the files.
+void PRESSCompressedTrajectory::store(FileWriter& spatialWriter, FileWriter& temporalWriter) {
+  spatial.store(spatialWriter);
+  temporalWriter.writeInt((int)temporalLength);
+  if (temporalWriter.isBinary()) {
+    for (auto tpPair: temporal) {
+      temporalWriter.writeInt(tpPair.t);
+      temporalWriter.writeFloat(tpPair.dist);
+    }
+  } else {
+    for (auto tpPair: temporal) {
+      temporalWriter.writeChar(' ');
+      temporalWriter.writeInt(tpPair.t);
+      temporalWriter.writeChar(' ');
+      temporalWriter.writeFloat(tpPair.dist);
+    }
+    temporalWriter.writeChar('\n');
+  }
+}
+
+// Get the compressed spatial component.
+Binary& PRESSCompressedTrajectory::getSpatialComponent() {
+  return spatial;
+}
+
+// Get the temporal component length.
+size_t PRESSCompressedTrajectory::getTemporalLength() {
+  return temporalLength;
+}
+
+// Get the compressed temporal component.
+const std::vector<TemporalPair>& PRESSCompressedTrajectory::getTemporalComponent() {
+  return temporal;
+}
+
+// Print the compressed PRESS trajectory for debug.
+void PRESSCompressedTrajectory::print() {
+  std::cout << "Spatial: ";
+  spatial.print();
+  std::cout << std::endl;
+  std::cout << "Temporal: ";
+  std::cout << temporalLength << "->";
+  for (auto temporalPair: temporal) {
+    temporalPair.print();
+  }
+  std::cout << std::endl;
+}
+
+PRESSCompressedTrajectory::~PRESSCompressedTrajectory() { }

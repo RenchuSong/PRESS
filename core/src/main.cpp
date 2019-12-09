@@ -180,7 +180,7 @@ int main(int argc, const char * argv[]) {
 //  }
 //  std::cout << std::endl;
   
-  std::vector<bool> bitArr;
+//  std::vector<bool> bitArr;
   
 //  std::vector<bool> b1;
 //  b1.push_back(true);
@@ -244,30 +244,98 @@ int main(int argc, const char * argv[]) {
 //  }
 //  std::cout << std::endl;
   
-  Timer t1, t2;
-  t1.start(); t2.start();
-  for (int i = 0; i < 100000000; i++) {
-    
-  }
-  t1.resume();
-
-  t2.pause();
-  for (int i = 0; i < 100000000; i++) {
-    
-  }
-
-  t2.resume();
-  for (int i = 0; i < 100000000; i++) {
-    
-  }
+//  Timer t1, t2;
+//  t1.start(); t2.start();
+//  for (int i = 0; i < 100000000; i++) {
+//    
+//  }
+//  t1.resume();
+//
+//  t2.pause();
+//  for (int i = 0; i < 100000000; i++) {
+//    
+//  }
+//
+//  t2.resume();
+//  for (int i = 0; i < 100000000; i++) {
+//    
+//  }
+//  
+//  std::cout << t1.getMilliSeconds() << std::endl;
+//  std::cout << t1.getSeconds() << std::endl;
+//  std::cout << t1.getSystemClockDuration() << std::endl;
+//  
+//  std::cout << t2.getMilliSeconds() << std::endl;
+//  std::cout << t2.getSeconds() << std::endl;
+//  std::cout << t2.getSystemClockDuration() << std::endl;
   
-  std::cout << t1.getMilliSeconds() << std::endl;
-  std::cout << t1.getSeconds() << std::endl;
-  std::cout << t1.getSystemClockDuration() << std::endl;
-  
-  std::cout << t2.getMilliSeconds() << std::endl;
-  std::cout << t2.getSeconds() << std::endl;
-  std::cout << t2.getSystemClockDuration() << std::endl;
+//    std::vector<bool> b1;
+//    b1.push_back(true);
+//    b1.push_back(true);
+//    b1.push_back(true);
+//    b1.push_back(true);
+//    b1.push_back(true);
+//    b1.push_back(false);
+//    b1.push_back(true);
+//    b1.push_back(true);
+//    b1.push_back(false);
+//    b1.push_back(true);
+//    b1.push_back(false);
+//    b1.push_back(true);
+//    b1.push_back(true);
+//    b1.push_back(false);
+//    b1.push_back(true);
+//    b1.push_back(true);
+//    b1.push_back(false);
+//    b1.push_back(true);
+//    b1.push_back(false);
+//    Binary spatial(b1);
+//    std::vector<TemporalPair> temporal;
+//    temporal.emplace_back(TemporalPair(0, 0));
+//    temporal.emplace_back(TemporalPair(1, 1.5));
+//    temporal.emplace_back(TemporalPair(2, 2));
+//    temporal.emplace_back(TemporalPair(3, 5));
+//    temporal.emplace_back(TemporalPair(4, 5.1));
+//  
+//    PRESSCompressedTrajectory pTraj(spatial, temporal);
+//    pTraj.print();
+//    std::cout << pTraj.getTemporalLength() << std::endl;
+//    FileWriter fw0("/Users/songrenchu/Develop/pctraj1.txt", true);
+//    FileWriter fw1("/Users/songrenchu/Develop/pctraj2.txt", true);
+//  //  FileWriter fw2("/Users/songrenchu/Develop/ptraj3.txt", false);
+//  //  FileWriter fw3("/Users/songrenchu/Develop/ptraj4.txt", false);
+//    pTraj.store(fw0,fw1);
+  //  pTraj.store(fw2,fw3);
+//    FileReader fr0("/Users/songrenchu/Develop/pctraj1.txt", true);
+//    FileReader fr1("/Users/songrenchu/Develop/pctraj2.txt", true);
+////    FileReader fr2("/Users/songrenchu/Develop/ptraj3.txt", false);
+////    FileReader fr3("/Users/songrenchu/Develop/ptraj4.txt", false);
+////  
+//    PRESSCompressedTrajectory pTraj1(fr0, fr1);
+//    pTraj1.print();
+////    std::cout << pTraj1.getSpatialLength() << std::endl;
+//    std::cout << pTraj1.getTemporalLength() << std::endl;
+////    for (auto id: pTraj1.getSpatialComponent()) {
+////      std::cout << id << " ";
+////    }
+//    pTraj1.getSpatialComponent().print();
+//    for (auto tp: pTraj1.getTemporalComponent()) {
+//      tp.print();
+//    }
+//    std::cout << std::endl;
+////
+////    PRESSTrajectory pTraj2(fr2, fr3);
+////    pTraj2.print();
+////    std::cout << pTraj2.getSpatialLength() << std::endl;
+////    std::cout << pTraj2.getTemporalLength() << std::endl;
+////    for (auto id: pTraj2.getSpatialComponent()) {
+////      std::cout << id << " ";
+////    }
+////    std::cout << std::endl;
+////    for (auto tp: pTraj2.getTemporalComponent()) {
+////      tp.print();
+////    }
+////    std::cout << std::endl;
   
   return 0;
 }
