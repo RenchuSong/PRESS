@@ -13,6 +13,7 @@
 #include "topology/graph.hpp"
 #include "topology/trajectory.hpp"
 #include "topology/auxiliaries.hpp"
+#include "topology/sp_table.hpp"
 #include "util/timer.hpp"
 #include <vector>
 
