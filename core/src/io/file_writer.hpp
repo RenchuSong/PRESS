@@ -27,6 +27,8 @@ public:
   bool writeDouble(const double& value);
   bool writeString(const char*& value);
   bool isBinary();
+  bool writeSeparator();
+  bool writeEol();
   ~FileWriter();
 };
 

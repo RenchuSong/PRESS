@@ -22,7 +22,7 @@ private:
   // spTable[i][j] represents the last edge index of the shortest path
   // between node of index i and node of index j.
   // Attention: We are using index, not id here for performance reasons.
-  std::vector<std::vector<size_t> > spTable;
+  int** spTable;
 
 public:
   // Read SP table from the file.
@@ -31,7 +31,7 @@ public:
   SPTable(Graph& graph);
   void store(FileWriter& spWriter);
   size_t getNodeNumber();
-  const std::vector<std::vector<size_t> >& getSPTable();
+  int** getSPTable();
   size_t prevEdgeIndex(size_t srcIndex, size_t tgtIndex);
   void print();
   ~SPTable();

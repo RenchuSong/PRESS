@@ -45,7 +45,7 @@ int main(int argc, const char * argv[]) {
 //  std::cout << fr.nextLong() << std::endl;
 //  std::cout << fr.nextChar() << std::endl;
 //  std::cout << fr.nextShort() << std::endl;
-  
+//  
 //  Node n(10, 20);
 //  
 //  n.print();
@@ -91,7 +91,7 @@ int main(int argc, const char * argv[]) {
 //  std::cout << fp.nextDouble() << std::endl;
 //  std::cout << fp.nextChar() << std::endl;
 //  std::cout << fp.nextString(1024) << std::endl;
-
+//
 //  std::vector<GPSPoint> trajectory;
 //  trajectory.emplace_back(GPSPoint(1, 2.0, 3.0));
 //  trajectory.emplace_back(GPSPoint(2, 2.1, 3.2));
@@ -99,19 +99,22 @@ int main(int argc, const char * argv[]) {
 //  trajectory.emplace_back(GPSPoint(4, 2.3, 3.3));
 //  trajectory.emplace_back(GPSPoint(5, 2.4, 3.2));
 //  trajectory.emplace_back(GPSPoint(6, 2.5, 3.0));
-//  
+//
 //  GPSTrajectory traj(trajectory);
 //  traj.print();
 //  std::cout << std::endl;
 //  std::cout << traj.getLength() << std::endl;
 //  traj.getGPSPoint(0).print();
-//  
-////  FileWriter fw0("/Users/songrenchu/Develop/traj.txt", true);
-////  traj.store(fw0);
+//
+//  FileWriter fw0("/Users/songrenchu/Develop/traj.txt", true);
+//  traj.store(fw0);
+//  FileWriter fw1("/Users/songrenchu/Develop/traj2.txt", false);
+//  traj.store(fw1);
+  
 //
 //  FileReader fw1("/Users/songrenchu/Develop/traj.txt", true);
 //  FileReader fw2("/Users/songrenchu/Develop/traj2.txt", false);
-//  
+//
 //  std::cout << std::endl;
 //  GPSTrajectory traj1(fw1);
 //  traj1.print();
@@ -139,17 +142,17 @@ int main(int argc, const char * argv[]) {
 //  temporal.emplace_back(TemporalPair(2, 2));
 //  temporal.emplace_back(TemporalPair(3, 5));
 //  temporal.emplace_back(TemporalPair(4, 5.1));
-//  
+//
 //  PRESSTrajectory pTraj(spatial, temporal);
 //  pTraj.print();
 //  std::cout << pTraj.getSpatialLength() << std::endl;
 //  std::cout << pTraj.getTemporalLength() << std::endl;
-////  FileWriter fw0("/Users/songrenchu/Develop/ptraj1.txt", true);
-////  FileWriter fw1("/Users/songrenchu/Develop/ptraj2.txt", true);
-////  FileWriter fw2("/Users/songrenchu/Develop/ptraj3.txt", false);
-////  FileWriter fw3("/Users/songrenchu/Develop/ptraj4.txt", false);
-////  pTraj.store(fw0,fw1);
-////  pTraj.store(fw2,fw3);
+//  FileWriter fw0("/Users/songrenchu/Develop/ptraj1.txt", true);
+//  FileWriter fw1("/Users/songrenchu/Develop/ptraj2.txt", true);
+//  FileWriter fw2("/Users/songrenchu/Develop/ptraj3.txt", false);
+//  FileWriter fw3("/Users/songrenchu/Develop/ptraj4.txt", false);
+//  pTraj.store(fw0,fw1);
+//  pTraj.store(fw2,fw3);
 //  FileReader fr0("/Users/songrenchu/Develop/ptraj1.txt", true);
 //  FileReader fr1("/Users/songrenchu/Develop/ptraj2.txt", true);
 //  FileReader fr2("/Users/songrenchu/Develop/ptraj3.txt", false);
@@ -167,7 +170,7 @@ int main(int argc, const char * argv[]) {
 //    tp.print();
 //  }
 //  std::cout << std::endl;
-//  
+//
 //  PRESSTrajectory pTraj2(fr2, fr3);
 //  pTraj2.print();
 //  std::cout << pTraj2.getSpatialLength() << std::endl;
@@ -303,10 +306,10 @@ int main(int argc, const char * argv[]) {
 //    std::cout << pTraj.getTemporalLength() << std::endl;
 //    FileWriter fw0("/Users/songrenchu/Develop/pctraj1.txt", true);
 //    FileWriter fw1("/Users/songrenchu/Develop/pctraj2.txt", true);
-//  //  FileWriter fw2("/Users/songrenchu/Develop/ptraj3.txt", false);
-//  //  FileWriter fw3("/Users/songrenchu/Develop/ptraj4.txt", false);
+////    FileWriter fw2("/Users/songrenchu/Develop/ptraj3.txt", false);
+////    FileWriter fw3("/Users/songrenchu/Develop/ptraj4.txt", false);
 //    pTraj.store(fw0,fw1);
-  //  pTraj.store(fw2,fw3);
+////    pTraj.store(fw2,fw3);
 //    FileReader fr0("/Users/songrenchu/Develop/pctraj1.txt", true);
 //    FileReader fr1("/Users/songrenchu/Develop/pctraj2.txt", true);
 ////    FileReader fr2("/Users/songrenchu/Develop/ptraj3.txt", false);
@@ -337,6 +340,32 @@ int main(int argc, const char * argv[]) {
 ////      tp.print();
 ////    }
 ////    std::cout << std::endl;
+  
+//  Graph g;
+//  g.print();
+//  FileWriter fw0("/Users/songrenchu/Develop/graph.txt", false);
+//  g.store(fw0);
+//  FileWriter fw1("/Users/songrenchu/Develop/graph1.txt", true);
+//  g.store(fw1);
+//  
+
+//  FileReader fr0("/Users/songrenchu/Develop/graph.txt", false);
+//  Graph g2(fr0);
+//  g2.print();
+//  std::cout << std::endl;
+//  FileReader fr1("/Users/songrenchu/Develop/graph1.txt", true);
+//  Graph g3(fr1);
+//  g3.print();
+  
+  
+//  {
+////    SPTable sp(g);
+////    FileWriter fw0("/Users/songrenchu/Develop/sp.txt", false);
+////    sp.store(fw0);
+//    FileReader fr0("/Users/songrenchu/Develop/sp.txt", false);
+//    SPTable sp(fr0);
+//    sp.print();
+//  }
   
   return 0;
 }

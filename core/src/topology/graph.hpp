@@ -14,6 +14,7 @@
 #include <unordered_map>
 
 #include "../io/file_reader.hpp"
+#include "../io/file_writer.hpp"
 #include "auxiliaries.hpp"
 
 // Node in graph represents one intersection.
@@ -27,7 +28,9 @@ public:
   Node(double x, double y);
   void addEdge(int eid);
   size_t getEdgeNumber();
+  const std::vector<int>& getEdgeList();
   int getEdgeId(size_t index);
+  Point2D& getPosition();
   void print();
   ~Node();
 };
@@ -65,15 +68,19 @@ private:
   std::unordered_map<int, int> edgeId2Index;
 
 public:
-  Graph(const FileReader& nodeReader, const FileReader& edgeReader, const FileReader& geoReader);
+  Graph();
+  // Load graph from ACM SIGSPATLAL CUP 2012 format.
+  Graph(FileReader& nodeReader, FileReader& edgeReader, FileReader& geoReader);
+  // Load graph from file.
+  Graph(FileReader& graphReader);
   size_t getNodeNumber();
-  Node& getNodeById(int id);
-  Node& getNodeByIndex(size_t index);
+  Node& getNode(size_t index);
   const std::vector<Node>& getNodeList();
   size_t getEdgeNumber();
-  Edge& getEdgeById(int id);
-  Edge& getEdgeByIndex(size_t index);
+  Edge& getEdge(size_t index);
   const std::vector<Edge>& getEdgeList();
+  // Store the graph into a file.
+  void store(FileWriter& graphWriter);
   void print();
   ~Graph();
 };

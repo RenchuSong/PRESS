@@ -113,6 +113,24 @@ bool FileWriter::writeString(const char*& value) {
   return true;
 }
 
+// Write a separator. For binary, we don't need a separator, so will do nothing.
+bool FileWriter::writeSeparator() {
+  if (binary) {
+    return true;
+  } else {
+    return fprintf(fp, "%c", ' ') == 1;
+  }
+}
+
+// Write an eol.For binary, we don't need an eol, so will do nothing.
+bool FileWriter::writeEol() {
+  if (binary) {
+    return true;
+  } else {
+    return fprintf(fp, "%c", '\n') == 1;
+  }
+}
+
 // If the file is binary format.
 bool FileWriter::isBinary() {
   return binary;

@@ -13,10 +13,11 @@
 // Read the SP table from a file.
 SPTable::SPTable(FileReader& spReader) {
   nodeNumber = spReader.nextInt();
+  spTable = new int*[nodeNumber];
   for (auto i = 0; i < nodeNumber; i++) {
-    spTable.emplace_back(std::vector<size_t>());
+    spTable[i] = new int[nodeNumber];
     for (auto j = 0; j < nodeNumber; j++) {
-      spTable[i].emplace_back(spReader.nextInt());
+      spTable[i][j] = spReader.nextInt();
     }
   }
 }
@@ -25,10 +26,11 @@ SPTable::SPTable(FileReader& spReader) {
 SPTable::SPTable(Graph& graph) {
   // TODO
   nodeNumber = graph.getNodeNumber();
+  spTable = new int*[nodeNumber];
   for (auto i = 0; i < nodeNumber; i++) {
-    spTable.emplace_back(std::vector<size_t>());
+    spTable[i] = new int[nodeNumber];
     for (auto j = 0; j < nodeNumber; j++) {
-      spTable[i].emplace_back(0);
+      spTable[i][j] = -1;
     }
   }
 }
@@ -36,19 +38,13 @@ SPTable::SPTable(Graph& graph) {
 // Store the SP table into the file.
 void SPTable::store(FileWriter& spWriter) {
   spWriter.writeInt((int)nodeNumber);
-  if (spWriter.isBinary()) {
-    for (auto i = 0; i < nodeNumber; i++) {
-      for (auto j = 0; j < nodeNumber; j++) {
-        spWriter.writeInt((int)spTable[i][j]);
-      }
+  spWriter.writeEol();
+  for (auto i = 0; i < nodeNumber; i++) {
+    for (auto j = 0; j < nodeNumber; j++) {
+      spWriter.writeInt((int)spTable[i][j]);
+      spWriter.writeSeparator();
     }
-  } else {
-    for (auto i = 0; i < nodeNumber; i++) {
-      for (auto j = 0; j < nodeNumber; j++) {
-        spWriter.writeChar(' ');
-        spWriter.writeInt((int)spTable[i][j]);
-      }
-    }
+    spWriter.writeEol();
   }
 }
 
@@ -58,7 +54,7 @@ size_t SPTable::getNodeNumber() {
 }
 
 // Get the SP table.
-const std::vector<std::vector<size_t> >& SPTable::getSPTable() {
+int** SPTable::getSPTable() {
   return spTable;
 }
 
@@ -79,4 +75,9 @@ void SPTable::print() {
   }
 }
 
-SPTable::~SPTable() { }
+SPTable::~SPTable() {
+  for (auto i = 0; i < nodeNumber; i++) {
+    delete[] spTable[i];
+  }
+  delete[] spTable;
+}

@@ -13,10 +13,10 @@
 
 // A 2D point.
 struct Point2D {
-  double x;
-  double y;
+  float x;
+  float y;
   
-  Point2D(double x, double y): x(x), y(y) { }
+  Point2D(float x, float y): x(x), y(y) { }
   void print() {
     std::cout << "(" << x << ", " << y << ")";
   }

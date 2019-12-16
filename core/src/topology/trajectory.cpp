@@ -45,27 +45,16 @@ const std::vector<GPSPoint>& GPSTrajectory::getTrajectory() {
 
 // Write the GPS trajectory to the file.
 void GPSTrajectory::store(FileWriter& gpsWriter) {
-  if (gpsWriter.isBinary()) {
-    // Writing to a binary file.
-    gpsWriter.writeInt((int)length);
-    for (auto gpsPoint: trajectory) {
-      gpsWriter.writeInt(gpsPoint.t);
-      gpsWriter.writeFloat(gpsPoint.latitude);
-      gpsWriter.writeFloat(gpsPoint.longitude);
-    }
-  } else {
-    // Writing to a normal file.
-    gpsWriter.writeInt((int)length);
-    for (auto gpsPoint: trajectory) {
-      gpsWriter.writeChar(' ');
-      gpsWriter.writeInt(gpsPoint.t);
-      gpsWriter.writeChar(' ');
-      gpsWriter.writeFloat(gpsPoint.latitude);
-      gpsWriter.writeChar(' ');
-      gpsWriter.writeFloat(gpsPoint.longitude);
-    }
-    gpsWriter.writeChar('\n');
+  gpsWriter.writeInt((int)length);
+  for (auto gpsPoint: trajectory) {
+    gpsWriter.writeSeparator();
+    gpsWriter.writeInt(gpsPoint.t);
+    gpsWriter.writeSeparator();
+    gpsWriter.writeFloat(gpsPoint.latitude);
+    gpsWriter.writeSeparator();
+    gpsWriter.writeFloat(gpsPoint.longitude);
   }
+  gpsWriter.writeEol();
 }
 
 // Print the GPS trajectory for debug.
@@ -125,36 +114,22 @@ const std::vector<TemporalPair>& PRESSTrajectory::getTemporalComponent() {
 // Write a PRESS trajectory to the files.
 void PRESSTrajectory::store(FileWriter& spatialWriter, FileWriter& temporalWriter) {
   // Write the spatial compoennt to file.
-  if (spatialWriter.isBinary()) {
-    spatialWriter.writeInt((int)spatialLength);
-    for (auto nodeId: spatialComponent) {
-      spatialWriter.writeInt(nodeId);
-    }
-  } else {
-    spatialWriter.writeInt((int)spatialLength);
-    for (auto nodeId: spatialComponent) {
-      spatialWriter.writeChar(' ');
-      spatialWriter.writeInt(nodeId);
-    }
-    spatialWriter.writeChar('\n');
+  spatialWriter.writeInt((int)spatialLength);
+  for (auto nodeId: spatialComponent) {
+    spatialWriter.writeSeparator();
+    spatialWriter.writeInt(nodeId);
   }
+  spatialWriter.writeEol();
+
   // Write the temporal component to file.
-  if (temporalWriter.isBinary()) {
-    temporalWriter.writeInt((int)temporalLength);
-    for (auto temporalPair: temporalComponent) {
-      temporalWriter.writeInt(temporalPair.t);
-      temporalWriter.writeFloat(temporalPair.dist);
-    }
-  } else {
-    temporalWriter.writeInt((int)temporalLength);
-    for (auto temporalPair: temporalComponent) {
-      temporalWriter.writeChar(' ');
-      temporalWriter.writeInt(temporalPair.t);
-      temporalWriter.writeChar(' ');
-      temporalWriter.writeFloat(temporalPair.dist);
-    }
-    temporalWriter.writeChar('\n');
+  temporalWriter.writeInt((int)temporalLength);
+  for (auto temporalPair: temporalComponent) {
+    temporalWriter.writeSeparator();
+    temporalWriter.writeInt(temporalPair.t);
+    temporalWriter.writeSeparator();
+    temporalWriter.writeFloat(temporalPair.dist);
   }
+  temporalWriter.writeEol();
 }
 
 // Print the PRESS trajectory for debug.
@@ -199,20 +174,13 @@ PRESSCompressedTrajectory::PRESSCompressedTrajectory(
 void PRESSCompressedTrajectory::store(FileWriter& spatialWriter, FileWriter& temporalWriter) {
   spatial.store(spatialWriter);
   temporalWriter.writeInt((int)temporalLength);
-  if (temporalWriter.isBinary()) {
-    for (auto tpPair: temporal) {
-      temporalWriter.writeInt(tpPair.t);
-      temporalWriter.writeFloat(tpPair.dist);
-    }
-  } else {
-    for (auto tpPair: temporal) {
-      temporalWriter.writeChar(' ');
-      temporalWriter.writeInt(tpPair.t);
-      temporalWriter.writeChar(' ');
-      temporalWriter.writeFloat(tpPair.dist);
-    }
-    temporalWriter.writeChar('\n');
+  for (auto tpPair: temporal) {
+    temporalWriter.writeSeparator();
+    temporalWriter.writeInt(tpPair.t);
+    temporalWriter.writeSeparator();
+    temporalWriter.writeFloat(tpPair.dist);
   }
+  temporalWriter.writeEol();
 }
 
 // Get the compressed spatial component.
