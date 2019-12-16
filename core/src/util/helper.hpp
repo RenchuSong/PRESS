@@ -14,8 +14,8 @@
 #include "../topology/auxiliaries.hpp"
 
 // Euclidean distance between 2 points.
-double euclideanDistance(const Point2D& p1, const Point2D& p2) {
-  return sqrt((p1.x - p2.x) * (p1.x - p2.x) + (p1.y - p2.y) * (p1.y - p2.y));
+float euclideanDistance(const Point2D& p1, const Point2D& p2) {
+  return sqrtf((p1.x - p2.x) * (p1.x - p2.x) + (p1.y - p2.y) * (p1.y - p2.y));
 }
 
 #endif /* helper_hpp */

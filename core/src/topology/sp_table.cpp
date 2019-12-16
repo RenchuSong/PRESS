@@ -7,6 +7,7 @@
 //
 
 #include <cassert>
+#include <queue>
 
 #include "sp_table.hpp"
 
@@ -23,14 +24,53 @@ SPTable::SPTable(FileReader& spReader) {
 }
 
 // Calculate the SP table of a given graph.
+// Dijkstra algorithm.
 SPTable::SPTable(Graph& graph) {
-  // TODO
   nodeNumber = graph.getNodeNumber();
+
+  // Init the SP table.
   spTable = new int*[nodeNumber];
   for (auto i = 0; i < nodeNumber; i++) {
     spTable[i] = new int[nodeNumber];
     for (auto j = 0; j < nodeNumber; j++) {
       spTable[i][j] = -1;
+    }
+  }
+
+  // Calculate all-pair shortest paths.
+  for (auto i = 0; i < nodeNumber; i++) {
+    float minDist[nodeNumber];
+    for (auto j = 0; j < nodeNumber; j++) {
+      minDist[j] = 1e20;
+    }
+    minDist[i] = 0;
+
+    // Priority queue to hold the distance.
+    std::priority_queue<
+      std::pair<float, int>,
+      std::vector<std::pair<float, int> >,
+    std::greater<std::pair<float, int> >
+    > queue;
+    queue.push(std::make_pair(0, i));
+
+    // Loop nodeNumber times, always pop the node with smallest distance.
+    for (int lp = 0; lp < nodeNumber && !queue.empty(); lp++) {
+      auto srcId = queue.top().second;
+      queue.pop();
+      auto& node = graph.getNode(srcId);
+      auto& edgeList = node.getEdgeList();
+      for (auto edgeId: edgeList) {
+        auto& edge = graph.getEdge(edgeId);
+        auto tgtId = edge.getTargetId();
+        // Relaxation function.
+        if (minDist[tgtId] > minDist[srcId] + edge.getDistance()) {
+          // Update min distance.
+          minDist[tgtId] = minDist[srcId] + edge.getDistance();
+          // Update SP table, and update queue.
+          spTable[i][tgtId] = edgeId;
+          queue.push(std::make_pair(minDist[tgtId], tgtId));
+        }
+      }
     }
   }
 }

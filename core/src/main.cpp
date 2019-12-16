@@ -341,7 +341,7 @@ int main(int argc, const char * argv[]) {
 ////    }
 ////    std::cout << std::endl;
   
-//  Graph g;
+  Graph g;
 //  g.print();
 //  FileWriter fw0("/Users/songrenchu/Develop/graph.txt", false);
 //  g.store(fw0);
@@ -358,14 +358,14 @@ int main(int argc, const char * argv[]) {
 //  g3.print();
   
   
-//  {
-////    SPTable sp(g);
-////    FileWriter fw0("/Users/songrenchu/Develop/sp.txt", false);
-////    sp.store(fw0);
+  {
+    SPTable sp(g);
+    FileWriter fw0("/Users/songrenchu/Develop/sp.txt", false);
+    sp.store(fw0);
 //    FileReader fr0("/Users/songrenchu/Develop/sp.txt", false);
 //    SPTable sp(fr0);
-//    sp.print();
-//  }
+    sp.print();
+  }
   
   return 0;
 }

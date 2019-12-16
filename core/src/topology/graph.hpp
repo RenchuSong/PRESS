@@ -25,7 +25,7 @@ private:
   std::vector<int> edges;
 
 public:
-  Node(double x, double y);
+  Node(float x, float y);
   void addEdge(int eid);
   size_t getEdgeNumber();
   const std::vector<int>& getEdgeList();
@@ -43,16 +43,16 @@ private:
   int targetId;
   size_t geoSize;
   std::vector<Point2D> shape;
-  double distance;
+  float distance;
 
 public:
   Edge(int srcId, int tgtId);
-  size_t addPosition(double x, double y);
+  size_t addPosition(float x, float y);
   int getSourceId();
   int getTargetId();
   size_t getGeoSize();
   const std::vector<Point2D>& getShape();
-  double getDistance();
+  float getDistance();
   void print();
   ~Edge();
 };

@@ -12,7 +12,7 @@
 #include "../util/helper.hpp"
 
 // Node constructor.
-Node::Node(double x, double y): position(x, y), edgeNumber(0) { }
+Node::Node(float x, float y): position(x, y), edgeNumber(0) { }
 
 // Add one edge to the node edge list.
 void Node::addEdge(int eid) {
@@ -59,7 +59,7 @@ Node::~Node() { }
 Edge::Edge(int srcId, int tgtId): sourceId(srcId), targetId(tgtId), geoSize(0), distance(0) { }
 
 // Add one position in the shape.
-size_t Edge::addPosition(double x, double y) {
+size_t Edge::addPosition(float x, float y) {
   geoSize++;
   Point2D point(x, y);
   if (shape.size() > 0) {
@@ -90,7 +90,7 @@ const std::vector<Point2D>& Edge::getShape() {
 }
 
 // Get the distance of the edge.
-double Edge::getDistance() {
+float Edge::getDistance() {
   return distance;
 }
 
@@ -125,8 +125,8 @@ Graph::Graph() {
   edgeNumber = 17;
   edgeList.emplace_back(Edge(0, 2));
   edgeList.emplace_back(Edge(2, 0));
-  edgeList.emplace_back(Edge(1, 2));
   edgeList.emplace_back(Edge(2, 1));
+  edgeList.emplace_back(Edge(1, 2));
   edgeList.emplace_back(Edge(0, 3));
   edgeList.emplace_back(Edge(3, 0));
   edgeList.emplace_back(Edge(3, 2));
