@@ -54,7 +54,7 @@ SPTable::SPTable(Graph& graph) {
     queue.push(std::make_pair(0, i));
 
     // Loop nodeNumber times, always pop the node with smallest distance.
-    for (int lp = 0; lp < nodeNumber && !queue.empty(); lp++) {
+    while (!queue.empty()) {
       auto srcId = queue.top().second;
       queue.pop();
       auto& node = graph.getNode(srcId);
