@@ -23,7 +23,7 @@ void Timer::reset() {
 // Pause the timer.
 void Timer::pause() {
   if (!paused) {
-    accumulation = clock() - startTime;
+    accumulation += clock() - startTime;
     paused = true;
   }
 }
