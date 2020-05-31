@@ -15,6 +15,8 @@
 #include "../io/file_writer.hpp"
 #include "./graph.hpp"
 
+const int EDGE_NOT_EXIST = -1;
+
 // The shortest path table.
 class SPTable {
 private:
@@ -32,7 +34,7 @@ public:
   void store(FileWriter& spWriter);
   size_t getNodeNumber();
   int** getSPTable();
-  size_t prevEdgeIndex(size_t srcIndex, size_t tgtIndex);
+  int prevEdgeIndex(size_t srcIndex, size_t tgtIndex);
   void print();
   ~SPTable();
 };

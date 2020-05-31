@@ -33,7 +33,7 @@ SPTable::SPTable(Graph& graph) {
   for (auto i = 0; i < nodeNumber; i++) {
     spTable[i] = new int[nodeNumber];
     for (auto j = 0; j < nodeNumber; j++) {
-      spTable[i][j] = -1;
+      spTable[i][j] = EDGE_NOT_EXIST;
     }
   }
 
@@ -49,7 +49,7 @@ SPTable::SPTable(Graph& graph) {
     std::priority_queue<
       std::pair<float, int>,
       std::vector<std::pair<float, int> >,
-    std::greater<std::pair<float, int> >
+      std::greater<std::pair<float, int> >
     > queue;
     queue.push(std::make_pair(0, i));
 
@@ -99,7 +99,7 @@ int** SPTable::getSPTable() {
 }
 
 // Get the last edge index along the shortest path between node srcIndex and node tgtIndex.
-size_t SPTable::prevEdgeIndex(size_t srcIndex, size_t tgtIndex) {
+int SPTable::prevEdgeIndex(size_t srcIndex, size_t tgtIndex) {
   assert(srcIndex < nodeNumber && tgtIndex < nodeNumber);
   return spTable[srcIndex][tgtIndex];
 }
