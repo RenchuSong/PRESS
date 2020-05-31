@@ -40,7 +40,7 @@ class PRESSTrajectory {
 private:
   size_t spatialLength;
   size_t temporalLength;
-  // Spatial component is represented by a list of node ids in the graph.
+  // Spatial component is represented by a list of edge ids in the graph.
   std::vector<int> spatialComponent;
   // Temporal component is represented by a list of temporal pairs.
   std::vector<TemporalPair> temporalComponent;
