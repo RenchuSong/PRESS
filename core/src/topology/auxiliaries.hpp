@@ -24,10 +24,10 @@ struct Point2D {
 
 // A GPS point.
 struct GPSPoint {
-  int t;
+  float t;
   float latitude, longitude;
   
-  GPSPoint(int t, float lat, float lng): t(t), latitude(lat), longitude(lng) { }
+  GPSPoint(float t, float lat, float lng): t(t), latitude(lat), longitude(lng) { }
   void print() {
     std::cout << "(" << t << ": " << latitude << ", " << longitude << ")";
   }

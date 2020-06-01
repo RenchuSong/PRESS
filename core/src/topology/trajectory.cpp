@@ -14,7 +14,7 @@
 GPSTrajectory::GPSTrajectory(FileReader& gpsTrajReader) {
   length = gpsTrajReader.nextInt();
   for (auto i = 0; i < length; i++) {
-    auto t = gpsTrajReader.nextInt();
+    auto t = gpsTrajReader.nextFloat();
     auto lat = gpsTrajReader.nextFloat();
     auto lng = gpsTrajReader.nextFloat();
     trajectory.emplace_back(GPSPoint(t, lat, lng));
@@ -48,7 +48,7 @@ void GPSTrajectory::store(FileWriter& gpsWriter) {
   gpsWriter.writeInt((int)length);
   for (auto gpsPoint: trajectory) {
     gpsWriter.writeSeparator();
-    gpsWriter.writeInt(gpsPoint.t);
+    gpsWriter.writeFloat(gpsPoint.t);
     gpsWriter.writeSeparator();
     gpsWriter.writeFloat(gpsPoint.latitude);
     gpsWriter.writeSeparator();
