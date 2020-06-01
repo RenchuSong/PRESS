@@ -78,7 +78,7 @@ PRESSTrajectory::PRESSTrajectory(FileReader& spatialReader, FileReader& temporal
   temporalLength = temporalReader.nextInt();
   for (auto i = 0; i < temporalLength; i++) {
     temporalComponent.emplace_back(
-      TemporalPair(temporalReader.nextInt(), temporalReader.nextFloat())
+      TemporalPair(temporalReader.nextFloat(), temporalReader.nextFloat())
     );
   }
 }
@@ -125,7 +125,7 @@ void PRESSTrajectory::store(FileWriter& spatialWriter, FileWriter& temporalWrite
   temporalWriter.writeInt((int)temporalLength);
   for (auto temporalPair: temporalComponent) {
     temporalWriter.writeSeparator();
-    temporalWriter.writeInt(temporalPair.t);
+    temporalWriter.writeFloat(temporalPair.t);
     temporalWriter.writeSeparator();
     temporalWriter.writeFloat(temporalPair.dist);
   }

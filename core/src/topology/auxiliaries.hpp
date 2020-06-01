@@ -35,10 +35,10 @@ struct GPSPoint {
 
 // A temporal pair (t, d).
 struct TemporalPair {
-  int t;
+  float t;
   float dist;
   
-  TemporalPair(int t, float dist): t(t), dist(dist) { }
+  TemporalPair(float t, float dist): t(t), dist(dist) { }
   void print() {
     std::cout << "(" << t << ": " << dist << ")";
   }
