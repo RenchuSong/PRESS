@@ -15,6 +15,7 @@
 #include "topology/auxiliaries.hpp"
 #include "topology/sp_table.hpp"
 #include "util/timer.hpp"
+#include "service/spatial_compressor.hpp"
 #include <vector>
 
 int main(int argc, const char * argv[]) {
@@ -360,11 +361,31 @@ int main(int argc, const char * argv[]) {
   
   {
     SPTable sp(g);
-    FileWriter fw0("/Users/songrenchu/Develop/sp.txt", false);
-    sp.store(fw0);
-//    FileReader fr0("/Users/songrenchu/Develop/sp.txt", false);
-//    SPTable sp(fr0);
+//    FileWriter fw0("/Users/songrenchu/Develop/sp.txt", false);
+//    sp.store(fw0);
+////    FileReader fr0("/Users/songrenchu/Develop/sp.txt", false);
+////    SPTable sp(fr0);
     sp.print();
+
+    SpatialCompressor sc(&g, &sp);
+
+    std::vector<int> spComp;
+    spComp.emplace_back(4);
+    spComp.emplace_back(16);
+    spComp.emplace_back(15);
+    spComp.emplace_back(13);
+    spComp.emplace_back(7);
+    spComp.emplace_back(5);
+    spComp.emplace_back(0);
+    spComp.emplace_back(2);
+
+
+    std::vector<int> result;
+    sc.shortestPathCompression(spComp, result);
+    for (auto s: result) {
+      std::cout << s << " ";
+    }
+    std::cout << std::endl;
   }
   
   return 0;
