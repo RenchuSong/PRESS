@@ -18,8 +18,8 @@ SpatialCompressor::SpatialCompressor(
 
 // Stage 1. Shortest path compression.
 void SpatialCompressor::shortestPathCompression(
-  const std::vector<int> &spatial,
-  std::vector<int> &result
+  const std::vector<int>& spatial,
+  std::vector<int>& result
 ) {
   result.clear();
 
