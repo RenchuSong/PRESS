@@ -16,7 +16,10 @@
 #include "topology/sp_table.hpp"
 #include "util/timer.hpp"
 #include "service/spatial_compressor.hpp"
+#include "service/temporal_compressor.hpp"
 #include <vector>
+#include <deque>
+#include "topology/ac_automaton.hpp"
 
 int main(int argc, const char * argv[]) {
 //  FileWriter fw("/Users/songrenchu/Develop/test2.txt", true);
@@ -386,6 +389,28 @@ int main(int argc, const char * argv[]) {
       std::cout << s << " ";
     }
     std::cout << std::endl;
+
+    std::vector<std::vector<int>> spComps;
+    spComps.emplace_back(std::vector<int>{ 1, 5, 8, 6, 3 });
+    spComps.emplace_back(std::vector<int>{ 1, 5, 2, 1, 4, 8 });
+    spComps.emplace_back(std::vector<int>{ 2, 1, 4, 6 });
+    ACAutomaton ac(g, spComps, 3);
+
+    ac.print();
+  }
+
+  std::vector<TemporalPair> pairs;
+  pairs.emplace_back(TemporalPair(0, 0));
+  pairs.emplace_back(TemporalPair(1, 0));
+  pairs.emplace_back(TemporalPair(2, 0));
+  pairs.emplace_back(TemporalPair(3, 0));
+  pairs.emplace_back(TemporalPair(4, 0));
+  pairs.emplace_back(TemporalPair(5, 1));
+  std::vector<TemporalPair> result;
+  TemporalCompressor ts;
+  ts.boundedTemporalCompression(pairs, result, 3, 3);
+  for (auto& p: result) {
+    p.print();
   }
   
   return 0;

@@ -33,4 +33,4 @@ public:
 };
 
 
-#endif /* spatial_compressor_h */
+#endif /* spatial_compressor_hpp */
