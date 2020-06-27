@@ -23,7 +23,8 @@ ACAutomaton::ACAutomaton(FileReader& acReader) {
     std::unordered_map<int, int> children;
     trie.emplace_back(children);
     for (int j = 0; j < childrenSize; j++) {
-      trie.at(i)[acReader.nextInt()] = acReader.nextInt();
+      auto key = acReader.nextInt();
+      trie.at(i)[key] = acReader.nextInt();
     }
   }
 }

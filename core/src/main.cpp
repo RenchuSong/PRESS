@@ -362,42 +362,48 @@ int main(int argc, const char * argv[]) {
 //  g3.print();
   
   
-  {
-    SPTable sp(g);
-//    FileWriter fw0("/Users/songrenchu/Develop/sp.txt", false);
-//    sp.store(fw0);
-////    FileReader fr0("/Users/songrenchu/Develop/sp.txt", false);
-////    SPTable sp(fr0);
-    sp.print();
-
-    SpatialCompressor sc(&g, &sp);
-
-    std::vector<int> spComp;
-    spComp.emplace_back(4);
-    spComp.emplace_back(16);
-    spComp.emplace_back(15);
-    spComp.emplace_back(13);
-    spComp.emplace_back(7);
-    spComp.emplace_back(5);
-    spComp.emplace_back(0);
-    spComp.emplace_back(2);
-
-
-    std::vector<int> result;
-    sc.shortestPathCompression(spComp, result);
-    for (auto s: result) {
-      std::cout << s << " ";
-    }
-    std::cout << std::endl;
-
-    std::vector<std::vector<int>> spComps;
-    spComps.emplace_back(std::vector<int>{ 1, 5, 8, 6, 3 });
-    spComps.emplace_back(std::vector<int>{ 1, 5, 2, 1, 4, 8 });
-    spComps.emplace_back(std::vector<int>{ 2, 1, 4, 6 });
-    ACAutomaton ac(g, spComps, 3);
-
-    ac.print();
-  }
+  FileReader fr0("/Users/songrenchu/Develop/ac,txt", false);
+  FileWriter fw0("/Users/songrenchu/Develop/ac2,txt", false);
+  ACAutomaton ac(fr0);
+  ac.print();
+  ac.store(fw0);
+//  {
+//    SPTable sp(g);
+////    FileWriter fw0("/Users/songrenchu/Develop/sp.txt", false);
+////    sp.store(fw0);
+//////    FileReader fr0("/Users/songrenchu/Develop/sp.txt", false);
+//////    SPTable sp(fr0);
+//    sp.print();
+//
+//    SpatialCompressor sc(&g, &sp);
+//
+//    std::vector<int> spComp;
+//    spComp.emplace_back(4);
+//    spComp.emplace_back(16);
+//    spComp.emplace_back(15);
+//    spComp.emplace_back(13);
+//    spComp.emplace_back(7);
+//    spComp.emplace_back(5);
+//    spComp.emplace_back(0);
+//    spComp.emplace_back(2);
+//
+//
+//    std::vector<int> result;
+//    sc.shortestPathCompression(spComp, result);
+//    for (auto s: result) {
+//      std::cout << s << " ";
+//    }
+//    std::cout << std::endl;
+//
+//    std::vector<std::vector<int>> spComps;
+//    spComps.emplace_back(std::vector<int>{ 1, 5, 8, 6, 3 });
+//    spComps.emplace_back(std::vector<int>{ 1, 5, 2, 1, 4, 8 });
+//    spComps.emplace_back(std::vector<int>{ 2, 1, 4, 6 });
+//    ACAutomaton ac(g, spComps, 3);
+//
+//    ac.print();
+//    ac.store(fw0);
+//  }
 
   std::vector<TemporalPair> pairs;
   pairs.emplace_back(TemporalPair(0, 0));
