@@ -193,26 +193,31 @@ void ACAutomaton::print() {
   }
 }
 
+// Get the size of the trie.
+size_t ACAutomaton::getTrieSize() const {
+  return trieSize;
+}
+
 // Given previous Trie matching position, get the next matched trie node.
-int ACAutomaton::getMatch(int prevPos, int edgeId) {
+int ACAutomaton::getMatch(int prevPos, int edgeId) const {
   while (prevPos > 0 && trie[prevPos].find(edgeId) == trie[prevPos].end()) {
     prevPos = next[prevPos];
   }
-  return trie[prevPos][edgeId];
+  return trie.at(prevPos).at(edgeId);
 }
 
 // Get corresponding edge id of a trie node.
-int ACAutomaton::getEdge(int index) {
+int ACAutomaton::getEdge(int index) const {
   return edgeId.at(index);
 }
 
 // Get corresponding frequency of a trie node.
-int ACAutomaton::getFrequency(int index) {
+int ACAutomaton::getFrequency(int index) const {
   return frequency.at(index);
 }
 
 // Get corresponding fathre trie node index of a trie node.
-int ACAutomaton::getFather(int index) {
+int ACAutomaton::getFather(int index) const {
   return father.at(index);
 }
 

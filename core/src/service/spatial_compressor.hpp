@@ -13,6 +13,7 @@
 
 #include "../topology/graph.hpp"
 #include "../topology/sp_table.hpp"
+#include "../io/binary.hpp"
 
 class SpatialCompressor {
 private:

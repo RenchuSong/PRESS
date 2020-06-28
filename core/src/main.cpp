@@ -20,6 +20,7 @@
 #include <vector>
 #include <deque>
 #include "topology/ac_automaton.hpp"
+#include "topology/huffman.hpp"
 
 int main(int argc, const char * argv[]) {
 //  FileWriter fw("/Users/songrenchu/Develop/test2.txt", true);
@@ -367,6 +368,36 @@ int main(int argc, const char * argv[]) {
   ACAutomaton ac(fr0);
   ac.print();
   ac.store(fw0);
+  
+  Huffman hm(ac);
+  std::cout << "here" << std::endl;
+  hm.print();
+  
+  {
+    FileWriter fw1("/Users/songrenchu/Develop/hm.txt", false);
+    hm.store(fw1);
+  }
+  
+  {
+    FileReader fr1("/Users/songrenchu/Develop/hm.txt", false);
+    Huffman hm2(fr1);
+    hm2.print();
+    
+    std::vector<int> spatial {30, 8, 6, 23, 25, 11};
+    std::vector<bool> result;
+    hm2.encode(spatial, result);
+    for (auto c: result) {
+      std::cout << c;
+    }
+    std::cout << std::endl;
+    std::vector<int> result2;
+    hm2.decode(result, result2);
+    for (auto s: result2) {
+      std::cout << s << " ";
+    }
+    std::cout << std::endl;
+  }
+  
 //  {
 //    SPTable sp(g);
 ////    FileWriter fw0("/Users/songrenchu/Develop/sp.txt", false);

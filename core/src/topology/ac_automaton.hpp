@@ -42,14 +42,15 @@ public:
   void store(FileWriter& acWriter);
   // Print for debug.
   void print();
+  size_t getTrieSize() const;
   // Given previous Trie matching position, get the next matched trie node.
-  int getMatch(int prevPos, int edgeId);
+  int getMatch(int prevPos, int edgeId) const;
   // Get corresponding edge id of a trie node.
-  int getEdge(int index);
+  int getEdge(int index) const;
   // Get corresponding frequency of a trie node.
-  int getFrequency(int index);
+  int getFrequency(int index) const;
   // Get corresponding fathre trie node index of a trie node.
-  int getFather(int index);
+  int getFather(int index) const;
   // Get frequency of all trie nodes.
   std::vector<int>& getAllFrequency();
   ~ACAutomaton();
