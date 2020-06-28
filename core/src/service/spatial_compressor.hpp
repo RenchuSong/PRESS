@@ -11,24 +11,37 @@
 
 #include <vector>
 
+#include "../topology/ac_automaton.hpp"
 #include "../topology/graph.hpp"
+#include "../topology/huffman.hpp"
 #include "../topology/sp_table.hpp"
 #include "../io/binary.hpp"
 
 class SpatialCompressor {
-private:
-  Graph* graph;
-  SPTable* spTable;
-
 public:
-  // Construct SpatialCompressor service.
-  SpatialCompressor(Graph* graph, SPTable* spTable);
   // Stage 1. Shortest path compression.
-  void shortestPathCompression(const std::vector<int>& spatial, std::vector<int>& result);
+  void shortestPathCompression(
+    Graph& graph,
+    SPTable& spTable,
+    const std::vector<int>& spatial,
+    std::vector<int>& result
+  );
   // Stage 2. Frequent sub-trajectory compression.
-  void frequentSubTrajectoryCompresson(const std::vector<int>& spatial, std::vector<bool>& binary);
+  void frequentSubTrajectoryCompresson(
+    ACAutomaton& acAutomaton,
+    Huffman& huffman,
+    const std::vector<int>& spatial,
+    std::vector<bool>& binary
+  );
   // Hybrid spatial compression.
-  void hybridSpatialCompression(const std::vector<int>& spatial, std::vector<bool>& binary);
+  void hybridSpatialCompression(
+    Graph& graph,
+    SPTable& spTable,
+    ACAutomaton& acAutomaton,
+    Huffman& huffman,
+    const std::vector<int>& spatial,
+    std::vector<bool>& binary
+  );
 
   ~SpatialCompressor();
 };
