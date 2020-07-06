@@ -35,6 +35,8 @@ public:
   size_t getNodeNumber();
   int** getSPTable();
   int prevEdgeIndex(size_t srcIndex, size_t tgtIndex);
+  // Append the shortest path sequence (edge1, edge2] to container.
+  void complement(Graph& graph, int edge1, int edge2, std::vector<int>& container);
   void print();
   ~SPTable();
 };

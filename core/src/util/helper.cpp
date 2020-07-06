@@ -23,3 +23,77 @@ double slope(double x1, double y1, double x2, double y2) {
   }
   return (y2 - y1) / (x2 - x1);
 }
+
+// vector product of two vectors
+double vectorProduct(const Point2D& u1, const Point2D& u2, const Point2D& v1, const Point2D& v2) {
+  double x1 = u2.x - u1.x;
+  double y1 = u2.y - u1.y;
+  double x2 = v2.x - v1.x;
+  double y2 = v2.y - v1.y;
+  
+  return x1 * y2 - x2 * y1;
+}
+
+// scalar product of two vectors
+double scalarProduct(const Point2D& u1, const Point2D& u2, const Point2D& v1, const Point2D& v2) {
+  double x1 = u2.x - u1.x;
+  double y1 = u2.y - u1.y;
+  double x2 = v2.x - v1.x;
+  double y2 = v2.y - v1.y;
+  
+  return x1 * x2 + y1 * y2;
+}
+
+// Distance of the a 2D point to a 2D interval.
+float distPoint2Interval(const Point2D& point, const Point2D& end1, const Point2D& end2) {
+  double result = std::min(euclideanDistance(point, end1), euclideanDistance(point, end2));
+  if (scalarProduct(end1, point, end1, end2) > 0 && scalarProduct(end2, point, end2, end1) > 0) {
+    result = std::min(
+      result,
+      fabs(vectorProduct(end1, end2, end1, point) / euclideanDistance(end1, end2))
+    );
+  }
+  return result;
+}
+
+// Distance of the projection of the point to the interval along the interval.
+float distProjAlongInterval(const Point2D& point, const Point2D& end1, const Point2D& end2) {
+  double edgeDist = euclideanDistance(end1, end2);
+  return std::max(
+    0.0,
+    std::min(
+      scalarProduct(end1, point, end1, end2) / edgeDist,
+      edgeDist
+    )
+  );
+}
+
+// Distance of the projection of the point to the geometry along the geometry.
+float distProjAlongGeo(const Point2D& point, const std::vector<Point2D>& geometry) {
+  float result = 0;
+  float accum = 0;
+  float minDist = 1e100;
+  auto geoSize = geometry.size();
+  for (auto i = 1; i < geoSize; i++) {
+    auto dist = distPoint2Interval(point, geometry.at(i - 1), geometry.at(i));
+    if (dist < minDist) {
+      minDist = dist;
+      result = accum + distProjAlongInterval(point, geometry.at(i - 1), geometry.at(i));
+    }
+    accum += euclideanDistance(geometry.at(i - 1), geometry.at(i));
+  }
+  return result;
+}
+
+// Convert degree to radian.
+float deg2rad(float deg) {
+  return deg * M_PI / 180;
+}
+
+// Convert GPS point to 2D point.
+Point2D gps2Point2D(GPSPoint& gpsPoint) {
+  return Point2D(
+    gpsPoint.longitude * M_PER_LONG * cos(deg2rad(gpsPoint.latitude)),
+    gpsPoint.latitude * M_PER_LAT
+  );
+}

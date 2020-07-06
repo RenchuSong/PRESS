@@ -490,5 +490,7 @@ int main(int argc, const char * argv[]) {
   std::cout << std::endl;
   std::cout << mt.getEdgeId(1) << std::endl;
   
+  // TODO: test formatter math functions.
+  
   return 0;
 }

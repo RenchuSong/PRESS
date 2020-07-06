@@ -104,6 +104,22 @@ int SPTable::prevEdgeIndex(size_t srcIndex, size_t tgtIndex) {
   return spTable[srcIndex][tgtIndex];
 }
 
+// Append the shortest path sequence (edge1, edge2] to container.
+void SPTable::complement(Graph& graph, int edge1, int edge2, std::vector<int>& container) {
+  std::vector<int> tmpPath;
+  auto node1 = graph.getEdge(edge1).getTargetId();
+  while (edge2 != EDGE_NOT_EXIST) {
+    tmpPath.emplace_back(edge2);
+    auto node2 = graph.getEdge(edge2).getSourceId();
+    if (node1 == node2) {
+      break;
+    }
+    edge2 = spTable[node1][node2];
+  }
+  std::reverse(tmpPath.begin(), tmpPath.end());
+  container.insert(container.end(), tmpPath.begin(), tmpPath.end());
+}
+
 // Print the SP table for debug.
 void SPTable::print() {
   std::cout << nodeNumber << std::endl;
