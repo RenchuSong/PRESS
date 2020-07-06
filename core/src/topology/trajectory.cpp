@@ -35,7 +35,7 @@ size_t GPSTrajectory::getLength() {
 // Get a GPS point by index.
 GPSPoint& GPSTrajectory::getGPSPoint(size_t index) {
   assert (index < length);
-  return trajectory[index];
+  return trajectory.at(index);
 }
 
 // Get the GPS trajectory.
@@ -66,6 +66,57 @@ void GPSTrajectory::print() {
 }
 
 GPSTrajectory::~GPSTrajectory() { }
+
+// Read a map matched trajectory from a file.
+MapMatchedTrajectory::MapMatchedTrajectory(FileReader& mmTrajReader) {
+  length = mmTrajReader.nextInt();
+  for (auto i = 0; i < length; i++) {
+    edgeList.emplace_back(mmTrajReader.nextInt());
+  }
+}
+
+// Construct an in-memory map matched trajectory.
+MapMatchedTrajectory::MapMatchedTrajectory(std::vector<int>& sequence) {
+  length = sequence.size();
+  edgeList = sequence;
+}
+
+// Get map matched trajectory length.
+size_t MapMatchedTrajectory::getLength() {
+  return length;
+}
+
+// Get an edge id within the sequence.
+int MapMatchedTrajectory::getEdgeId(size_t index) {
+  assert (index < length);
+  return edgeList.at(index);
+}
+
+// Get the map matched trajectory.
+const std::vector<int>& MapMatchedTrajectory::getEdgeList() {
+  return edgeList;
+}
+
+// Write the map matched trajectory to the file.
+void MapMatchedTrajectory::store(FileWriter& mmTrajWriter) {
+  mmTrajWriter.writeInt((int)length);
+  for (auto eid: edgeList) {
+    mmTrajWriter.writeSeparator();
+    mmTrajWriter.writeInt(eid);
+  }
+  mmTrajWriter.writeEol();
+}
+
+// Print the map matched trajectory for debug.
+void MapMatchedTrajectory::print() {
+  std::cout << length << "->";
+  for (auto eid: edgeList) {
+    std::cout << " " << eid;
+  }
+  std::cout << std::endl;
+}
+
+MapMatchedTrajectory::~MapMatchedTrajectory() { }
 
 // Read a PRESS trajectory from files.
 PRESSTrajectory::PRESSTrajectory(FileReader& spatialReader, FileReader& temporalReader) {

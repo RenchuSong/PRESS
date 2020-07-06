@@ -473,6 +473,22 @@ int main(int argc, const char * argv[]) {
   for (auto& p: result) {
     p.print();
   }
+  std::cout << std::endl;
+
+//  std::vector<int> eList { 1, 3, 2, 5, 4, 3 };
+//  MapMatchedTrajectory mt(eList);
+//  mt.print();
+//  FileWriter fw3("/Users/songrenchu/Develop/mm.txt", false);
+//  mt.store(fw3);
+  FileReader fr3("/Users/songrenchu/Develop/mm.txt", false);
+  MapMatchedTrajectory mt(fr3);
+  mt.print();
+  std::cout << mt.getLength() << std::endl;
+  for (auto e : mt.getEdgeList()) {
+    std::cout << e << " ";
+  }
+  std::cout << std::endl;
+  std::cout << mt.getEdgeId(1) << std::endl;
   
   return 0;
 }

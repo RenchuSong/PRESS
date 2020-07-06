@@ -35,6 +35,24 @@ public:
   ~GPSTrajectory();
 };
 
+// Map matched trajectory.
+class MapMatchedTrajectory {
+private:
+  size_t length;
+  std::vector<int> edgeList;
+public:
+  // Read a map matched trajectory from a file.
+  MapMatchedTrajectory(FileReader& mmTrajReader);
+  // Construct an in-memory map matched trajectory.
+  MapMatchedTrajectory(std::vector<int>& sequence);
+  size_t getLength();
+  int getEdgeId(size_t index);
+  const std::vector<int>& getEdgeList();
+  void store(FileWriter& mmTrajWriter);
+  void print();
+  ~MapMatchedTrajectory();
+};
+
 // Raw PRESS trajectory.
 class PRESSTrajectory {
 private:
