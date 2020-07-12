@@ -9,8 +9,8 @@
 #include "helper.hpp"
 
 // Euclidean distance between 2 points.
-float euclideanDistance(const Point2D& p1, const Point2D& p2) {
-  return sqrtf((p1.x - p2.x) * (p1.x - p2.x) + (p1.y - p2.y) * (p1.y - p2.y));
+double euclideanDistance(const Point2D& p1, const Point2D& p2) {
+  return sqrt((p1.x - p2.x) * (p1.x - p2.x) + (p1.y - p2.y) * (p1.y - p2.y));
 }
 
 // Calculate the slope between two points.
@@ -45,7 +45,7 @@ double scalarProduct(const Point2D& u1, const Point2D& u2, const Point2D& v1, co
 }
 
 // Distance of the a 2D point to a 2D interval.
-float distPoint2Interval(const Point2D& point, const Point2D& end1, const Point2D& end2) {
+double distPoint2Interval(const Point2D& point, const Point2D& end1, const Point2D& end2) {
   double result = std::min(euclideanDistance(point, end1), euclideanDistance(point, end2));
   if (scalarProduct(end1, point, end1, end2) > 0 && scalarProduct(end2, point, end2, end1) > 0) {
     result = std::min(
@@ -57,7 +57,7 @@ float distPoint2Interval(const Point2D& point, const Point2D& end1, const Point2
 }
 
 // Distance of the projection of the point to the interval along the interval.
-float distProjAlongInterval(const Point2D& point, const Point2D& end1, const Point2D& end2) {
+double distProjAlongInterval(const Point2D& point, const Point2D& end1, const Point2D& end2) {
   double edgeDist = euclideanDistance(end1, end2);
   return std::max(
     0.0,
@@ -69,10 +69,10 @@ float distProjAlongInterval(const Point2D& point, const Point2D& end1, const Poi
 }
 
 // Distance of the projection of the point to the geometry along the geometry.
-float distProjAlongGeo(const Point2D& point, const std::vector<Point2D>& geometry) {
-  float result = 0;
-  float accum = 0;
-  float minDist = 1e100;
+double distProjAlongGeo(const Point2D& point, const std::vector<Point2D>& geometry) {
+  double result = 0;
+  double accum = 0;
+  double minDist = 1e100;
   auto geoSize = geometry.size();
   for (auto i = 1; i < geoSize; i++) {
     auto dist = distPoint2Interval(point, geometry.at(i - 1), geometry.at(i));
@@ -86,7 +86,7 @@ float distProjAlongGeo(const Point2D& point, const std::vector<Point2D>& geometr
 }
 
 // Convert degree to radian.
-float deg2rad(float deg) {
+double deg2rad(double deg) {
   return deg * M_PI / 180;
 }
 

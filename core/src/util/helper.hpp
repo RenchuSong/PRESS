@@ -15,13 +15,13 @@
 #include "../topology/auxiliaries.hpp"
 
 // Meters per latitude.
-const float M_PER_LAT = 111195.19;
+const double M_PER_LAT = 111195.19;
 
 // Meters per longitude on equator.
-const float M_PER_LONG = 111319.49;
+const double M_PER_LONG = 111319.49;
 
 // Euclidean distance between 2 points.
-float euclideanDistance(const Point2D& p1, const Point2D& p2);
+double euclideanDistance(const Point2D& p1, const Point2D& p2);
 
 // Calculate the slope between two points.
 double slope(double x1, double y1, double x2, double y2);
@@ -33,16 +33,16 @@ double vectorProduct(const Point2D& u1, const Point2D& u2, const Point2D& v1, co
 double scalarProduct(const Point2D& u1, const Point2D& u2, const Point2D& v1, const Point2D& v2);
 
 // Distance of the a 2D point to a 2D interval.
-float distPoint2Interval(const Point2D& point, const Point2D& end1, const Point2D& end2);
+double distPoint2Interval(const Point2D& point, const Point2D& end1, const Point2D& end2);
 
 // Distance of the projection of the point to the interval along the interval.
-float distProjAlongInterval(const Point2D& point, const Point2D& end1, const Point2D& end2);
+double distProjAlongInterval(const Point2D& point, const Point2D& end1, const Point2D& end2);
 
 // Distance of the projection of the point to the geometry along the geometry.
-float distProjAlongGeo(const Point2D& point, const std::vector<Point2D>& geometry);
+double distProjAlongGeo(const Point2D& point, const std::vector<Point2D>& geometry);
 
 // Convert degree to radian.
-float deg2rad(float deg);
+double deg2rad(double deg);
 
 // Convert GPS point to 2D point.
 Point2D gps2Point2D(GPSPoint& gpsPoint);
