@@ -22,7 +22,10 @@
 #include "topology/ac_automaton.hpp"
 #include "topology/huffman.hpp"
 
-int main(int argc, const char * argv[]) {
+#include "gtest/gtest.h"
+#include "util/test/test_helper.hpp"
+
+int main(int argc, char** argv) {
 //  FileWriter fw("/Users/songrenchu/Develop/test2.txt", true);
 //  fw.writeChar('a');
 //  fw.writeInt(123);
@@ -492,5 +495,6 @@ int main(int argc, const char * argv[]) {
   
   // TODO: test formatter math functions.
   
-  return 0;
+  ::testing::InitGoogleTest(&argc, argv);
+  return RUN_ALL_TESTS();
 }
