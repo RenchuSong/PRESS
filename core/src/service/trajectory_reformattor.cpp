@@ -38,7 +38,7 @@ PRESSTrajectory TrajectoryReformatter::generateTrajectory(
   }
 
   // Get the temporal sequence.
-  float dist = 0;
+  double dist = 0;
   int pt = 0;
   for (auto i = 0; i < length; i++) {
     // Accumulate the edges before current matched one.

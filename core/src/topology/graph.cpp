@@ -12,7 +12,7 @@
 #include "../util/helper.hpp"
 
 // Node constructor.
-Node::Node(float x, float y): position(x, y), edgeNumber(0) { }
+Node::Node(double x, double y): position(x, y), edgeNumber(0) { }
 
 // Add one edge to the node edge list.
 void Node::addEdge(int eid) {
@@ -59,7 +59,7 @@ Node::~Node() { }
 Edge::Edge(int srcId, int tgtId): sourceId(srcId), targetId(tgtId), geoSize(0), distance(0) { }
 
 // Add one position in the shape.
-size_t Edge::addPosition(float x, float y) {
+size_t Edge::addPosition(double x, double y) {
   geoSize++;
   Point2D point(x, y);
   if (shape.size() > 0) {
@@ -90,7 +90,7 @@ const std::vector<Point2D>& Edge::getShape() {
 }
 
 // Get the distance of the edge.
-float Edge::getDistance() {
+double Edge::getDistance() {
   return distance;
 }
 
@@ -208,7 +208,7 @@ Graph::Graph(FileReader& graphReader) {
   // Load the nodes.
   nodeNumber = graphReader.nextInt();
   for (auto i = 0; i < nodeNumber; i++) {
-    nodeList.emplace_back(Node(graphReader.nextFloat(), graphReader.nextFloat()));
+    nodeList.emplace_back(Node(graphReader.nextDouble(), graphReader.nextDouble()));
     auto& node = nodeList.back();
     auto edgeSize = graphReader.nextInt();
     for (auto j = 0; j < edgeSize; j++) {
@@ -223,7 +223,7 @@ Graph::Graph(FileReader& graphReader) {
     auto& edge = edgeList.back();
     auto shapeSize = graphReader.nextInt();
     for (auto j = 0; j < shapeSize; j++) {
-      edge.addPosition(graphReader.nextFloat(), graphReader.nextFloat());
+      edge.addPosition(graphReader.nextDouble(), graphReader.nextDouble());
     }
   }
 }
@@ -276,9 +276,9 @@ void Graph::store(FileWriter& graphWriter) {
   for (auto node: nodeList) {
     // Node position.
     Point2D& point = node.getPosition();
-    graphWriter.writeFloat(point.x);
+    graphWriter.writeDouble(point.x);
     graphWriter.writeSeparator();
-    graphWriter.writeFloat(point.y);
+    graphWriter.writeDouble(point.y);
     graphWriter.writeSeparator();
     // Node edge list.
     graphWriter.writeInt((int)node.getEdgeNumber());
@@ -303,9 +303,9 @@ void Graph::store(FileWriter& graphWriter) {
     graphWriter.writeInt((int)edge.getGeoSize());
     for (auto point: edge.getShape()) {
       graphWriter.writeSeparator();
-      graphWriter.writeFloat(point.x);
+      graphWriter.writeDouble(point.x);
       graphWriter.writeSeparator();
-      graphWriter.writeFloat(point.y);
+      graphWriter.writeDouble(point.y);
     }
     graphWriter.writeEol();
   }

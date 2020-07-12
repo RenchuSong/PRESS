@@ -13,10 +13,10 @@
 
 // A 2D point.
 struct Point2D {
-  float x;
-  float y;
+  double x;
+  double y;
   
-  Point2D(float x, float y): x(x), y(y) { }
+  Point2D(double x, double y): x(x), y(y) { }
   void print() {
     std::cout << "(" << x << ", " << y << ")";
   }
@@ -24,10 +24,10 @@ struct Point2D {
 
 // A GPS point.
 struct GPSPoint {
-  float t;
-  float latitude, longitude;
+  double t;
+  double latitude, longitude;
   
-  GPSPoint(float t, float lat, float lng): t(t), latitude(lat), longitude(lng) { }
+  GPSPoint(double t, double lat, double lng): t(t), latitude(lat), longitude(lng) { }
   void print() {
     std::cout << "(" << t << ": " << latitude << ", " << longitude << ")";
   }
@@ -35,10 +35,10 @@ struct GPSPoint {
 
 // A temporal pair (t, d).
 struct TemporalPair {
-  float t;
-  float dist;
+  double t;
+  double dist;
   
-  TemporalPair(float t, float dist): t(t), dist(dist) { }
+  TemporalPair(double t, double dist): t(t), dist(dist) { }
   void print() {
     std::cout << "(" << t << ": " << dist << ")";
   }

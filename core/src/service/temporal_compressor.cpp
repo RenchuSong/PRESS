@@ -17,8 +17,8 @@ TemporalCompressor::TemporalCompressor() { }
 void TemporalCompressor::boundedTemporalCompression(
   const std::vector<TemporalPair>& temporal,
   std::vector<TemporalPair>& result,
-  float tsnd,
-  float nstd
+  double tsnd,
+  double nstd
 ) {
   result.clear();
 

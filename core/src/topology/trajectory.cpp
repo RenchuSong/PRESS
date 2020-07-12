@@ -14,9 +14,9 @@
 GPSTrajectory::GPSTrajectory(FileReader& gpsTrajReader) {
   length = gpsTrajReader.nextInt();
   for (auto i = 0; i < length; i++) {
-    auto t = gpsTrajReader.nextFloat();
-    auto lat = gpsTrajReader.nextFloat();
-    auto lng = gpsTrajReader.nextFloat();
+    auto t = gpsTrajReader.nextDouble();
+    auto lat = gpsTrajReader.nextDouble();
+    auto lng = gpsTrajReader.nextDouble();
     trajectory.emplace_back(GPSPoint(t, lat, lng));
   }
 }
@@ -48,11 +48,11 @@ void GPSTrajectory::store(FileWriter& gpsWriter) {
   gpsWriter.writeInt((int)length);
   for (auto gpsPoint: trajectory) {
     gpsWriter.writeSeparator();
-    gpsWriter.writeFloat(gpsPoint.t);
+    gpsWriter.writeDouble(gpsPoint.t);
     gpsWriter.writeSeparator();
-    gpsWriter.writeFloat(gpsPoint.latitude);
+    gpsWriter.writeDouble(gpsPoint.latitude);
     gpsWriter.writeSeparator();
-    gpsWriter.writeFloat(gpsPoint.longitude);
+    gpsWriter.writeDouble(gpsPoint.longitude);
   }
   gpsWriter.writeEol();
 }
@@ -129,7 +129,7 @@ PRESSTrajectory::PRESSTrajectory(FileReader& spatialReader, FileReader& temporal
   temporalLength = temporalReader.nextInt();
   for (auto i = 0; i < temporalLength; i++) {
     temporalComponent.emplace_back(
-      TemporalPair(temporalReader.nextFloat(), temporalReader.nextFloat())
+      TemporalPair(temporalReader.nextDouble(), temporalReader.nextDouble())
     );
   }
 }
@@ -176,9 +176,9 @@ void PRESSTrajectory::store(FileWriter& spatialWriter, FileWriter& temporalWrite
   temporalWriter.writeInt((int)temporalLength);
   for (auto temporalPair: temporalComponent) {
     temporalWriter.writeSeparator();
-    temporalWriter.writeFloat(temporalPair.t);
+    temporalWriter.writeDouble(temporalPair.t);
     temporalWriter.writeSeparator();
-    temporalWriter.writeFloat(temporalPair.dist);
+    temporalWriter.writeDouble(temporalPair.dist);
   }
   temporalWriter.writeEol();
 }
@@ -208,7 +208,7 @@ PRESSCompressedTrajectory::PRESSCompressedTrajectory(
   temporalLength = temporalReader.nextInt();
   for (auto i = 0; i < temporalLength; i++) {
     temporal.emplace_back(
-      TemporalPair(temporalReader.nextInt(), temporalReader.nextFloat())
+      TemporalPair(temporalReader.nextInt(), temporalReader.nextDouble())
     );
   }
 }
@@ -229,7 +229,7 @@ void PRESSCompressedTrajectory::store(FileWriter& spatialWriter, FileWriter& tem
     temporalWriter.writeSeparator();
     temporalWriter.writeInt(tpPair.t);
     temporalWriter.writeSeparator();
-    temporalWriter.writeFloat(tpPair.dist);
+    temporalWriter.writeDouble(tpPair.dist);
   }
   temporalWriter.writeEol();
 }

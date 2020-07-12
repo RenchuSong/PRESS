@@ -39,7 +39,7 @@ SPTable::SPTable(Graph& graph) {
 
   // Calculate all-pair shortest paths.
   for (auto i = 0; i < nodeNumber; i++) {
-    float minDist[nodeNumber];
+    double minDist[nodeNumber];
     for (auto j = 0; j < nodeNumber; j++) {
       minDist[j] = 1e20;
     }
@@ -47,9 +47,9 @@ SPTable::SPTable(Graph& graph) {
 
     // Priority queue to hold the distance.
     std::priority_queue<
-      std::pair<float, int>,
-      std::vector<std::pair<float, int> >,
-      std::greater<std::pair<float, int> >
+      std::pair<double, int>,
+      std::vector<std::pair<double, int> >,
+      std::greater<std::pair<double, int> >
     > queue;
     queue.push(std::make_pair(0, i));
 
