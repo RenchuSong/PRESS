@@ -24,6 +24,8 @@
 
 #include "gtest/gtest.h"
 #include "util/test/test_helper.hpp"
+#include "service/test/test_trajectory_reformattor.hpp"
+
 
 int main(int argc, char** argv) {
 //  FileWriter fw("/Users/songrenchu/Develop/test2.txt", true);

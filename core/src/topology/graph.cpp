@@ -14,6 +14,9 @@
 // Node constructor.
 Node::Node(double x, double y): position(x, y), edgeNumber(0) { }
 
+// Node constructor.
+Node::Node(Point2D& point): position(point.x, point.y), edgeNumber(0) { }
+
 // Add one edge to the node edge list.
 void Node::addEdge(int eid) {
   edgeNumber++;
@@ -67,6 +70,11 @@ size_t Edge::addPosition(double x, double y) {
   }
   shape.push_back(point);
   return geoSize;
+}
+
+// Add one position in the shape.
+size_t Edge::addPosition(Point2D& point) {
+  return addPosition(point.x, point.y);
 }
 
 // Get the source node id.
@@ -194,6 +202,13 @@ Graph::Graph() {
   edgeList[16].addPosition(1, 2);
   edgeList[16].addPosition(4, 2);
   
+}
+
+Graph::Graph(std::vector<Node>& nodeList, std::vector<Edge>& edgeList) {
+  nodeNumber = nodeList.size();
+  this->nodeList.insert(this->nodeList.end(), nodeList.begin(), nodeList.end());
+  edgeNumber = edgeList.size();
+  this->edgeList.insert(this->edgeList.end(), edgeList.begin(), edgeList.end());
 }
 
 // Construct the graph from the ACM SIGSPATIAL CUP 2012 format files.

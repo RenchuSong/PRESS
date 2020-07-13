@@ -26,6 +26,7 @@ private:
 
 public:
   Node(double x, double y);
+  Node(Point2D& point);
   void addEdge(int eid);
   size_t getEdgeNumber();
   const std::vector<int>& getEdgeList();
@@ -48,6 +49,7 @@ private:
 public:
   Edge(int srcId, int tgtId);
   size_t addPosition(double x, double y);
+  size_t addPosition(Point2D& point);
   int getSourceId();
   int getTargetId();
   size_t getGeoSize();
@@ -62,13 +64,15 @@ class Graph {
 private:
   size_t nodeNumber;
   std::vector<Node> nodeList;
-  std::unordered_map<int, int> nodeId2Index;
+  // std::unordered_map<int, int> nodeId2Index;
   size_t edgeNumber;
   std::vector<Edge> edgeList;
-  std::unordered_map<int, int> edgeId2Index;
+  // std::unordered_map<int, int> edgeId2Index;
 
 public:
   Graph();
+  // Construct graph from given node list and edge list.
+  Graph(std::vector<Node>& nodeList, std::vector<Edge>& edgeList);
   // Load graph from ACM SIGSPATLAL CUP 2012 format.
   Graph(FileReader& nodeReader, FileReader& edgeReader, FileReader& geoReader);
   // Load graph from file.
