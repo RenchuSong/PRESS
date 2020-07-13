@@ -14,7 +14,7 @@
 
 MockTestObjects::MockTestObjects() {
   // Construct the test roadnet.
-  // lat
+  // long
   //  .4 6-----7
   //          /
   //  .3     /    5
@@ -24,7 +24,7 @@ MockTestObjects::MockTestObjects() {
   //  .1  /    2
   //     /   ⟋ |
   //  .0 0 ⟋   1
-  //    .0 .1 .2 .3 .4 .5 long
+  //    .0 .1 .2 .3 .4 .5 lat
   std::vector<GPSPoint> gpsList {
     GPSPoint(0, 37.0, 122.0),
     GPSPoint(0, 37.2, 122.0),
