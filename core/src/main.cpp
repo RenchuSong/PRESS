@@ -24,6 +24,7 @@
 
 #include "gtest/gtest.h"
 #include "util/test/test_helper.hpp"
+#include "util/test/test_timer.hpp"
 #include "service/test/test_trajectory_reformattor.hpp"
 
 
