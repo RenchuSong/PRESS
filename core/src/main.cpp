@@ -22,10 +22,10 @@
 #include "topology/ac_automaton.hpp"
 #include "topology/huffman.hpp"
 
-//#include "gtest/gtest.h"
-//#include "util/test/test_helper.hpp"
-//#include "util/test/test_timer.hpp"
-//#include "service/test/test_trajectory_reformattor.hpp"
+#include "gtest/gtest.h"
+#include "util/test/test_helper.hpp"
+#include "util/test/test_timer.hpp"
+#include "service/test/test_trajectory_reformattor.hpp"
 
 
 int main(int argc, char** argv) {
@@ -498,6 +498,6 @@ int main(int argc, char** argv) {
   
   // TODO: test formatter math functions.
   
-//  ::testing::InitGoogleTest(&argc, argv);
-//  return RUN_ALL_TESTS();
+  ::testing::InitGoogleTest(&argc, argv);
+  return RUN_ALL_TESTS();
 }
