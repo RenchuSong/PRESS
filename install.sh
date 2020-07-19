@@ -27,4 +27,9 @@ fail_on_err "Failed to create PRESS Core config file"
 echo ${DIR_CORE}/tmp/ >> ${DIR_CORE}/src/config
 echo ${DIR}/data/ >> ${DIR_CORE}/src/config
 
+printf "${BLUE}Downloading Sample Data ...${NC}\n"
+cd ${DIR}/data
+bash download_data.sh
+cd ${DIR}
+
 printf "${GREEN}Installation Finished${NC}\n"
