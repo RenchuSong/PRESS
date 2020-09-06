@@ -68,6 +68,21 @@ Point2D gps2Point2D(GPSPoint& gpsPoint) {
   );
 }
 
+// TODO: maybe useful
+//GPSPoint point2D2GPSPoint(double t, Point2D& point) {
+//  return GPSPoint(
+//    t,
+//    point.y / M_PER_LAT,
+//    point.x / M_PER_LONG / cos(deg2rad(point.y / M_PER_LAT))
+//  );
+//}
+
+// Check if a point is in an MBR.
+bool pointInMBR(Point2D& point, Point2D& minBound, Point2D& maxBound) {
+  return point.x >= minBound.x && point.y >= minBound.y
+      && point.x <= maxBound.x && point.y <= maxBound.y;
+}
+
 // scalar product of two vectors
 double scalarProduct(const Point2D& u1, const Point2D& u2, const Point2D& v1, const Point2D& v2) {
   double x1 = u2.x - u1.x;

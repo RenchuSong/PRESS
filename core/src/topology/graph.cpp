@@ -204,20 +204,6 @@ Graph::Graph() {
   
 }
 
-Graph::Graph(std::vector<Node>& nodeList, std::vector<Edge>& edgeList) {
-  nodeNumber = nodeList.size();
-  this->nodeList.insert(this->nodeList.end(), nodeList.begin(), nodeList.end());
-  edgeNumber = edgeList.size();
-  this->edgeList.insert(this->edgeList.end(), edgeList.begin(), edgeList.end());
-}
-
-// Construct the graph from the ACM SIGSPATIAL CUP 2012 format files.
-Graph::Graph(FileReader& nodeReader,
-             FileReader& edgeReader,
-             FileReader& geoReader) {
-  // TODO: read graph from file.
-}
-
 // Construct the graph from a file.
 Graph::Graph(FileReader& graphReader) {
   // Load the nodes.
@@ -241,6 +227,19 @@ Graph::Graph(FileReader& graphReader) {
       edge.addPosition(graphReader.nextDouble(), graphReader.nextDouble());
     }
   }
+}
+
+Graph::Graph(std::vector<Node>& nodeList, std::vector<Edge>& edgeList) {
+  setGraph(nodeList, edgeList);
+}
+
+void Graph::setGraph(std::vector<Node>& nodeList, std::vector<Edge>& edgeList) {
+  nodeNumber = nodeList.size();
+  this->nodeList.clear();
+  this->nodeList.insert(this->nodeList.end(), nodeList.begin(), nodeList.end());
+  edgeNumber = edgeList.size();
+  this->edgeList.clear();
+  this->edgeList.insert(this->edgeList.end(), edgeList.begin(), edgeList.end());
 }
 
 // Get node number in the graph.

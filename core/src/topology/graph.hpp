@@ -71,12 +71,12 @@ private:
 
 public:
   Graph();
-  // Construct graph from given node list and edge list.
-  Graph(std::vector<Node>& nodeList, std::vector<Edge>& edgeList);
-  // Load graph from ACM SIGSPATLAL CUP 2012 format.
-  Graph(FileReader& nodeReader, FileReader& edgeReader, FileReader& geoReader);
   // Load graph from file.
   Graph(FileReader& graphReader);
+  // Construct graph from given node list and edge list.
+  Graph(std::vector<Node>& nodeList, std::vector<Edge>& edgeList);
+  // Set graph from given node list and edge list.
+  void setGraph(std::vector<Node>& nodeList, std::vector<Edge>& edgeList);
   size_t getNodeNumber();
   Node& getNode(size_t index);
   const std::vector<Node>& getNodeList();

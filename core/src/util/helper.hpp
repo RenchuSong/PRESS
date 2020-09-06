@@ -38,6 +38,9 @@ double euclideanDistance(const Point2D& p1, const Point2D& p2);
 // Convert GPS point to 2D point.
 Point2D gps2Point2D(GPSPoint& gpsPoint);
 
+// Check if a point is within MBR x bound [minBound.x, maxBound.x], y bound [minBound.y, maxBound.y]
+bool pointInMBR(Point2D& point, Point2D& minBound, Point2D& maxBound);
+
 // scalar product of two vectors
 double scalarProduct(const Point2D& u1, const Point2D& u2, const Point2D& v1, const Point2D& v2);
 

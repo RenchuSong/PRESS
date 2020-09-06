@@ -243,6 +243,37 @@ TEST(HelperTest, GPS2Point2DTest) {
   EXPECT_DOUBLE_EQ(-111195.19 * 90, p19.y);
 }
 
+TEST(HelperTest, PointInMBRTest) {
+  Point2D p1(-1, -2);
+  Point2D p2(3, 4);
+  Point2D p3(-1, 4);
+  Point2D p4(3, -2);
+  Point2D p5(-1, 0);
+  Point2D p6(3, 0);
+  Point2D p7(0, -2);
+  Point2D p8(0, 4);
+  Point2D p9(0, 0);
+  Point2D p10(-2, 0);
+  Point2D p11(5, 0);
+  Point2D p12(0, -4);
+  Point2D p13(0, 8);
+
+  EXPECT_TRUE(pointInMBR(p1, p1, p2));
+  EXPECT_TRUE(pointInMBR(p2, p1, p2));
+  EXPECT_TRUE(pointInMBR(p3, p1, p2));
+  EXPECT_TRUE(pointInMBR(p4, p1, p2));
+  EXPECT_TRUE(pointInMBR(p5, p1, p2));
+  EXPECT_TRUE(pointInMBR(p6, p1, p2));
+  EXPECT_TRUE(pointInMBR(p7, p1, p2));
+  EXPECT_TRUE(pointInMBR(p8, p1, p2));
+  EXPECT_TRUE(pointInMBR(p9, p1, p2));
+  
+  EXPECT_FALSE(pointInMBR(p10, p1, p2));
+  EXPECT_FALSE(pointInMBR(p11, p1, p2));
+  EXPECT_FALSE(pointInMBR(p12, p1, p2));
+  EXPECT_FALSE(pointInMBR(p13, p1, p2));
+}
+
 TEST(HelperTest, ScalarProductTest) {
   Point2D p1(0, 0);
   Point2D p2(0, 2);
