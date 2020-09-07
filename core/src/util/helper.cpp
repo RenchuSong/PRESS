@@ -78,10 +78,47 @@ Point2D gps2Point2D(const GPSPoint& gpsPoint) {
 //  );
 //}
 
+// Check if 2 intervals intersect with each other in strict case/
+// Strict means touch doesn't count as intersect.
+bool intervalIntersect(
+  const Point2D& p1,
+  const Point2D& p2,
+  const Point2D& p3,
+  const Point2D& p4
+) {
+  return vectorProduct(p1, p2, p1, p4) * vectorProduct(p1, p2, p1, p3) < 0
+      && vectorProduct(p3, p4, p3, p1) * vectorProduct(p3, p4, p3, p2) < 0;
+}
+
+// Check if interval [p1, p2] goes through MBR [[minBound], [maxBound]] in strict case.
+// Strict means touch doesn't count as goes through.
+bool intervalThroughMBR(
+  const Point2D& p1,
+  const Point2D& p2,
+  const Point2D& minBound,
+  const Point2D& maxBound
+) {
+  Point2D p3(minBound.x, maxBound.y);
+  Point2D p4(maxBound.x, minBound.y);
+  return intervalIntersect(p1, p2, minBound, p3)
+      || intervalIntersect(p1, p2, minBound, p4)
+      || intervalIntersect(p1, p2, maxBound, p3)
+      || intervalIntersect(p1, p2, maxBound, p4)
+      || (pointOnInterval(minBound, p1, p2) && pointOnInterval(maxBound, p1, p2))
+      || (pointOnInterval(p3, p1, p2) && pointOnInterval(p4, p1, p2));
+}
+
 // Check if a point is in an MBR.
 bool pointInMBR(const Point2D& point, const Point2D& minBound, const Point2D& maxBound) {
   return point.x >= minBound.x && point.y >= minBound.y
       && point.x <= maxBound.x && point.y <= maxBound.y;
+}
+
+// Check if a point is on an interval.
+bool pointOnInterval(const Point2D& point, const Point2D& p1, const Point2D& p2) {
+  return fabs(vectorProduct(p1, point, p1, p2)) <= 1e-8
+      && scalarProduct(p1, point, p1, p2) >= 0
+      && scalarProduct(p2, point, p2, p1) >= 0;
 }
 
 // scalar product of two vectors

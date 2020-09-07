@@ -243,6 +243,59 @@ TEST(HelperTest, GPS2Point2DTest) {
   EXPECT_DOUBLE_EQ(-111195.19 * 90, p19.y);
 }
 
+TEST(HelperTest, IntervalIntersectTest) {
+  Point2D p1(1, 1);
+  Point2D p2(2, 1);
+  Point2D p3(3, 1);
+  Point2D p4(1, 2);
+  Point2D p5(2, 2);
+  Point2D p6(3, 2);
+  Point2D p7(4, 2);
+  Point2D p8(1, 3);
+  Point2D p9(2, 3);
+  Point2D p10(3, 3);
+  Point2D p11(4, 4);
+  
+  
+  EXPECT_TRUE(intervalIntersect(p4, p6, p2, p9));
+  EXPECT_TRUE(intervalIntersect(p8, p3, p1, p10));
+  EXPECT_TRUE(intervalIntersect(p8, p6, p2, p11));
+  
+  EXPECT_FALSE(intervalIntersect(p1, p2, p3, p2));
+  EXPECT_FALSE(intervalIntersect(p4, p7, p5, p6));
+  EXPECT_FALSE(intervalIntersect(p8, p5, p5, p10));
+  EXPECT_FALSE(intervalIntersect(p4, p5, p6, p7));
+  EXPECT_FALSE(intervalIntersect(p1, p3, p5, p11));
+}
+
+TEST(HelperTest, IntervalThroughMBRTest) {
+  Point2D p1(1, 1);
+  Point2D p2(2, 1);
+  Point2D p3(3, 1);
+  Point2D p4(1, 2);
+  Point2D p5(2, 2);
+  Point2D p6(3, 2);
+  Point2D p7(4, 2);
+  Point2D p8(1, 3);
+  Point2D p9(2, 3);
+  Point2D p10(3, 3);
+  Point2D p11(4, 4);
+
+  EXPECT_TRUE(intervalThroughMBR(p5, p7, p1, p10));
+  EXPECT_TRUE(intervalThroughMBR(p1, p7, p2, p10));
+  EXPECT_TRUE(intervalThroughMBR(p1, p11, p5, p10));
+  EXPECT_TRUE(intervalThroughMBR(p8, p3, p2, p6));
+  
+  EXPECT_FALSE(intervalThroughMBR(p8, p11, p1, p10));
+  EXPECT_FALSE(intervalThroughMBR(p8, p11, p2, p10));
+  EXPECT_FALSE(intervalThroughMBR(p6, p7, p2, p10));
+  EXPECT_FALSE(intervalThroughMBR(p5, p10, p6, p7));
+  EXPECT_FALSE(intervalThroughMBR(p4, p7, p5, p10));
+  EXPECT_FALSE(intervalThroughMBR(p8, p9, p2, p6));
+  EXPECT_FALSE(intervalThroughMBR(p1, p11, p4, p9));
+  EXPECT_FALSE(intervalThroughMBR(p8, p3, p1, p5));
+}
+
 TEST(HelperTest, PointInMBRTest) {
   Point2D p1(-1, -2);
   Point2D p2(3, 4);
@@ -272,6 +325,38 @@ TEST(HelperTest, PointInMBRTest) {
   EXPECT_FALSE(pointInMBR(p11, p1, p2));
   EXPECT_FALSE(pointInMBR(p12, p1, p2));
   EXPECT_FALSE(pointInMBR(p13, p1, p2));
+}
+
+// Check if a point is on an interval.
+TEST(HelperTest, PointOnIntervalTest) {
+  Point2D p1(1, 1);
+  Point2D p2(2, 1);
+  Point2D p3(3, 1);
+  Point2D p4(1, 2);
+  Point2D p5(2, 2);
+  Point2D p6(3, 2);
+  Point2D p7(4, 2);
+  Point2D p8(1, 3);
+  Point2D p9(2, 3);
+  Point2D p10(3, 3);
+  Point2D p11(4, 4);
+  
+  EXPECT_TRUE(pointOnInterval(p4, p4, p7));
+  EXPECT_TRUE(pointOnInterval(p5, p4, p7));
+  EXPECT_TRUE(pointOnInterval(p6, p4, p7));
+  EXPECT_TRUE(pointOnInterval(p7, p4, p7));
+  EXPECT_TRUE(pointOnInterval(p1, p1, p11));
+  EXPECT_TRUE(pointOnInterval(p5, p1, p11));
+  EXPECT_TRUE(pointOnInterval(p10, p1, p11));
+  EXPECT_TRUE(pointOnInterval(p11, p1, p11));
+
+  EXPECT_FALSE(pointOnInterval(p1, p5, p6));
+  EXPECT_FALSE(pointOnInterval(p2, p5, p6));
+  EXPECT_FALSE(pointOnInterval(p3, p5, p6));
+  EXPECT_FALSE(pointOnInterval(p4, p5, p6));
+  EXPECT_FALSE(pointOnInterval(p7, p5, p6));
+  EXPECT_FALSE(pointOnInterval(p8, p3, p11));
+  EXPECT_FALSE(pointOnInterval(p9, p8, p7));
 }
 
 TEST(HelperTest, ScalarProductTest) {

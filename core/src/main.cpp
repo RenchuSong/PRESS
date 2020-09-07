@@ -22,6 +22,7 @@
 #include "topology/ac_automaton.hpp"
 #include "topology/huffman.hpp"
 #include "./user_defined/factory.hpp"
+#include "./topology/grid_index.hpp"
 
 #include "gtest/gtest.h"
 #include "util/test/test_helper.hpp"
@@ -33,19 +34,35 @@ int main(int argc, char** argv) {
   
 //  ::testing::InitGoogleTest(&argc, argv);
 //  return RUN_ALL_TESTS();
-//  auto graphReader = Factory::getGraphReader(GraphReaderType::SEATTLE_SAMPLE_ROADNET);
-//  Graph g;
-//  std::string path = "/Users/songrenchu/Develop/PRESS/data/WA_roadnetwork_and_single_trajectory/road_network.txt";
-//  graphReader->readGraph(path, g);
+  
+  auto graphReader = Factory::getGraphReader(GraphReaderType::SEATTLE_SAMPLE_ROADNET);
+  Graph g;
+  std::string path = "/Users/songrenchu/Develop/PRESS/data/WA_roadnetwork_and_single_trajectory/road_network.txt";
+  graphReader->readGraph(path, g);
 //  FileWriter fw("/Users/songrenchu/Develop/graph.txt", false);
 //  g.store(fw);
-  auto gpsReader = Factory::getGPSTrajectoryReader(GPSTrajectoryReaderType::SEATTLE_SAMPLE_GPS);
-  GPSTrajectory gpsTrajectory;
-  std::string path2 = "/Users/songrenchu/Develop/PRESS/data/WA_roadnetwork_and_single_trajectory/gps_data.txt";
-  gpsReader->readGPSTrajectory(path2, gpsTrajectory);
-  FileWriter fw2("/Users/songrenchu/Develop/gps.txt", false);
-  gpsTrajectory.store(fw2);
+//  auto gpsReader = Factory::getGPSTrajectoryReader(GPSTrajectoryReaderType::SEATTLE_SAMPLE_GPS);
+//  GPSTrajectory gpsTrajectory;
+//  std::string path2 = "/Users/songrenchu/Develop/PRESS/data/WA_roadnetwork_and_single_trajectory/gps_data.txt";
+//  gpsReader->readGPSTrajectory(path2, gpsTrajectory);
+//  FileWriter fw2("/Users/songrenchu/Develop/gps.txt", false);
+//  gpsTrajectory.store(fw2);
+  GridIndex gIndex(g, 100, 128);
+//  FileWriter fw3("/Users/songrenchu/Develop/gridindex.txt", false);
+//  gIndex.store(fw3);
+//  gIndex.print();
 
+//  FileReader fr("/Users/songrenchu/Develop/gridindex.txt", false);
+//  GridIndex gIndex2(fr);
+//  FileWriter fw4("/Users/songrenchu/Develop/gridindex2.txt", false);
+//  gIndex2.store(fw4);
+  std::unordered_set<int> edges;
+  Point2D p1(-9164900.000000, 5318000.000000);
+  gIndex.search(p1, 500, edges);
+  for (auto eid: edges) {
+    std::cout << eid << " ";
+  }
+  std::cout << std::endl;
   
 ////  FileWriter fw("/Users/songrenchu/Develop/test2.txt", true);
 ////  fw.writeChar('a');

@@ -10,6 +10,7 @@
 #define grid_index_hpp
 
 #include <vector>
+#include <unordered_set>
 
 #include "./auxiliaries.hpp"
 #include "./graph.hpp"
@@ -23,8 +24,8 @@ private:
   Point2D minPoint;
   // The top-right corner point.
   Point2D maxPoint;
-  // The index from each grid cell to the list of edge ids.
-  std::vector<std::vector<int> > index;
+  // The index from each grid cell to the set of edge ids.
+  std::vector<std::unordered_set<int> > index;
 
 public:
   // Build grid index given graph and index cell width/height.
@@ -32,7 +33,7 @@ public:
   // Load grid index from file.
   GridIndex(FileReader& gridIndexReader);
   // Search nearby edges.
-  void search(Point2D& position, double dist, std::vector<int>& edges);
+  void search(const Point2D& position, double dist, std::unordered_set<int>& edges) const;
   void store(FileWriter& gridIndexWriter);
   void print() const;
   ~GridIndex();

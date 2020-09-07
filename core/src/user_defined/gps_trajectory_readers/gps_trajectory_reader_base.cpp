@@ -21,7 +21,10 @@ void GPSTrajectoryReaderBase::readGPSTrajectory(
 }
 
 void GPSTrajectoryReaderBase::sanityCheck(GPSTrajectory& gpsTrajectory) const {
-  // 1. All latitudes and longitudes fall in reasonable range.
+  // 1. Trajectory cannot be empty.
+  assert(gpsTrajectory.getLength() > 0);
+
+  // 2. All latitudes and longitudes fall in reasonable range.
   GPSPoint minLatGPS(-90, 0);
   auto minBoundY = gps2Point2D(minLatGPS);
   GPSPoint minLongGPS(0, -180);
