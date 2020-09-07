@@ -27,6 +27,7 @@ struct GPSPoint {
   double t;
   double latitude, longitude;
   
+  GPSPoint(double lat, double lng): GPSPoint(0, lat, lng) { }
   GPSPoint(double t, double lat, double lng): t(t), latitude(lat), longitude(lng) { }
   void print() {
     std::cout << "(" << t << ": " << latitude << ", " << longitude << ")";

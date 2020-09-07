@@ -16,8 +16,8 @@ class FileWriter {
   bool binary;
 
 public:
-  FileWriter(char* fileName, bool binary);
-  FileWriter(char* fileName, char* options);
+  FileWriter(const char* fileName, bool binary);
+  FileWriter(const char* fileName, char* options);
   bool fileOpened();
   bool writeChar(const char& value);
   bool writeShort(const short& value);

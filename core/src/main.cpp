@@ -36,6 +36,8 @@ int main(int argc, char** argv) {
   Graph g;
   std::string path = "/Users/songrenchu/Develop/PRESS/data/WA_roadnetwork_and_single_trajectory/road_network.txt";
   graphReader->readGraph(path, g);
+  FileWriter fw("/Users/songrenchu/Develop/graph.txt", false);
+  g.store(fw);
 
   
 ////  FileWriter fw("/Users/songrenchu/Develop/test2.txt", true);

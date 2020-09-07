@@ -16,8 +16,8 @@ class FileReader {
   bool binary;
   
 public:
-  FileReader(char* fileName, bool binary);
-  FileReader(char* fileName, char* options);
+  FileReader(const char* fileName, bool binary);
+  FileReader(const char* fileName, char* options);
   bool fileOpened();
   char nextChar();
   short nextShort();

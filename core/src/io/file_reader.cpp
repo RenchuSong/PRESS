@@ -16,12 +16,12 @@ extern union Long2Binary long2Binary;
 extern union Float2Binary float2Binary;
 extern union Double2Binary double2Binary;
 
-FileReader::FileReader(char* fileName, bool binary) {
+FileReader::FileReader(const char* fileName, bool binary) {
   this->binary = binary;
   fp = fopen(fileName, binary ? "rb" : "r");
 }
 
-FileReader::FileReader(char* fileName, char* options) {
+FileReader::FileReader(const char* fileName, char* options) {
   this->binary = (strchr(options, 'b') != NULL);
   fp = fopen(fileName, options);
 }

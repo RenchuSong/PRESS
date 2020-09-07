@@ -16,12 +16,12 @@ extern union Long2Binary long2Binary;
 extern union Float2Binary float2Binary;
 extern union Double2Binary double2Binary;
 
-FileWriter::FileWriter(char* fileName, bool binary) {
+FileWriter::FileWriter(const char* fileName, bool binary) {
   this->binary = binary;
   fp = fopen(fileName, binary ? "wb" : "w");
 }
 
-FileWriter::FileWriter(char* fileName, char* options) {
+FileWriter::FileWriter(const char* fileName, char* options) {
   this->binary = (strchr(options, 'b') != NULL);
   fp = fopen(fileName, options);
 }

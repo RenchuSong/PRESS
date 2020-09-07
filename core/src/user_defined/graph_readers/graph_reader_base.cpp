@@ -22,10 +22,16 @@ void GraphReaderBase::readGraph(const std::string &fileName, Graph &graph) {
 
 void GraphReaderBase::semanticCheck() {
   // 1. All latitudes and longitudes fall in reasonable range.
-  GPSPoint minGPS(0, -90, -180);
-  auto minBound = gps2Point2D(minGPS);
-  GPSPoint maxGPS(0, 90, 180);
-  auto maxBound = gps2Point2D(maxGPS);
+  GPSPoint minLatGPS(-90, 0);
+  auto minBoundY = gps2Point2D(minLatGPS);
+  GPSPoint minLongGPS(0, -180);
+  auto minBoundX = gps2Point2D(minLongGPS);
+  GPSPoint maxLatGPS(90, 0);
+  auto maxBoundY = gps2Point2D(maxLatGPS);
+  GPSPoint maxLongGPS(0, 180);
+  auto maxBoundX = gps2Point2D(maxLongGPS);
+  Point2D minBound(minBoundX.x, minBoundY.y);
+  Point2D maxBound(maxBoundX.x, maxBoundY.y);
   for (auto node: nodeList) {
     assert(pointInMBR(node.getPosition(), minBound, maxBound));
   }
