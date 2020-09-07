@@ -22,9 +22,9 @@ public:
   void reset();
   void pause();
   void resume();
-  long long getSystemClockDuration();
-  long long getMilliSeconds();
-  long long getSeconds();
+  long long getSystemClockDuration() const;
+  long long getMilliSeconds() const;
+  long long getSeconds() const;
 };
 
 #endif /* timer_hpp */

@@ -12,15 +12,15 @@
 
 #include "../../util/helper.hpp"
 
-void GraphReaderBase::readGraph(const std::string &fileName, Graph &graph) {
-  nodeList.clear();
-  edgeList.clear();
-  readGraphImpl(fileName);
-  semanticCheck();
-  graph.setGraph(nodeList, edgeList);
+void GraphReaderBase::readGraph(const std::string& fileName, Graph& graph) {
+  readGraphImpl(fileName, graph);
+  sanityCheck(graph);
 }
 
-void GraphReaderBase::semanticCheck() {
+void GraphReaderBase::sanityCheck(Graph& graph) const {
+  auto& nodeList = graph.getNodeList();
+  auto& edgeList = graph.getEdgeList();
+
   // 1. All latitudes and longitudes fall in reasonable range.
   GPSPoint minLatGPS(-90, 0);
   auto minBoundY = gps2Point2D(minLatGPS);

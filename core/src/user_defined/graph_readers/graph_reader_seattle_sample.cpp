@@ -11,7 +11,11 @@
 #include "../../io/file_reader.hpp"
 #include "../../util/helper.hpp"
 
-void GraphReaderSeattleSample::readGraphImpl(const std::string& fileName) {
+void GraphReaderSeattleSample::readGraphImpl(const std::string& fileName, Graph& graph) {
+  // Data structure holding the graph nodes and edges.
+  std::vector<Node> nodeList;
+  std::vector<Edge> edgeList;
+
   FileReader reader(fileName.c_str(), false);
   
   // Skip the header line.
@@ -80,4 +84,6 @@ void GraphReaderSeattleSample::readGraphImpl(const std::string& fileName) {
       nodeList.at(tgtId).addEdge(edgeNumber++);
     }
   }
+  
+  graph.setGraph(nodeList, edgeList);
 }

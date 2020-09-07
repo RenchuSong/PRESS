@@ -42,17 +42,17 @@ Binary::Binary(FileReader& binaryReader) {
 }
 
 // Get binary length.
-size_t Binary::getLength() {
+size_t Binary::getLength() const {
   return length;
 }
 
 // Get the binary.
-const std::vector<char>& Binary::getBinary() {
+const std::vector<char>& Binary::getBinary() const {
   return binary;
 }
 
 // Get the bit array.
-void Binary::getBitArray(std::vector<bool>& result) {
+void Binary::getBitArray(std::vector<bool>& result) const {
   result.clear();
   for (auto i = 0; i < length; i++) {
     result.push_back(getBitByIndex(i));
@@ -60,7 +60,7 @@ void Binary::getBitArray(std::vector<bool>& result) {
 }
 
 // Get bit by index.
-bool Binary::getBitByIndex(size_t index) {
+bool Binary::getBitByIndex(size_t index) const {
   auto byteIndex = index / 8, bitIndex = index % 8;
   assert (byteIndex < length);
   return binary[byteIndex] & (0x80 >> bitIndex);
@@ -77,7 +77,7 @@ void Binary::store(FileWriter& binaryWriter) {
 }
 
 // Print the binary for debug.
-void Binary::print() {
+void Binary::print() const {
   std::cout << length << "->";
   for (auto i = 0; i < length; i++) {
     std::cout << " " << getBitByIndex(i);

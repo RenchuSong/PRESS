@@ -37,16 +37,16 @@ void Timer::resume() {
 }
 
 // Original time unit (different according to system and compiler, use carefully!)
-long long Timer::getSystemClockDuration() {
+long long Timer::getSystemClockDuration() const {
   return (paused ? 0 : clock() - startTime) + accumulation;
 }
 
 // Time unit: milisecond
-long long Timer::getMilliSeconds() {
+long long Timer::getMilliSeconds() const {
   return getSystemClockDuration() * 1000 / CLOCKS_PER_SEC;
 }
 
 // Time unit: second
-long long Timer::getSeconds() {
+long long Timer::getSeconds() const {
   return getSystemClockDuration() / CLOCKS_PER_SEC;
 }

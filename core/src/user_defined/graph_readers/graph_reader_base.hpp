@@ -17,16 +17,12 @@ class GraphReaderBase {
 public:
   // The method for outside world to call: read graph structure from given filename.
   void readGraph(const std::string& fileName, Graph& graph);
-
-  // Data structure holding the graph nodes and edges.
-  std::vector<Node> nodeList;
-  std::vector<Edge> edgeList;
   // Each subclass needs to implement this method and read the nodes and edges from the filename.
-  virtual void readGraphImpl(const std::string& fileName) = 0;
+  virtual void readGraphImpl(const std::string& fileName, Graph& graph) = 0;
 
 private:
-  // Do semantic check of the graph structure, and make sure the graph is valid.
-  void semanticCheck();
+  // Do sanity check of the graph structure, and make sure the graph is valid.
+  void sanityCheck(Graph& graph) const;
 };
 
 #endif /* graph_reader_base_hpp */

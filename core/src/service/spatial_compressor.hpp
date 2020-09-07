@@ -21,27 +21,27 @@ class SpatialCompressor {
 public:
   // Stage 1. Shortest path compression.
   void shortestPathCompression(
-    Graph& graph,
-    SPTable& spTable,
+    const Graph& graph,
+    const SPTable& spTable,
     const std::vector<int>& spatial,
     std::vector<int>& result
-  );
+  ) const;
   // Stage 2. Frequent sub-trajectory compression.
   void frequentSubTrajectoryCompresson(
-    ACAutomaton& acAutomaton,
-    Huffman& huffman,
+    const ACAutomaton& acAutomaton,
+    const Huffman& huffman,
     const std::vector<int>& spatial,
     std::vector<bool>& binary
-  );
+  ) const;
   // Hybrid spatial compression.
   void hybridSpatialCompression(
-    Graph& graph,
-    SPTable& spTable,
-    ACAutomaton& acAutomaton,
-    Huffman& huffman,
+    const Graph& graph,
+    const SPTable& spTable,
+    const ACAutomaton& acAutomaton,
+    const Huffman& huffman,
     const std::vector<int>& spatial,
     std::vector<bool>& binary
-  );
+  ) const;
 
   ~SpatialCompressor();
 };

@@ -19,7 +19,7 @@ void TemporalCompressor::boundedTemporalCompression(
   std::vector<TemporalPair>& result,
   double tsnd,
   double nstd
-) {
+) const {
   result.clear();
 
   // Empty temporal sequence.

@@ -26,13 +26,13 @@ private:
 
 public:
   Node(double x, double y);
-  Node(Point2D& point);
+  Node(const Point2D& point);
   void addEdge(int eid);
-  size_t getEdgeNumber();
-  const std::vector<int>& getEdgeList();
-  int getEdgeId(size_t index);
-  Point2D& getPosition();
-  void print();
+  size_t getEdgeNumber() const;
+  const std::vector<int>& getEdgeList() const;
+  int getEdgeId(size_t index) const;
+  const Point2D& getPosition() const;
+  void print() const ;
   ~Node();
 };
 
@@ -49,13 +49,13 @@ private:
 public:
   Edge(int srcId, int tgtId);
   size_t addPosition(double x, double y);
-  size_t addPosition(Point2D& point);
-  int getSourceId();
-  int getTargetId();
-  size_t getGeoSize();
-  const std::vector<Point2D>& getShape();
-  double getDistance();
-  void print();
+  size_t addPosition(const Point2D& point);
+  int getSourceId() const;
+  int getTargetId() const;
+  size_t getGeoSize() const;
+  const std::vector<Point2D>& getShape() const;
+  double getDistance() const;
+  void print() const;
   ~Edge();
 };
 
@@ -74,18 +74,18 @@ public:
   // Load graph from file.
   Graph(FileReader& graphReader);
   // Construct graph from given node list and edge list.
-  Graph(std::vector<Node>& nodeList, std::vector<Edge>& edgeList);
+  Graph(const std::vector<Node>& nodeList, const std::vector<Edge>& edgeList);
   // Set graph from given node list and edge list.
-  void setGraph(std::vector<Node>& nodeList, std::vector<Edge>& edgeList);
-  size_t getNodeNumber();
-  Node& getNode(size_t index);
-  const std::vector<Node>& getNodeList();
-  size_t getEdgeNumber();
-  Edge& getEdge(size_t index);
-  const std::vector<Edge>& getEdgeList();
+  void setGraph(const std::vector<Node>& nodeList, const std::vector<Edge>& edgeList);
+  size_t getNodeNumber() const;
+  const Node& getNode(size_t index) const;
+  const std::vector<Node>& getNodeList() const;
+  size_t getEdgeNumber() const;
+  const Edge& getEdge(size_t index) const;
+  const std::vector<Edge>& getEdgeList() const;
   // Store the graph into a file.
   void store(FileWriter& graphWriter);
-  void print();
+  void print() const;
   ~Graph();
 };
 

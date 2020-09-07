@@ -13,11 +13,11 @@
 #include "../util/helper.hpp"
 
 PRESSTrajectory TrajectoryReformatter::generateTrajectory(
-  SPTable& spTable,
-  Graph& graph,
-  GPSTrajectory& gpsTrajectory,
+  const SPTable& spTable,
+  const Graph& graph,
+  const GPSTrajectory& gpsTrajectory,
   MapMatchedTrajectory &mmTrajectory
-) {
+) const {
   // GPS trajectory and map matched trajectory should have same length.
   assert (gpsTrajectory.getLength() == mmTrajectory.getLength());
 

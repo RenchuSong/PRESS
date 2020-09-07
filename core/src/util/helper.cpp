@@ -61,7 +61,8 @@ double euclideanDistance(const Point2D& p1, const Point2D& p2) {
 }
 
 // Convert GPS point to 2D point.
-Point2D gps2Point2D(GPSPoint& gpsPoint) {
+Point2D gps2Point2D(const GPSPoint& gpsPoint) {
+  // TODO: eliminate unnecessary copy.
   return Point2D(
     gpsPoint.longitude * M_PER_LONG * cos(deg2rad(gpsPoint.latitude)),
     gpsPoint.latitude * M_PER_LAT
@@ -78,7 +79,7 @@ Point2D gps2Point2D(GPSPoint& gpsPoint) {
 //}
 
 // Check if a point is in an MBR.
-bool pointInMBR(Point2D& point, Point2D& minBound, Point2D& maxBound) {
+bool pointInMBR(const Point2D& point, const Point2D& minBound, const Point2D& maxBound) {
   return point.x >= minBound.x && point.y >= minBound.y
       && point.x <= maxBound.x && point.y <= maxBound.y;
 }

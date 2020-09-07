@@ -12,11 +12,11 @@
 
 // Stage 1. Shortest path compression.
 void SpatialCompressor::shortestPathCompression(
-  Graph& graph,
-  SPTable& spTable,
+  const Graph& graph,
+  const SPTable& spTable,
   const std::vector<int>& spatial,
   std::vector<int>& result
-) {
+) const {
   result.clear();
 
   // Empty path.
@@ -47,11 +47,11 @@ void SpatialCompressor::shortestPathCompression(
 
 // Stage 2. Frequent sub-trajectory compression.
 void SpatialCompressor::frequentSubTrajectoryCompresson(
-  ACAutomaton& acAutomaton,
-  Huffman& huffman,
+  const ACAutomaton& acAutomaton,
+  const Huffman& huffman,
   const std::vector<int>& spatial,
   std::vector<bool>& binary
-) {
+) const {
   // Get matched trie nodes sequence.
   std::vector<int> trieNodeSequence;
   int id = 0;
@@ -78,13 +78,13 @@ void SpatialCompressor::frequentSubTrajectoryCompresson(
 
 // Hybrid spatial compression.
 void SpatialCompressor::hybridSpatialCompression(
-  Graph& graph,
-  SPTable& spTable,
-  ACAutomaton& acAutomaton,
-  Huffman& huffman,
+  const Graph& graph,
+  const SPTable& spTable,
+  const ACAutomaton& acAutomaton,
+  const Huffman& huffman,
   const std::vector<int>& spatial,
   std::vector<bool>& binary
-) {
+) const {
   std::vector<int> tmpSpatial;
   shortestPathCompression(graph, spTable, spatial, tmpSpatial);
   frequentSubTrajectoryCompresson(acAutomaton, huffman, tmpSpatial, binary);

@@ -22,7 +22,7 @@ public:
     std::vector<TemporalPair>& result,
     double tsnd,
     double nstd
-  );
+  ) const;
 };
 
 #endif /* temporal_compressor_hpp */

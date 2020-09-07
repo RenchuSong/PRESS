@@ -13,7 +13,7 @@
 
 class GraphReaderSeattleSample: public GraphReaderBase {
 public:
-  void readGraphImpl(const std::string& fileName);
+  void readGraphImpl(const std::string& fileName, Graph& graph);
 };
 
 #endif /* graph_reader_seattle_sample_hpp */

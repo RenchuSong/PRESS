@@ -32,7 +32,7 @@ Huffman::Huffman(FileReader& hmReader) {
 }
 
 // Construct huffman encoding of each node of AC automaton.
-Huffman::Huffman(ACAutomaton& acAutomaton) {
+Huffman::Huffman(const ACAutomaton& acAutomaton) {
   acSize = acAutomaton.getTrieSize();
 
   // Sort AC automaton nodes indices based on frequency ascendingly. Root node will be skipped.
@@ -107,7 +107,9 @@ Huffman::Huffman(ACAutomaton& acAutomaton) {
 }
 
 // Comparator for sorting AC automaton nodes frequency.
-std::function<bool(const int left, const int right)> Huffman::acNodeCmp(ACAutomaton& acAutomaton) {
+std::function<bool(const int left, const int right)> Huffman::acNodeCmp(
+  const ACAutomaton& acAutomaton
+) {
   return [acAutomaton](const int left, const int right) {
     return acAutomaton.getFrequency(left) < acAutomaton.getFrequency(right);
   };
@@ -142,7 +144,7 @@ void Huffman::store(FileWriter& hmWriter) {
 }
 
 // Print the huffman tree for debug.
-void Huffman::print() {
+void Huffman::print() const {
   std::cout << hmSize << " " << acSize << std::endl;
   for (auto i = 0; i < hmSize; i++) {
     std::cout << huffman.at(i).first << " " << huffman.at(i).second << std::endl;
@@ -156,7 +158,7 @@ void Huffman::print() {
 }
 
 // Encode an AC automaton node sequence to binary.
-void Huffman::encode(const std::vector<int>& spatial, std::vector<bool>& binary) {
+void Huffman::encode(const std::vector<int>& spatial, std::vector<bool>& binary) const {
   binary.clear();
   for (auto acNode: spatial) {
     binary.insert(binary.end(), hmCode.at(acNode).begin(), hmCode.at(acNode).end());
@@ -164,7 +166,7 @@ void Huffman::encode(const std::vector<int>& spatial, std::vector<bool>& binary)
 }
 
 // Decode binary to AC automaton node sequence.
-void Huffman::decode(std::vector<bool>& binary, std::vector<int>& spatial) {
+void Huffman::decode(const std::vector<bool>& binary, std::vector<int>& spatial) const {
   spatial.clear();
   int index = 0;
   for (auto c: binary) {

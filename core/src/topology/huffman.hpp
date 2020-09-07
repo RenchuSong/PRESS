@@ -28,20 +28,20 @@ private:
   // Collect huffman code of each AC automaton node.
   void collectHmCode(int index, std::vector<bool>& code);
   // Comparator for sorting AC automaton nodes frequency.
-  std::function<bool(const int left, const int right)> acNodeCmp(ACAutomaton& acAutomaton);
+  std::function<bool(const int left, const int right)> acNodeCmp(const ACAutomaton& acAutomaton);
 public:
   // Read huffman encoding from file.
   Huffman(FileReader& hmReader);
   // Construct huffman encoding of each node of AC automaton.
-  Huffman(ACAutomaton& acAutomaton);
+  Huffman(const ACAutomaton& acAutomaton);
   // Store the huffman encoding to file.
   void store(FileWriter& hmWriter);
   // Print for debug.
-  void print();
+  void print() const;
   // Encode an AC automaton node sequence to binary.
-  void encode(const std::vector<int>& spatial, std::vector<bool>& binary);
+  void encode(const std::vector<int>& spatial, std::vector<bool>& binary) const;
   // Decode binary to AC automaton node sequence.
-  void decode(std::vector<bool>& binary, std::vector<int>& spatial);
+  void decode(const std::vector<bool>& binary, std::vector<int>& spatial) const;
 
   ~Huffman();
 };

@@ -18,7 +18,7 @@ class FileReader {
 public:
   FileReader(const char* fileName, bool binary);
   FileReader(const char* fileName, char* options);
-  bool fileOpened();
+  bool fileOpened() const;
   char nextChar();
   short nextShort();
   int nextInt();
@@ -26,7 +26,7 @@ public:
   float nextFloat();
   double nextDouble();
   char* nextString(int maxLen = 256);
-  bool isBinary();
+  bool isBinary() const;
   ~FileReader();
 };
 

@@ -23,15 +23,20 @@ private:
   std::vector<GPSPoint> trajectory;
 
 public:
+  GPSTrajectory();
   // Read a GPS trajectory from a file.
   GPSTrajectory(FileReader& gpsTrajReader);
   // Construct an in-memory GPS trajectory.
-  GPSTrajectory(std::vector<GPSPoint>& sequence);
-  size_t getLength();
-  GPSPoint& getGPSPoint(size_t index);
-  const std::vector<GPSPoint>& getTrajectory();
+  GPSTrajectory(const std::vector<GPSPoint>& sequence);
+  // Set an in-memory GPS trajectory.
+  void setGPSTrajectory(const std::vector<GPSPoint>& sequence);
+  // Add a new GPS point to the trajectory.
+  void addGPSPoint(const GPSPoint& gpsPoint);
+  size_t getLength() const;
+  const GPSPoint& getGPSPoint(size_t index) const;
+  const std::vector<GPSPoint>& getTrajectory() const;
   void store(FileWriter& gpsWriter);
-  void print();
+  void print() const;
   ~GPSTrajectory();
 };
 
@@ -44,12 +49,12 @@ public:
   // Read a map matched trajectory from a file.
   MapMatchedTrajectory(FileReader& mmTrajReader);
   // Construct an in-memory map matched trajectory.
-  MapMatchedTrajectory(std::vector<int>& sequence);
-  size_t getLength();
-  int getEdgeId(size_t index);
-  const std::vector<int>& getEdgeList();
+  MapMatchedTrajectory(const std::vector<int>& sequence);
+  size_t getLength() const;
+  int getEdgeId(size_t index) const;
+  const std::vector<int>& getEdgeList() const;
   void store(FileWriter& mmTrajWriter);
-  void print();
+  void print() const;
   ~MapMatchedTrajectory();
 };
 
@@ -69,11 +74,11 @@ public:
   // Construct an in-memory PRESS trajectory.
   PRESSTrajectory(const std::vector<int>& spatial, const std::vector<TemporalPair>& temporal);
   void store(FileWriter& spatialWriter, FileWriter& temporalWriter);
-  size_t getSpatialLength();
-  const std::vector<int>& getSpatialComponent();
-  size_t getTemporalLength();
-  const std::vector<TemporalPair>& getTemporalComponent();
-  void print();
+  size_t getSpatialLength() const;
+  const std::vector<int>& getSpatialComponent() const;
+  size_t getTemporalLength() const;
+  const std::vector<TemporalPair>& getTemporalComponent() const;
+  void print() const;
   ~PRESSTrajectory();
 };
 
@@ -90,10 +95,10 @@ public:
   // Construct an in-memory compressed PRESS trajectory.
   PRESSCompressedTrajectory(const Binary& spatial, const std::vector<TemporalPair>& temporal);
   void store(FileWriter& spatialWriter, FileWriter& temporalWriter);
-  Binary& getSpatialComponent();
-  size_t getTemporalLength();
-  const std::vector<TemporalPair>& getTemporalComponent();
-  void print();
+  const Binary& getSpatialComponent() const;
+  size_t getTemporalLength() const;
+  const std::vector<TemporalPair>& getTemporalComponent() const;
+  void print() const;
   ~PRESSCompressedTrajectory();
 };
 

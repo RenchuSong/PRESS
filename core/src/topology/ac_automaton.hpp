@@ -37,11 +37,15 @@ public:
   // Read AC automaton from file.
   ACAutomaton(FileReader& acReader);
   // Construct AC automaton from shortest path compressed spatial components.
-  ACAutomaton(Graph& graph, std::vector<std::vector<int> >& spCompressedSpatialComps, int theta);
+  ACAutomaton(
+    const Graph& graph,
+    const std::vector<std::vector<int> >& spCompressedSpatialComps,
+    int theta
+  );
   // Store the AC automaton to file.
   void store(FileWriter& acWriter);
   // Print for debug.
-  void print();
+  void print() const;
   size_t getTrieSize() const;
   // Given previous Trie matching position, get the next matched trie node.
   int getMatch(int prevPos, int edgeId) const;
@@ -52,7 +56,7 @@ public:
   // Get corresponding fathre trie node index of a trie node.
   int getFather(int index) const;
   // Get frequency of all trie nodes.
-  std::vector<int>& getAllFrequency();
+  const std::vector<int>& getAllFrequency() const;
   ~ACAutomaton();
 };
 

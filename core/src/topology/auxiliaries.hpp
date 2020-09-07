@@ -24,7 +24,7 @@ struct Point2D {
     this->x = x;
     this->y = y;
   }
-  void print() {
+  void print() const {
     std::cout << "(" << x << ", " << y << ")";
   }
 };
@@ -36,7 +36,7 @@ struct GPSPoint {
   
   GPSPoint(double lat, double lng): GPSPoint(0, lat, lng) { }
   GPSPoint(double t, double lat, double lng): t(t), latitude(lat), longitude(lng) { }
-  void print() {
+  void print() const {
     std::cout << "(" << t << ": " << latitude << ", " << longitude << ")";
   }
 };
@@ -47,7 +47,7 @@ struct TemporalPair {
   double dist;
   
   TemporalPair(double t, double dist): t(t), dist(dist) { }
-  void print() {
+  void print() const {
     std::cout << "(" << t << ": " << dist << ")";
   }
 };

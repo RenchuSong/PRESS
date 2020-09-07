@@ -30,14 +30,21 @@
 
 
 int main(int argc, char** argv) {
+  
 //  ::testing::InitGoogleTest(&argc, argv);
 //  return RUN_ALL_TESTS();
-  auto graphReader = Factory::getGraphReader(GraphReaderType::SEATTLE_SAMPLE);
-  Graph g;
-  std::string path = "/Users/songrenchu/Develop/PRESS/data/WA_roadnetwork_and_single_trajectory/road_network.txt";
-  graphReader->readGraph(path, g);
-  FileWriter fw("/Users/songrenchu/Develop/graph.txt", false);
-  g.store(fw);
+//  auto graphReader = Factory::getGraphReader(GraphReaderType::SEATTLE_SAMPLE_ROADNET);
+//  Graph g;
+//  std::string path = "/Users/songrenchu/Develop/PRESS/data/WA_roadnetwork_and_single_trajectory/road_network.txt";
+//  graphReader->readGraph(path, g);
+//  FileWriter fw("/Users/songrenchu/Develop/graph.txt", false);
+//  g.store(fw);
+  auto gpsReader = Factory::getGPSTrajectoryReader(GPSTrajectoryReaderType::SEATTLE_SAMPLE_GPS);
+  GPSTrajectory gpsTrajectory;
+  std::string path2 = "/Users/songrenchu/Develop/PRESS/data/WA_roadnetwork_and_single_trajectory/gps_data.txt";
+  gpsReader->readGPSTrajectory(path2, gpsTrajectory);
+  FileWriter fw2("/Users/songrenchu/Develop/gps.txt", false);
+  gpsTrajectory.store(fw2);
 
   
 ////  FileWriter fw("/Users/songrenchu/Develop/test2.txt", true);

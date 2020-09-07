@@ -32,12 +32,12 @@ public:
   // Calculate SP table of the graph.
   SPTable(Graph& graph);
   void store(FileWriter& spWriter);
-  size_t getNodeNumber();
-  int** getSPTable();
-  int prevEdgeIndex(size_t srcIndex, size_t tgtIndex);
+  size_t getNodeNumber() const;
+  int** getSPTable() const;
+  int prevEdgeIndex(size_t srcIndex, size_t tgtIndex) const;
   // Append the shortest path sequence (edge1, edge2] to container.
-  void complement(Graph& graph, int edge1, int edge2, std::vector<int>& container);
-  void print();
+  void complement(const Graph& graph, int edge1, int edge2, std::vector<int>& container) const;
+  void print() const;
   ~SPTable();
 };
 

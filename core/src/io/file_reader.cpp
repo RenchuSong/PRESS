@@ -27,7 +27,7 @@ FileReader::FileReader(const char* fileName, char* options) {
 }
 
 // Check if file is opened.
-bool FileReader::fileOpened() {
+bool FileReader::fileOpened() const {
   return fp != NULL;
 }
 
@@ -126,7 +126,7 @@ char* FileReader::nextString(int maxLen) {
     int i = 0;
     while (fread(char2Binary.data, sizeof(unsigned char), 1, fp) > 0) {
       temp[i] = (char)char2Binary.value;
-      if (temp[i++] == 0 || i > 254) {
+      if (temp[i++] == 0 || i >= maxLen) {
         break;
       }
     }
@@ -136,7 +136,8 @@ char* FileReader::nextString(int maxLen) {
     temp[i] = 0;
     return temp;
   } else {
-    if (fscanf(fp, "%s", temp) == EOF) {
+    std::string tplt = "%" + std::to_string(maxLen) + "s";
+    if (fscanf(fp, tplt.c_str(), temp) == EOF) {
       return NULL;
     }
     return temp;
@@ -144,7 +145,7 @@ char* FileReader::nextString(int maxLen) {
 }
 
 // If the file is binary format.
-bool FileReader::isBinary() {
+bool FileReader::isBinary() const {
   return binary;
 }
 

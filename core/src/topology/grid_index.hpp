@@ -28,13 +28,13 @@ private:
 
 public:
   // Build grid index given graph and index cell width/height.
-  GridIndex(Graph& graph, int width, int height);
+  GridIndex(Graph& graph, double width, double height);
   // Load grid index from file.
   GridIndex(FileReader& gridIndexReader);
   // Search nearby edges.
   void search(Point2D& position, double dist, std::vector<int>& edges);
   void store(FileWriter& gridIndexWriter);
-  void print();
+  void print() const;
   ~GridIndex();
 };
 

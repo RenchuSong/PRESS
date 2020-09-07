@@ -27,7 +27,7 @@ FileWriter::FileWriter(const char* fileName, char* options) {
 }
 
 // Check if file is opened.
-bool FileWriter::fileOpened() {
+bool FileWriter::fileOpened() const {
   return fp != NULL;
 }
 
@@ -132,7 +132,7 @@ bool FileWriter::writeEol() {
 }
 
 // If the file is binary format.
-bool FileWriter::isBinary() {
+bool FileWriter::isBinary() const {
   return binary;
 }
 

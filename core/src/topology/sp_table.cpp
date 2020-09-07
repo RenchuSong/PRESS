@@ -89,23 +89,28 @@ void SPTable::store(FileWriter& spWriter) {
 }
 
 // Get the node number.
-size_t SPTable::getNodeNumber() {
+size_t SPTable::getNodeNumber() const {
   return nodeNumber;
 }
 
 // Get the SP table.
-int** SPTable::getSPTable() {
+int** SPTable::getSPTable() const {
   return spTable;
 }
 
 // Get the last edge index along the shortest path between node srcIndex and node tgtIndex.
-int SPTable::prevEdgeIndex(size_t srcIndex, size_t tgtIndex) {
+int SPTable::prevEdgeIndex(size_t srcIndex, size_t tgtIndex) const {
   assert(srcIndex < nodeNumber && tgtIndex < nodeNumber);
   return spTable[srcIndex][tgtIndex];
 }
 
 // Append the shortest path sequence (edge1, edge2] to container.
-void SPTable::complement(Graph& graph, int edge1, int edge2, std::vector<int>& container) {
+void SPTable::complement(
+  const Graph& graph,
+  int edge1,
+  int edge2,
+  std::vector<int>& container
+) const {
   std::vector<int> tmpPath;
   auto node1 = graph.getEdge(edge1).getTargetId();
   while (edge2 != EDGE_NOT_EXIST) {
@@ -121,7 +126,7 @@ void SPTable::complement(Graph& graph, int edge1, int edge2, std::vector<int>& c
 }
 
 // Print the SP table for debug.
-void SPTable::print() {
+void SPTable::print() const {
   std::cout << nodeNumber << std::endl;
   for (auto i = 0; i < nodeNumber; i++) {
     for (auto j = 0; j < nodeNumber; j++) {

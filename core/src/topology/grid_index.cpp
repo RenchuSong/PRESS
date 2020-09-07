@@ -11,7 +11,7 @@
 #include <iostream>
 
 // Build grid index given graph and index cell width/height.
-GridIndex::GridIndex(Graph& graph, int width, int height): gridWidth(width), gridHeight(height) {
+GridIndex::GridIndex(Graph& graph, double width, double height): gridWidth(width), gridHeight(height) {
   // TODO
 }
 
@@ -65,7 +65,7 @@ void GridIndex::store(FileWriter& gridIndexWriter) {
   }
 }
 
-void GridIndex::print() {
+void GridIndex::print() const {
   std::cout << gridWidth << " " << gridHeight << std::endl;
   minPoint.print();
   maxPoint.print();

@@ -31,8 +31,8 @@ ACAutomaton::ACAutomaton(FileReader& acReader) {
 
 // Construct AC automaton from shortest path compressed spatial components.
 ACAutomaton::ACAutomaton(
- Graph& graph,
- std::vector<std::vector<int> >& spCompressedSpatialComps,
+ const Graph& graph,
+ const std::vector<std::vector<int> >& spCompressedSpatialComps,
  int theta
 ) {
   // Prepare trie root.
@@ -160,7 +160,7 @@ void ACAutomaton::store(FileWriter& acWriter) {
 }
 
 // Print for debug.
-void ACAutomaton::print() {
+void ACAutomaton::print() const {
   std::cout << "Trie size: " << trieSize << std::endl;
   std::cout << "edge id:";
   for (int i = 0; i < trieSize; i++) {
@@ -222,7 +222,7 @@ int ACAutomaton::getFather(int index) const {
 }
 
 // Get frequency of all trie nodes.
-std::vector<int>& ACAutomaton::getAllFrequency() {
+const std::vector<int>& ACAutomaton::getAllFrequency() const {
   return frequency;
 }
 

@@ -15,37 +15,37 @@
 Node::Node(double x, double y): position(x, y), edgeNumber(0) { }
 
 // Node constructor.
-Node::Node(Point2D& point): position(point.x, point.y), edgeNumber(0) { }
+Node::Node(const Point2D& point): position(point.x, point.y), edgeNumber(0) { }
 
 // Add one edge to the node edge list.
 void Node::addEdge(int eid) {
   edgeNumber++;
-  edges.push_back(eid);
+  edges.emplace_back(eid);
 }
 
 // Get the position.
-Point2D& Node::getPosition() {
+const Point2D& Node::getPosition() const {
   return position;
 }
 
 // Get edge number.
-size_t Node::getEdgeNumber() {
+size_t Node::getEdgeNumber() const {
   return edgeNumber;
 }
 
 // Get edge id by index.
-int Node::getEdgeId(size_t index) {
+int Node::getEdgeId(size_t index) const {
   assert (index < edgeNumber);
   return edges[index];
 }
 
 // Get the edge list.
-const std::vector<int>& Node::getEdgeList() {
+const std::vector<int>& Node::getEdgeList() const {
   return edges;
 }
 
 // Print the node for debug.
-void Node::print() {
+void Node::print() const {
   std::cout << "position ";
   position.print();
   std::cout << std::endl;
@@ -73,37 +73,37 @@ size_t Edge::addPosition(double x, double y) {
 }
 
 // Add one position in the shape.
-size_t Edge::addPosition(Point2D& point) {
+size_t Edge::addPosition(const Point2D& point) {
   return addPosition(point.x, point.y);
 }
 
 // Get the source node id.
-int Edge::getSourceId() {
+int Edge::getSourceId() const {
   return sourceId;
 }
 
 // Get the target node id.
-int Edge::getTargetId() {
+int Edge::getTargetId() const {
   return targetId;
 }
 
 // Get the geo size.
-size_t Edge::getGeoSize() {
+size_t Edge::getGeoSize() const {
   return geoSize;
 }
 
 // Get the shape of the edge.
-const std::vector<Point2D>& Edge::getShape() {
+const std::vector<Point2D>& Edge::getShape() const {
   return shape;
 }
 
 // Get the distance of the edge.
-double Edge::getDistance() {
+double Edge::getDistance() const {
   return distance;
 }
 
 // Print the edge for debug.
-void Edge::print() {
+void Edge::print() const {
   std::cout << "srcId: " << sourceId << std::endl;
   std::cout << "tgtId: " << targetId << std::endl;
   std::cout << "geoSize: " << geoSize << std::endl;
@@ -146,11 +146,11 @@ Graph::Graph(FileReader& graphReader) {
   }
 }
 
-Graph::Graph(std::vector<Node>& nodeList, std::vector<Edge>& edgeList) {
+Graph::Graph(const std::vector<Node>& nodeList, const std::vector<Edge>& edgeList) {
   setGraph(nodeList, edgeList);
 }
 
-void Graph::setGraph(std::vector<Node>& nodeList, std::vector<Edge>& edgeList) {
+void Graph::setGraph(const std::vector<Node>& nodeList, const std::vector<Edge>& edgeList) {
   nodeNumber = nodeList.size();
   this->nodeList.clear();
   this->nodeList.insert(this->nodeList.end(), nodeList.begin(), nodeList.end());
@@ -160,7 +160,7 @@ void Graph::setGraph(std::vector<Node>& nodeList, std::vector<Edge>& edgeList) {
 }
 
 // Get node number in the graph.
-size_t Graph::getNodeNumber() {
+size_t Graph::getNodeNumber() const {
   return nodeNumber;
 }
 
@@ -170,17 +170,17 @@ size_t Graph::getNodeNumber() {
 //}
 
 // Get the node by index.
-Node& Graph::getNode(size_t index) {
+const Node& Graph::getNode(size_t index) const {
   return nodeList[index];
 }
 
 // Get the node list.
-const std::vector<Node>& Graph::getNodeList() {
+const std::vector<Node>& Graph::getNodeList() const {
   return nodeList;
 }
 
 // Get edge number in the graph.
-size_t Graph::getEdgeNumber() {
+size_t Graph::getEdgeNumber() const {
   return edgeNumber;
 }
 
@@ -190,12 +190,12 @@ size_t Graph::getEdgeNumber() {
 //}
 
 // Get the edge by index.
-Edge& Graph::getEdge(size_t index) {
+const Edge& Graph::getEdge(size_t index) const {
   return edgeList[index];
 }
 
 // Get the edge list.
-const std::vector<Edge>& Graph::getEdgeList() {
+const std::vector<Edge>& Graph::getEdgeList() const {
   return edgeList;
 }
 
@@ -206,7 +206,7 @@ void Graph::store(FileWriter& graphWriter) {
   graphWriter.writeEol();
   for (auto node: nodeList) {
     // Node position.
-    Point2D& point = node.getPosition();
+    const Point2D& point = node.getPosition();
     graphWriter.writeDouble(point.x);
     graphWriter.writeSeparator();
     graphWriter.writeDouble(point.y);
@@ -243,11 +243,11 @@ void Graph::store(FileWriter& graphWriter) {
 }
 
 // Print the graph for debug.
-void Graph::print() {
+void Graph::print() const {
   // Print nodes.
   std::cout << "Node: " << getNodeNumber() << std::endl;
   for (auto i = 0; i < nodeNumber; i++) {
-    Node& node = getNode(i);
+    auto& node = getNode(i);
     std::cout << i << ": ";
     node.getPosition().print();
     for (auto j = 0; j < node.getEdgeNumber(); j++) {
@@ -260,7 +260,7 @@ void Graph::print() {
   // Print edges.
   std::cout << "Edge: " << getEdgeNumber() << std::endl;
   for (auto i = 0; i < edgeNumber; i++) {
-    Edge& edge = getEdge(i);
+    auto& edge = getEdge(i);
     std::cout << i << ": (" << edge.getSourceId() << ")-[" << edge.getDistance() << "]->(" << edge.getTargetId() << ") " << edge.getGeoSize() << "->";
     for (auto pt : edge.getShape()) {
       pt.print();

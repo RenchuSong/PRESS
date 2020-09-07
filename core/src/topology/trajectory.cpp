@@ -10,6 +10,8 @@
 
 #include "trajectory.hpp"
 
+GPSTrajectory::GPSTrajectory() { }
+
 // Read a GPS trajectory from a file.
 GPSTrajectory::GPSTrajectory(FileReader& gpsTrajReader) {
   length = gpsTrajReader.nextInt();
@@ -22,43 +24,55 @@ GPSTrajectory::GPSTrajectory(FileReader& gpsTrajReader) {
 }
 
 // Construct an in-memory GPS trajectory.
-GPSTrajectory::GPSTrajectory(std::vector<GPSPoint>& trajectory) {
+GPSTrajectory::GPSTrajectory(const std::vector<GPSPoint>& trajectory) {
+  setGPSTrajectory(trajectory);
+}
+
+// Construct an in-memory GPS trajectory.
+void GPSTrajectory::setGPSTrajectory(const std::vector<GPSPoint>& trajectory) {
+  this->trajectory.clear();
   length = trajectory.size();
-  this->trajectory = trajectory;
+  this->trajectory.insert(this->trajectory.end(), trajectory.begin(), trajectory.end());
+}
+
+// Add a new GPS point to the trajectory.
+void GPSTrajectory::addGPSPoint(const GPSPoint& gpsPoint) {
+  length++;
+  trajectory.emplace_back(gpsPoint);
 }
 
 // Get GPS trajectory length.
-size_t GPSTrajectory::getLength() {
+size_t GPSTrajectory::getLength() const {
   return length;
 }
 
 // Get a GPS point by index.
-GPSPoint& GPSTrajectory::getGPSPoint(size_t index) {
+const GPSPoint& GPSTrajectory::getGPSPoint(size_t index) const {
   assert (index < length);
   return trajectory.at(index);
 }
 
 // Get the GPS trajectory.
-const std::vector<GPSPoint>& GPSTrajectory::getTrajectory() {
+const std::vector<GPSPoint>& GPSTrajectory::getTrajectory() const {
   return trajectory;
 }
 
 // Write the GPS trajectory to the file.
 void GPSTrajectory::store(FileWriter& gpsWriter) {
   gpsWriter.writeInt((int)length);
+  gpsWriter.writeEol();
   for (auto gpsPoint: trajectory) {
-    gpsWriter.writeSeparator();
     gpsWriter.writeDouble(gpsPoint.t);
     gpsWriter.writeSeparator();
     gpsWriter.writeDouble(gpsPoint.latitude);
     gpsWriter.writeSeparator();
     gpsWriter.writeDouble(gpsPoint.longitude);
+    gpsWriter.writeEol();
   }
-  gpsWriter.writeEol();
 }
 
 // Print the GPS trajectory for debug.
-void GPSTrajectory::print() {
+void GPSTrajectory::print() const {
   std::cout << length << "->";
   for (auto gpsPoint: trajectory) {
     gpsPoint.print();
@@ -76,24 +90,24 @@ MapMatchedTrajectory::MapMatchedTrajectory(FileReader& mmTrajReader) {
 }
 
 // Construct an in-memory map matched trajectory.
-MapMatchedTrajectory::MapMatchedTrajectory(std::vector<int>& sequence) {
+MapMatchedTrajectory::MapMatchedTrajectory(const std::vector<int>& sequence) {
   length = sequence.size();
   edgeList = sequence;
 }
 
 // Get map matched trajectory length.
-size_t MapMatchedTrajectory::getLength() {
+size_t MapMatchedTrajectory::getLength() const {
   return length;
 }
 
 // Get an edge id within the sequence.
-int MapMatchedTrajectory::getEdgeId(size_t index) {
+int MapMatchedTrajectory::getEdgeId(size_t index) const {
   assert (index < length);
   return edgeList.at(index);
 }
 
 // Get the map matched trajectory.
-const std::vector<int>& MapMatchedTrajectory::getEdgeList() {
+const std::vector<int>& MapMatchedTrajectory::getEdgeList() const {
   return edgeList;
 }
 
@@ -108,7 +122,7 @@ void MapMatchedTrajectory::store(FileWriter& mmTrajWriter) {
 }
 
 // Print the map matched trajectory for debug.
-void MapMatchedTrajectory::print() {
+void MapMatchedTrajectory::print() const {
   std::cout << length << "->";
   for (auto eid: edgeList) {
     std::cout << " " << eid;
@@ -143,22 +157,22 @@ PRESSTrajectory::PRESSTrajectory(const std::vector<int>& spatial, const std::vec
 }
 
 // Get spatial component length.
-size_t PRESSTrajectory::getSpatialLength() {
+size_t PRESSTrajectory::getSpatialLength() const {
   return spatialLength;
 }
 
 // Get the spatial component of the PRESS trajectory.
-const std::vector<int>& PRESSTrajectory::getSpatialComponent() {
+const std::vector<int>& PRESSTrajectory::getSpatialComponent() const {
   return spatialComponent;
 }
 
 // Get the temporal component length.
-size_t PRESSTrajectory::getTemporalLength() {
+size_t PRESSTrajectory::getTemporalLength() const {
   return temporalLength;
 }
 
 // Get the temporal component of the PRESS trajectory.
-const std::vector<TemporalPair>& PRESSTrajectory::getTemporalComponent() {
+const std::vector<TemporalPair>& PRESSTrajectory::getTemporalComponent() const {
   return temporalComponent;
 }
 
@@ -184,7 +198,7 @@ void PRESSTrajectory::store(FileWriter& spatialWriter, FileWriter& temporalWrite
 }
 
 // Print the PRESS trajectory for debug.
-void PRESSTrajectory::print() {
+void PRESSTrajectory::print() const {
   std::cout << "Spatial: ";
   std::cout << spatialLength << "->";
   for (auto nodeId: spatialComponent) {
@@ -235,22 +249,22 @@ void PRESSCompressedTrajectory::store(FileWriter& spatialWriter, FileWriter& tem
 }
 
 // Get the compressed spatial component.
-Binary& PRESSCompressedTrajectory::getSpatialComponent() {
+const Binary& PRESSCompressedTrajectory::getSpatialComponent() const {
   return spatial;
 }
 
 // Get the temporal component length.
-size_t PRESSCompressedTrajectory::getTemporalLength() {
+size_t PRESSCompressedTrajectory::getTemporalLength() const {
   return temporalLength;
 }
 
 // Get the compressed temporal component.
-const std::vector<TemporalPair>& PRESSCompressedTrajectory::getTemporalComponent() {
+const std::vector<TemporalPair>& PRESSCompressedTrajectory::getTemporalComponent() const {
   return temporal;
 }
 
 // Print the compressed PRESS trajectory for debug.
-void PRESSCompressedTrajectory::print() {
+void PRESSCompressedTrajectory::print() const {
   std::cout << "Spatial: ";
   spatial.print();
   std::cout << std::endl;

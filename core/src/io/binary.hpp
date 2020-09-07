@@ -23,12 +23,12 @@ public:
   Binary(const std::vector<bool>& binary);
   Binary(size_t length, const std::vector<char>& binary);
   Binary(FileReader& binaryReader);
-  size_t getLength();
-  const std::vector<char>& getBinary();
-  void getBitArray(std::vector<bool>& result);
-  bool getBitByIndex(size_t index);
+  size_t getLength() const;
+  const std::vector<char>& getBinary() const;
+  void getBitArray(std::vector<bool>& result) const;
+  bool getBitByIndex(size_t index) const;
   void store(FileWriter& binaryWriter);
-  void print();
+  void print() const;
   ~Binary();
 };
 
