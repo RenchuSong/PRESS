@@ -117,8 +117,7 @@ bool pointInMBR(const Point2D& point, const Point2D& minBound, const Point2D& ma
 // Check if a point is on an interval.
 bool pointOnInterval(const Point2D& point, const Point2D& p1, const Point2D& p2) {
   return fabs(vectorProduct(p1, point, p1, p2)) <= 1e-8
-      && scalarProduct(p1, point, p1, p2) >= 0
-      && scalarProduct(p2, point, p2, p1) >= 0;
+      && scalarProduct(point, p1, point, p2) <= 0;
 }
 
 // scalar product of two vectors
