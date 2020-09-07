@@ -255,15 +255,15 @@ TEST(HelperTest, IntervalIntersectTest) {
   Point2D p9(2, 3);
   Point2D p10(3, 3);
   Point2D p11(4, 4);
-  
-  
+
   EXPECT_TRUE(intervalIntersect(p4, p6, p2, p9));
   EXPECT_TRUE(intervalIntersect(p8, p3, p1, p10));
   EXPECT_TRUE(intervalIntersect(p8, p6, p2, p11));
-  
-  EXPECT_FALSE(intervalIntersect(p1, p2, p3, p2));
-  EXPECT_FALSE(intervalIntersect(p4, p7, p5, p6));
-  EXPECT_FALSE(intervalIntersect(p8, p5, p5, p10));
+  EXPECT_TRUE(intervalIntersect(p1, p2, p3, p2));
+  EXPECT_TRUE(intervalIntersect(p4, p7, p5, p6));
+  EXPECT_TRUE(intervalIntersect(p8, p5, p5, p10));
+  EXPECT_TRUE(intervalIntersect(p1, p10, p5, p11));
+
   EXPECT_FALSE(intervalIntersect(p4, p5, p6, p7));
   EXPECT_FALSE(intervalIntersect(p1, p3, p5, p11));
 }
@@ -285,15 +285,15 @@ TEST(HelperTest, IntervalThroughMBRTest) {
   EXPECT_TRUE(intervalThroughMBR(p1, p7, p2, p10));
   EXPECT_TRUE(intervalThroughMBR(p1, p11, p5, p10));
   EXPECT_TRUE(intervalThroughMBR(p8, p3, p2, p6));
-  
-  EXPECT_FALSE(intervalThroughMBR(p8, p11, p1, p10));
+  EXPECT_TRUE(intervalThroughMBR(p8, p11, p1, p10));
+  EXPECT_TRUE(intervalThroughMBR(p6, p7, p2, p10));
+  EXPECT_TRUE(intervalThroughMBR(p6, p7, p5, p10));
+  EXPECT_TRUE(intervalThroughMBR(p4, p7, p5, p10));
+  EXPECT_TRUE(intervalThroughMBR(p1, p11, p4, p9));
+  EXPECT_TRUE(intervalThroughMBR(p8, p3, p1, p5));
+
   EXPECT_FALSE(intervalThroughMBR(p8, p11, p2, p10));
-  EXPECT_FALSE(intervalThroughMBR(p6, p7, p2, p10));
-  EXPECT_FALSE(intervalThroughMBR(p5, p10, p6, p7));
-  EXPECT_FALSE(intervalThroughMBR(p4, p7, p5, p10));
   EXPECT_FALSE(intervalThroughMBR(p8, p9, p2, p6));
-  EXPECT_FALSE(intervalThroughMBR(p1, p11, p4, p9));
-  EXPECT_FALSE(intervalThroughMBR(p8, p3, p1, p5));
 }
 
 TEST(HelperTest, PointInMBRTest) {

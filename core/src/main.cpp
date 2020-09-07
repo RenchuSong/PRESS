@@ -32,8 +32,8 @@
 
 int main(int argc, char** argv) {
   
-  ::testing::InitGoogleTest(&argc, argv);
-  return RUN_ALL_TESTS();
+//  ::testing::InitGoogleTest(&argc, argv);
+//  return RUN_ALL_TESTS();
   
   auto graphReader = Factory::getGraphReader(GraphReaderType::SEATTLE_SAMPLE_ROADNET);
   Graph g;
@@ -48,8 +48,8 @@ int main(int argc, char** argv) {
 //  FileWriter fw2("/Users/songrenchu/Develop/gps.txt", false);
 //  gpsTrajectory.store(fw2);
   GridIndex gIndex(g, 100, 128);
-//  FileWriter fw3("/Users/songrenchu/Develop/gridindex.txt", false);
-//  gIndex.store(fw3);
+  FileWriter fw3("/Users/songrenchu/Develop/gridindex3.txt", false);
+  gIndex.store(fw3);
 //  gIndex.print();
 
 //  FileReader fr("/Users/songrenchu/Develop/gridindex.txt", false);

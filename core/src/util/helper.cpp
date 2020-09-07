@@ -78,20 +78,24 @@ Point2D gps2Point2D(const GPSPoint& gpsPoint) {
 //  );
 //}
 
-// Check if 2 intervals intersect with each other in strict case/
-// Strict means touch doesn't count as intersect.
+// Check if 2 intervals intersect with each other in in loose case.
+// Loose means touch counts as going through.
 bool intervalIntersect(
   const Point2D& p1,
   const Point2D& p2,
   const Point2D& p3,
   const Point2D& p4
 ) {
-  return vectorProduct(p1, p2, p1, p4) * vectorProduct(p1, p2, p1, p3) < 0
-      && vectorProduct(p3, p4, p3, p1) * vectorProduct(p3, p4, p3, p2) < 0;
+  return (vectorProduct(p1, p2, p1, p4) * vectorProduct(p1, p2, p1, p3) < 0
+       && vectorProduct(p3, p4, p3, p1) * vectorProduct(p3, p4, p3, p2) < 0)
+       || pointOnInterval(p1, p3, p4)
+       || pointOnInterval(p2, p3, p4)
+       || pointOnInterval(p3, p1, p2)
+       || pointOnInterval(p4, p1, p2);
 }
 
-// Check if interval [p1, p2] goes through MBR [[minBound], [maxBound]] in strict case.
-// Strict means touch doesn't count as goes through.
+// Check if interval [p1, p2] goes through MBR [[minBound], [maxBound]] in loose case.
+// Loose means touch counts as going through.
 bool intervalThroughMBR(
   const Point2D& p1,
   const Point2D& p2,
@@ -103,9 +107,7 @@ bool intervalThroughMBR(
   return intervalIntersect(p1, p2, minBound, p3)
       || intervalIntersect(p1, p2, minBound, p4)
       || intervalIntersect(p1, p2, maxBound, p3)
-      || intervalIntersect(p1, p2, maxBound, p4)
-      || (pointOnInterval(minBound, p1, p2) && pointOnInterval(maxBound, p1, p2))
-      || (pointOnInterval(p3, p1, p2) && pointOnInterval(p4, p1, p2));
+      || intervalIntersect(p1, p2, maxBound, p4);
 }
 
 // Check if a point is in an MBR.

@@ -38,8 +38,8 @@ double euclideanDistance(const Point2D& p1, const Point2D& p2);
 // Convert GPS point to 2D point.
 Point2D gps2Point2D(const GPSPoint& gpsPoint);
 
-// Check if 2 intervals intersect with each other in strict case/
-// Strict means touch doesn't count as intersect.
+// Check if 2 intervals intersect with each other in loose case.
+// Loose means touch counts as going through.
 bool intervalIntersect(
   const Point2D& p1,
   const Point2D& p2,
@@ -47,8 +47,8 @@ bool intervalIntersect(
   const Point2D& p4
 );
 
-// Check if interval [p1, p2] goes through MBR [[minBound], [maxBound]] in strict case.
-// Strict means touch doesn't count as goes through.
+// Check if interval [p1, p2] goes through MBR [[minBound], [maxBound]] in loose case.
+// Loose means touch counts as going through.
 bool intervalThroughMBR(
   const Point2D& p1,
   const Point2D& p2,
