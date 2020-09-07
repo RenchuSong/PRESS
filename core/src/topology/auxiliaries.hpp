@@ -16,7 +16,14 @@ struct Point2D {
   double x;
   double y;
   
-  Point2D(double x, double y): x(x), y(y) { }
+  Point2D() { };
+  Point2D(double x, double y) {
+    setPosition(x, y);
+  }
+  void setPosition(double x, double y) {
+    this->x = x;
+    this->y = y;
+  }
   void print() {
     std::cout << "(" << x << ", " << y << ")";
   }
