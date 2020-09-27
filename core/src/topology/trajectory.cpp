@@ -81,6 +81,8 @@ void GPSTrajectory::print() const {
 
 GPSTrajectory::~GPSTrajectory() { }
 
+MapMatchedTrajectory::MapMatchedTrajectory() { }
+
 // Read a map matched trajectory from a file.
 MapMatchedTrajectory::MapMatchedTrajectory(FileReader& mmTrajReader) {
   length = mmTrajReader.nextInt();
@@ -91,6 +93,11 @@ MapMatchedTrajectory::MapMatchedTrajectory(FileReader& mmTrajReader) {
 
 // Construct an in-memory map matched trajectory.
 MapMatchedTrajectory::MapMatchedTrajectory(const std::vector<int>& sequence) {
+  setMapMatchedTrajectory(sequence);
+}
+
+// Set an in-memory map matched trajectory.
+void MapMatchedTrajectory::setMapMatchedTrajectory(const std::vector<int>& sequence) {
   length = sequence.size();
   edgeList = sequence;
 }

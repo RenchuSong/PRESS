@@ -72,6 +72,23 @@ TEST(HelperTest, DistPoint2IntervalTest) {
   EXPECT_DOUBLE_EQ(0, distPoint2Interval(p6, p6, p6));
 }
 
+TEST(HelperTest, DistPoint2PolylineTest) {
+  std::vector<Point2D> polyline {
+    Point2D(0, 0),
+    Point2D(1, 1),
+    Point2D(3, 1),
+    Point2D(4, 3),
+    Point2D(3, 5)
+  };
+  EXPECT_DOUBLE_EQ(0, distPoint2Polyline(Point2D(0, 0), polyline));
+  EXPECT_DOUBLE_EQ(1, distPoint2Polyline(Point2D(-1, 0), polyline));
+  EXPECT_DOUBLE_EQ(0, distPoint2Polyline(Point2D(0.5, 0.5), polyline));
+  EXPECT_DOUBLE_EQ(0.2, distPoint2Polyline(Point2D(2, 0.8), polyline));
+  EXPECT_DOUBLE_EQ(1, distPoint2Polyline(Point2D(3, 0), polyline));
+  EXPECT_NEAR(2/sqrt(5), distPoint2Polyline(Point2D(4, 1), polyline), 1e-8);
+  EXPECT_NEAR(1/sqrt(5), distPoint2Polyline(Point2D(3, 4), polyline), 1e-8);
+}
+
 TEST(HelperTest, DistProjAlongGeoTest) {
   std::vector<Point2D> geo {
     Point2D(1, 1),

@@ -46,10 +46,13 @@ private:
   size_t length;
   std::vector<int> edgeList;
 public:
+  MapMatchedTrajectory();
   // Read a map matched trajectory from a file.
   MapMatchedTrajectory(FileReader& mmTrajReader);
   // Construct an in-memory map matched trajectory.
   MapMatchedTrajectory(const std::vector<int>& sequence);
+  // Set an in-memeory map matched trajectory.
+  void setMapMatchedTrajectory(const std::vector<int>& sequence);
   size_t getLength() const;
   int getEdgeId(size_t index) const;
   const std::vector<int>& getEdgeList() const;

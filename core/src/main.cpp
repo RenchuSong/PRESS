@@ -17,6 +17,7 @@
 #include "util/timer.hpp"
 #include "service/spatial_compressor.hpp"
 #include "service/temporal_compressor.hpp"
+#include "service/map_matcher.hpp"
 #include <vector>
 #include <deque>
 #include "topology/ac_automaton.hpp"
@@ -31,9 +32,26 @@
 
 
 int main(int argc, char** argv) {
-  
-  ::testing::InitGoogleTest(&argc, argv);
-  return RUN_ALL_TESTS();
+//  std::vector<std::vector<int> > test;
+//  std::vector<int> tmp;
+//  tmp.emplace_back(1);
+//  tmp.emplace_back(2);
+//  tmp.emplace_back(3);
+//  test.emplace_back(tmp);
+////  tmp.clear();
+//  tmp.emplace_back(4);
+//  tmp.emplace_back(5);
+//  test.emplace_back(tmp);
+//  for (auto& d: test) {
+//    for (auto& s: d) {
+//      std::cout << s << " ";
+//    }
+//    std::cout << std::endl;
+//  }
+//  return 0;
+//  
+//  ::testing::InitGoogleTest(&argc, argv);
+//  return RUN_ALL_TESTS();
   
   auto graphReader = Factory::getGraphReader(GraphReaderType::SEATTLE_SAMPLE_ROADNET);
   Graph g;
@@ -41,10 +59,10 @@ int main(int argc, char** argv) {
   graphReader->readGraph(path, g);
 //  FileWriter fw("/Users/songrenchu/Develop/graph.txt", false);
 //  g.store(fw);
-//  auto gpsReader = Factory::getGPSTrajectoryReader(GPSTrajectoryReaderType::SEATTLE_SAMPLE_GPS);
-//  GPSTrajectory gpsTrajectory;
-//  std::string path2 = "/Users/songrenchu/Develop/PRESS/data/WA_roadnetwork_and_single_trajectory/gps_data.txt";
-//  gpsReader->readGPSTrajectory(path2, gpsTrajectory);
+  auto gpsReader = Factory::getGPSTrajectoryReader(GPSTrajectoryReaderType::SEATTLE_SAMPLE_GPS);
+  GPSTrajectory gpsTrajectory;
+  std::string path2 = "/Users/songrenchu/Develop/PRESS/data/WA_roadnetwork_and_single_trajectory/gps_data.txt";
+  gpsReader->readGPSTrajectory(path2, gpsTrajectory);
 //  FileWriter fw2("/Users/songrenchu/Develop/gps.txt", false);
 //  gpsTrajectory.store(fw2);
   GridIndex gIndex(g, 100, 128);
@@ -63,6 +81,14 @@ int main(int argc, char** argv) {
     std::cout << eid << " ";
   }
   std::cout << std::endl;
+  
+  SPTable spTable(g);
+  MapMatcher matcher;
+  std::vector<GPSTrajectory> gpsTrajectories;
+  std::vector<MapMatchedTrajectory> mmTrajectories;
+  matcher.mapMatch(spTable, g, gIndex, 4.07, 0.49037673, 200, 2000, gpsTrajectory, gpsTrajectories, mmTrajectories);
+  
+  return 0;
   
 ////  FileWriter fw("/Users/songrenchu/Develop/test2.txt", true);
 ////  fw.writeChar('a');

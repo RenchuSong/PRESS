@@ -26,6 +26,9 @@ double deg2rad(double deg);
 // Distance of the a 2D point to a 2D interval.
 double distPoint2Interval(const Point2D& point, const Point2D& end1, const Point2D& end2);
 
+// Distance from a 2D point to a polyline (edge shape).
+double distPoint2Polyline(const Point2D& point, const std::vector<Point2D>& polyline);
+
 // Distance of the projection of the point to the geometry along the geometry.
 double distProjAlongGeo(const Point2D& point, const std::vector<Point2D>& geometry);
 

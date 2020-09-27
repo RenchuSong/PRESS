@@ -25,6 +25,16 @@ double distPoint2Interval(const Point2D& point, const Point2D& end1, const Point
   return result;
 }
 
+// Distance from a 2D point to a polyline (edge shape).
+double distPoint2Polyline(const Point2D& point, const std::vector<Point2D>& polyline) {
+  double dist = 1e100;
+  auto geoSize = polyline.size();
+  for (int i = 1; i < geoSize; ++i) {
+    dist = std::min(dist, distPoint2Interval(point, polyline.at(i - 1), polyline.at(i)));
+  }
+  return dist;
+}
+
 // Distance of the projection of the point to the geometry along the geometry.
 double distProjAlongGeo(const Point2D& point, const std::vector<Point2D>& geometry) {
   double result = 0;
