@@ -8,6 +8,7 @@
 
 #include "grid_index.hpp"
 
+#include <cassert>
 #include <cmath>
 #include <iostream>
 
@@ -20,6 +21,7 @@ int getCellIndex(int col, int x, int y) {
 
 // Build grid index given graph and index cell width/height.
 GridIndex::GridIndex(Graph& graph, double width, double height): gridWidth(width), gridHeight(height) {
+  assert(width > 0 && height > 0);
   // Get the boundary of the graph.
   minPoint = graph.getNode(0).getPosition();
   maxPoint = graph.getNode(0).getPosition();
