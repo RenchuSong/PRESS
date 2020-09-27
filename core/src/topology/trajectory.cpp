@@ -132,6 +132,8 @@ void MapMatchedTrajectory::print() const {
 
 MapMatchedTrajectory::~MapMatchedTrajectory() { }
 
+PRESSTrajectory::PRESSTrajectory() { }
+
 // Read a PRESS trajectory from files.
 PRESSTrajectory::PRESSTrajectory(FileReader& spatialReader, FileReader& temporalReader) {
   // Read spatial component.
@@ -150,6 +152,11 @@ PRESSTrajectory::PRESSTrajectory(FileReader& spatialReader, FileReader& temporal
 
 // Construct a trajectory from spatial and temporal vector.
 PRESSTrajectory::PRESSTrajectory(const std::vector<int>& spatial, const std::vector<TemporalPair>& temporal) {
+  setPRESSTrajectory(spatial, temporal);
+}
+
+// Set an in-memory PRESS trajectory.
+void PRESSTrajectory::setPRESSTrajectory(const std::vector<int> &spatial, const std::vector<TemporalPair> &temporal) {
   spatialLength = spatial.size();
   spatialComponent = spatial;
   temporalLength = temporal.size();

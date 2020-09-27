@@ -69,10 +69,13 @@ private:
   std::vector<TemporalPair> temporalComponent;
   
 public:
+  PRESSTrajectory();
   // Read a PRESS trajectory from files.
   PRESSTrajectory(FileReader& spatialReader, FileReader& temporalReader);
   // Construct an in-memory PRESS trajectory.
   PRESSTrajectory(const std::vector<int>& spatial, const std::vector<TemporalPair>& temporal);
+  // Set an in-memory PRESS trajectory.
+  void setPRESSTrajectory(const std::vector<int>& spatial, const std::vector<TemporalPair>& temporal);
   void store(FileWriter& spatialWriter, FileWriter& temporalWriter);
   size_t getSpatialLength() const;
   const std::vector<int>& getSpatialComponent() const;

@@ -12,11 +12,12 @@
 #include "trajectory_reformattor.hpp"
 #include "../util/helper.hpp"
 
-PRESSTrajectory TrajectoryReformatter::generateTrajectory(
+void TrajectoryReformatter::generateTrajectory(
   const SPTable& spTable,
   const Graph& graph,
   const GPSTrajectory& gpsTrajectory,
-  MapMatchedTrajectory &mmTrajectory
+  const MapMatchedTrajectory &mmTrajectory,
+  PRESSTrajectory& pressTrajectory
 ) const {
   // GPS trajectory and map matched trajectory should have same length.
   assert (gpsTrajectory.getLength() == mmTrajectory.getLength());
@@ -64,7 +65,7 @@ PRESSTrajectory TrajectoryReformatter::generateTrajectory(
     );
   }
 
-  return PRESSTrajectory(spatialComponent, temporalComponent);
+  pressTrajectory.setPRESSTrajectory(spatialComponent, temporalComponent);
 }
 
 TrajectoryReformatter::~TrajectoryReformatter() { }

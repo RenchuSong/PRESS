@@ -15,11 +15,12 @@
 class TrajectoryReformatter {
 public:
   // Generate a PRESS trajectory from a map matched trajectory.
-  PRESSTrajectory generateTrajectory(
+  void generateTrajectory(
     const SPTable& spTable,
     const Graph& graph,
     const GPSTrajectory& gpsTrajectory,
-    MapMatchedTrajectory& mmTrajectory
+    const MapMatchedTrajectory& mmTrajectory,
+    PRESSTrajectory& pressTrajectory
   ) const;
 
   ~TrajectoryReformatter();

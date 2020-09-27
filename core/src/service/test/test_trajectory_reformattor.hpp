@@ -20,6 +20,7 @@
 TEST(TrajectoryReformattorTest, GPSTrajPRESSTrajLenMismatchTest) {
   MockTestObjects mockObj;
   TrajectoryReformatter trajFormatter;
+  PRESSTrajectory pressTrajectory;
   std::vector<GPSPoint> gpsSequence {
     GPSPoint(0, 0, 0)
   };
@@ -31,7 +32,8 @@ TEST(TrajectoryReformattorTest, GPSTrajPRESSTrajLenMismatchTest) {
       *(mockObj.spTable),
       *(mockObj.graph),
       gpsTrajectory,
-      mmTrajectory
+      mmTrajectory,
+      pressTrajectory
     );
   }, "Assertion failed.*");
 }
@@ -43,11 +45,13 @@ TEST(TrajectoryReformattorTest, EmptyTrajectoryTest) {
   GPSTrajectory gpsTrajectory(gpsSequence);
   std::vector<int> spSequence;
   MapMatchedTrajectory mmTrajectory(spSequence);
-  PRESSTrajectory trajectory = trajFormatter.generateTrajectory(
+  PRESSTrajectory trajectory;
+  trajFormatter.generateTrajectory(
     *(mockObj.spTable),
     *(mockObj.graph),
     gpsTrajectory,
-    mmTrajectory
+    mmTrajectory,
+    trajectory
   );
   EXPECT_EQ(0, trajectory.getSpatialLength());
   EXPECT_EQ(0, trajectory.getTemporalLength());
@@ -62,11 +66,13 @@ TEST(TrajectoryReformattorTest, TrajectoryWithOnePointTest) {
   GPSTrajectory gpsTrajectory(gpsSequence);
   std::vector<int> spSequence { 2 };
   MapMatchedTrajectory mmTrajectory(spSequence);
-  PRESSTrajectory trajectory = trajFormatter.generateTrajectory(
+  PRESSTrajectory trajectory;
+  trajFormatter.generateTrajectory(
     *(mockObj.spTable),
     *(mockObj.graph),
     gpsTrajectory,
-    mmTrajectory
+    mmTrajectory,
+    trajectory
   );
   EXPECT_EQ(1, trajectory.getSpatialLength());
   EXPECT_EQ(1, trajectory.getTemporalLength());
@@ -99,11 +105,13 @@ TEST(TrajectoryReformattorTest, TrajectoryTest) {
   GPSTrajectory gpsTrajectory(gpsSequence);
   std::vector<int> spSequence { 4, 4, 4, 6, 6, 6, 14, 14 };
   MapMatchedTrajectory mmTrajectory(spSequence);
-  PRESSTrajectory trajectory = trajFormatter.generateTrajectory(
+  PRESSTrajectory trajectory;
+  trajFormatter.generateTrajectory(
     *(mockObj.spTable),
     *(mockObj.graph),
     gpsTrajectory,
-    mmTrajectory
+    mmTrajectory,
+    trajectory
   );
   std::vector<int> expectedSpComp { 4, 6, 12, 14 };
   EXPECT_EQ(expectedSpComp.size(), trajectory.getSpatialLength());

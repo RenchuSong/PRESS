@@ -26,14 +26,14 @@
 
 #include "gtest/gtest.h"
 #include "util/test/test_helper.hpp"
-//#include "util/test/test_timer.hpp"
-//#include "service/test/test_trajectory_reformattor.hpp"
+#include "util/test/test_timer.hpp"
+#include "service/test/test_trajectory_reformattor.hpp"
 
 
 int main(int argc, char** argv) {
   
-//  ::testing::InitGoogleTest(&argc, argv);
-//  return RUN_ALL_TESTS();
+  ::testing::InitGoogleTest(&argc, argv);
+  return RUN_ALL_TESTS();
   
   auto graphReader = Factory::getGraphReader(GraphReaderType::SEATTLE_SAMPLE_ROADNET);
   Graph g;
