@@ -77,9 +77,14 @@ void MapMatcher::mapMatch(
   std::vector<std::unordered_map<int, int> > prev;
   // Matching probability of each GPS point to each edge.
   std::vector<std::unordered_map<int, double> > prob;
+  
+  std::cout << gpsTrajectory.getLength() << std::endl;
 
   // Viterbi algorithm for HMM.
   for (int i = 0; i < gpsTrajectory.getLength(); ++i) {
+    if (i % 1000 == 0) {
+      std::cout << i << std::endl;
+    }
     auto& gpsPoint1 = gpsTrajectory.getGPSPoint(i);
     Point2D p1 = gps2Point2D(gpsPoint1);
     std::unordered_set<int> nearByEdges;

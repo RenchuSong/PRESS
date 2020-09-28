@@ -14,6 +14,7 @@
 #include "topology/trajectory.hpp"
 #include "topology/auxiliaries.hpp"
 #include "topology/sp_table.hpp"
+//#include "topology/full_sp_table.hpp"
 #include "util/timer.hpp"
 #include "service/spatial_compressor.hpp"
 #include "service/temporal_compressor.hpp"
@@ -82,12 +83,23 @@ int main(int argc, char** argv) {
   }
   std::cout << std::endl;
   
-  SPTable spTable(g);
+  SPTable spTable(g, 4000);
   MapMatcher matcher;
   std::vector<GPSTrajectory> gpsTrajectories;
   std::vector<MapMatchedTrajectory> mmTrajectories;
   matcher.mapMatch(spTable, g, gIndex, 4.07, 0.49037673, 200, 2000, gpsTrajectory, gpsTrajectories, mmTrajectories);
   
+  FileWriter segGPS("/Users/songrenchu/Develop/segGPS.txt", false);
+  FileWriter mmResult("/Users/songrenchu/Develop/mmResult.txt", false);
+  
+  for (auto& gpsT: gpsTrajectories) {
+    segGPS.writeChar('=');
+    segGPS.writeEol();
+    gpsT.store(segGPS);
+  }
+  for (auto& mmR: mmTrajectories) {
+    mmR.store(mmResult);
+  }
   return 0;
   
 ////  FileWriter fw("/Users/songrenchu/Develop/test2.txt", true);

@@ -1,47 +1,47 @@
 //
-//  optimized_sp_table.cpp
+//  sp_table.cpp
 //  press-v3
 //
-//  Created by Renchu Song on 9/27/20.
-//  Copyright © 2020 Renc. All rights reserved.
+//  Created by Renchu Song on 12/8/19.
+//  Copyright © 2019 Renc. All rights reserved.
 //
+
 #include <cassert>
 #include <queue>
 
-#include "sp_table.hpp"
+#include "full_sp_table.hpp"
 
-// Read the optimized SP table from a file.
-SPTable::SPTable(FileReader& spReader) {
+// Read the SP table from a file.
+FullSPTable::FullSPTable(FileReader& spReader) {
   nodeNumber = spReader.nextInt();
+  spTable = new int*[nodeNumber];
   for (auto i = 0; i < nodeNumber; i++) {
-    std::unordered_map<int, int> nodePrevEdge;
-    int prevNum = spReader.nextInt();
-    for (int j = 0; j < prevNum; ++j) {
-      int eid = spReader.nextInt();
-      int prevEid = spReader.nextInt();
-      nodePrevEdge[eid] = prevEid;
+    spTable[i] = new int[nodeNumber];
+    for (auto j = 0; j < nodeNumber; j++) {
+      spTable[i][j] = spReader.nextInt();
     }
   }
 }
 
-// Calculate the optimized SP table of a given graph.
+// Calculate the SP table of a given graph.
 // Dijkstra algorithm.
-SPTable::SPTable(Graph& graph, double maxDist) {
+FullSPTable::FullSPTable(Graph& graph) {
   nodeNumber = graph.getNodeNumber();
-  std::cout << nodeNumber << std::endl;
+  
+  // Init the SP table.
+  spTable = new int*[nodeNumber];
+  for (auto i = 0; i < nodeNumber; i++) {
+    spTable[i] = new int[nodeNumber];
+    for (auto j = 0; j < nodeNumber; j++) {
+      spTable[i][j] = EDGE_NOT_EXIST;
+    }
+  }
   
   // Calculate all-pair shortest paths.
   for (auto i = 0; i < nodeNumber; i++) {
-    if (i % 10000 == 0) {
-      std::cout << i << std::endl;
-    }
-    std::unordered_map<int, int> nodePrevEdge;
-    
     double minDist[nodeNumber];
-    int prev[nodeNumber];
     for (auto j = 0; j < nodeNumber; j++) {
       minDist[j] = 1e20;
-      prev[j] = EDGE_NOT_EXIST;
     }
     minDist[i] = 0;
     
@@ -55,12 +55,7 @@ SPTable::SPTable(Graph& graph, double maxDist) {
     
     // Loop nodeNumber times, always pop the node with smallest distance.
     while (!queue.empty()) {
-      auto& candidate = queue.top();
-      if (candidate.first > maxDist) {
-        break;
-      }
-      auto srcId = candidate.second;
-      nodePrevEdge[srcId] = prev[srcId];
+      auto srcId = queue.top().second;
       queue.pop();
       auto& node = graph.getNode(srcId);
       auto& edgeList = node.getEdgeList();
@@ -72,49 +67,45 @@ SPTable::SPTable(Graph& graph, double maxDist) {
           // Update min distance.
           minDist[tgtId] = minDist[srcId] + edge.getDistance();
           // Update SP table, and update queue.
-          prev[tgtId] = edgeId;
+          spTable[i][tgtId] = edgeId;
           queue.push(std::make_pair(minDist[tgtId], tgtId));
         }
       }
     }
-    prevEdge.emplace_back(nodePrevEdge);
   }
 }
 
-// Store the optimized SP table into the file.
-void SPTable::store(FileWriter& spWriter) {
+// Store the SP table into the file.
+void FullSPTable::store(FileWriter& spWriter) {
   spWriter.writeInt((int)nodeNumber);
   spWriter.writeEol();
   for (auto i = 0; i < nodeNumber; i++) {
-    spWriter.writeInt((int)prevEdge.at(i).size());
-    for (auto& eidPrevPair: prevEdge.at(i)) {
+    for (auto j = 0; j < nodeNumber; j++) {
+      spWriter.writeInt((int)spTable[i][j]);
       spWriter.writeSeparator();
-      spWriter.writeInt(eidPrevPair.first);
-      spWriter.writeSeparator();
-      spWriter.writeInt(eidPrevPair.second);
     }
     spWriter.writeEol();
   }
 }
 
 // Get the node number.
-size_t SPTable::getNodeNumber() const {
+size_t FullSPTable::getNodeNumber() const {
   return nodeNumber;
 }
 
+// Get the SP table.
+int** FullSPTable::getSPTable() const {
+  return spTable;
+}
+
 // Get the last edge index along the shortest path between node srcIndex and node tgtIndex.
-int SPTable::prevEdgeIndex(size_t srcIndex, size_t tgtIndex) const {
+int FullSPTable::prevEdgeIndex(size_t srcIndex, size_t tgtIndex) const {
   assert(srcIndex < nodeNumber && tgtIndex < nodeNumber);
-  auto& prev = prevEdge.at(srcIndex);
-  if (prev.find((int)tgtIndex) != prev.end()) {
-    return prev.at((int)tgtIndex);
-  } else {
-    return EDGE_NOT_EXIST;
-  }
+  return spTable[srcIndex][tgtIndex];
 }
 
 // Append the shortest path sequence (edge1, edge2] to container.
-void SPTable::complement(
+void FullSPTable::complement(
   const Graph& graph,
   int edge1,
   int edge2,
@@ -128,22 +119,26 @@ void SPTable::complement(
     if (node1 == node2) {
       break;
     }
-    edge2 = prevEdgeIndex(node1, node2);
+    edge2 = spTable[node1][node2];
   }
   std::reverse(tmpPath.begin(), tmpPath.end());
   container.insert(container.end(), tmpPath.begin(), tmpPath.end());
 }
 
-// Print the optimized SP table for debug.
-void SPTable::print() const {
+// Print the SP table for debug.
+void FullSPTable::print() const {
   std::cout << nodeNumber << std::endl;
   for (auto i = 0; i < nodeNumber; i++) {
-    std::cout << i << ": ";
-    for (auto& eidPrevPair: prevEdge.at(i)) {
-      std::cout << "(" << eidPrevPair.first << ", " << eidPrevPair.second << ") ";
+    for (auto j = 0; j < nodeNumber; j++) {
+      std::cout << spTable[i][j] << " ";
     }
     std::cout << std::endl;
   }
 }
 
-SPTable::~SPTable() { }
+FullSPTable::~FullSPTable() {
+  for (auto i = 0; i < nodeNumber; i++) {
+    delete[] spTable[i];
+  }
+  delete[] spTable;
+}
