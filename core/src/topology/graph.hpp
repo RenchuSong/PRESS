@@ -87,6 +87,10 @@ public:
   void store(FileWriter& graphWriter);
   void print() const;
   ~Graph();
+  
+  // FIXME: hack for check MM result. Should be removed.
+  std::unordered_map<int, long long> eid2OriginalId;
+  std::unordered_map<int, int> fromTo;
 };
 
 #endif /* graph_hpp */

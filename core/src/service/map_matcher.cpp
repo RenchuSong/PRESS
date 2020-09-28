@@ -115,6 +115,16 @@ void MapMatcher::mapMatch(
         pointProb[eid] = maxProb * measureProb;
       }
     }
+    // Normalize the probability.
+    double maxProb = 0;
+    for (auto& eidProdPair: pointProb) {
+      maxProb = std::max(maxProb, eidProdPair.second);
+    }
+    if (maxProb > 0) {
+      for (auto& eidProdPair: pointProb) {
+        pointProb[eidProdPair.first] /= maxProb;
+      }
+    }
     prev.emplace_back(pointPrev);
     prob.emplace_back(pointProb);
   }
@@ -150,5 +160,12 @@ void MapMatcher::mapMatch(
       gpsTrajCollector.clear();
       mmResultCollector.clear();
     }
+  }
+  for (auto& pointProb: prob) {
+    double maxProb = 0;
+    for (auto& p: pointProb) {
+      maxProb = std::max(maxProb, p.second);
+    }
+    std::cout << maxProb << std::endl;
   }
 }

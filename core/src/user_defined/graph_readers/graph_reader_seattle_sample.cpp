@@ -23,9 +23,11 @@ void GraphReaderSeattleSample::readGraphImpl(const std::string& fileName, Graph&
   
   // Hold the map from node id in the file to the internal node index.
   std::unordered_map<long long, int> nodeIdToIndex;
+
   int nodeNumber = 0;
   int edgeNumber = 0;
-  while (reader.nextLong() != EOF) {
+  long long edgeId;
+  while ((edgeId = reader.nextLong()) != EOF) {
     long long srcRawId = reader.nextLong();
     long long tgtRawId = reader.nextLong();
     bool twoWay = (reader.nextInt() == 1);
@@ -72,6 +74,8 @@ void GraphReaderSeattleSample::readGraphImpl(const std::string& fileName, Graph&
       forward.addPosition(point);
     }
     edgeList.emplace_back(forward);
+    graph.eid2OriginalId[edgeNumber] = edgeId;
+    graph.fromTo[edgeNumber] = 1;
     nodeList.at(srcId).addEdge(edgeNumber++);
     // The backward edge if two way.
     if (twoWay) {
@@ -81,6 +85,8 @@ void GraphReaderSeattleSample::readGraphImpl(const std::string& fileName, Graph&
         backward.addPosition(point);
       }
       edgeList.emplace_back(backward);
+      graph.eid2OriginalId[edgeNumber] = edgeId;
+      graph.fromTo[edgeNumber] = 0;
       nodeList.at(tgtId).addEdge(edgeNumber++);
     }
   }

@@ -21,6 +21,7 @@ SPTable::SPTable(FileReader& spReader) {
       int prevEid = spReader.nextInt();
       nodePrevEdge[eid] = prevEid;
     }
+    prevEdge.emplace_back(nodePrevEdge);
   }
 }
 

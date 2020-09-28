@@ -83,7 +83,12 @@ int main(int argc, char** argv) {
   }
   std::cout << std::endl;
   
-  SPTable spTable(g, 4000);
+//  SPTable spTable(g, 4000);
+//  FileWriter spTableWriter("/Users/songrenchu/Develop/spTable_bin.txt", true);
+//  spTable.store(spTableWriter);
+  FileReader spTableReader("/Users/songrenchu/Develop/spTable_bin.txt", true);
+  SPTable spTable(spTableReader);
+  
   MapMatcher matcher;
   std::vector<GPSTrajectory> gpsTrajectories;
   std::vector<MapMatchedTrajectory> mmTrajectories;
@@ -92,6 +97,9 @@ int main(int argc, char** argv) {
   FileWriter segGPS("/Users/songrenchu/Develop/segGPS.txt", false);
   FileWriter mmResult("/Users/songrenchu/Develop/mmResult.txt", false);
   
+  FileWriter mmCheck("/Users/songrenchu/Develop/mmResultForCheck.txt", false);
+  mmCheck.writeEol();
+  
   for (auto& gpsT: gpsTrajectories) {
     segGPS.writeChar('=');
     segGPS.writeEol();
@@ -99,6 +107,12 @@ int main(int argc, char** argv) {
   }
   for (auto& mmR: mmTrajectories) {
     mmR.store(mmResult);
+    for (auto eid: mmR.getEdgeList()) {
+      mmCheck.writeLong(g.eid2OriginalId.at(eid));
+      mmCheck.writeChar('\t');
+      mmCheck.writeInt(g.fromTo.at(eid));
+      mmCheck.writeEol();
+    }
   }
   return 0;
   
