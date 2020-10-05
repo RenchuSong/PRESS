@@ -9,11 +9,50 @@
 #include "map_matcher.hpp"
 #include "../util/helper.hpp"
 
+// https://dl.acm.org/doi/abs/10.1145/2424321.2424428
+const double HMM_TRANSITION_BETA[30] = {
+  0.49037673,
+  0.82918373,
+  1.24364564,
+  1.67079581,
+  2.00719298,
+  2.42513007,
+  2.81248831,
+  3.15745473,
+  3.52645392,
+  4.09511775,
+  4.67319795,
+  5.41088180,
+  6.47666590,
+  6.29010734,
+  7.80752112,
+  8.09074504,
+  8.08550528,
+  9.09405065,
+  11.09090603,
+  11.87752824,
+  12.55107715,
+  15.82820829,
+  17.69496773,
+  18.07655652,
+  19.63438911,
+  25.40832185,
+  23.76001877,
+  28.43289797,
+  32.21683062,
+  34.56991141
+};
+double getBeta(const GPSPoint& prev, const GPSPoint& next) {
+  return HMM_TRANSITION_BETA[
+    std::min(std::max((int)round(next.t - prev.t - 1), 0), 29)
+  ];
+}
+
 // Measurement probability
 double measurementProb(const Point2D& gpsPoint, const Edge& edge, double sigmaZ) {
-  double sqrt2PISigmaZ = 1 / sqrt(2 * M_PI) / sigmaZ;
+//  double sqrt2PISigmaZ = 1 / sqrt(2 * M_PI) / sigmaZ;
   double exponent = -0.5 * pow(distPoint2Polyline(gpsPoint, edge.getShape()) / sigmaZ, 2);
-  return sqrt2PISigmaZ * exp(exponent);
+  return /*sqrt2PISigmaZ * */ exp(exponent);
 }
 
 // Calculate differenece between great circle distance and route distance.
@@ -58,7 +97,7 @@ double transitionProb(
   double maxDistDifference
 ) {
   double diff = distanceDifference(prevPoint, prevEdge, nextPoint, nextEdge, graph, spTable);
-  return diff < maxDistDifference ? (1 / beta * exp(-diff / beta)) : 0;
+  return diff < maxDistDifference ? (/*1 / beta * */ exp(-diff / beta)) : 0;
 }
 
 void MapMatcher::mapMatch(
@@ -66,7 +105,6 @@ void MapMatcher::mapMatch(
   const Graph& graph,
   const GridIndex& gridIndex,
   double sigmaZ,
-  double beta,
   double maxGPSBias,
   double maxDistDifference,
   const GPSTrajectory& gpsTrajectory,
@@ -77,8 +115,6 @@ void MapMatcher::mapMatch(
   std::vector<std::unordered_map<int, int> > prev;
   // Matching probability of each GPS point to each edge.
   std::vector<std::unordered_map<int, double> > prob;
-  
-  std::cout << gpsTrajectory.getLength() << std::endl;
 
   // Viterbi algorithm for HMM.
   for (int i = 0; i < gpsTrajectory.getLength(); ++i) {
@@ -91,18 +127,28 @@ void MapMatcher::mapMatch(
     gridIndex.search(p1, maxGPSBias, nearByEdges);
     std::unordered_map<int, int> pointPrev;
     std::unordered_map<int, double> pointProb;
+    std::unordered_map<int, double> measureProbs;
+
     for (int eid: nearByEdges) {
       double measureProb = measurementProb(p1, graph.getEdge(eid), sigmaZ);
-      if (i == 0) {
-        pointPrev[eid] = EDGE_NOT_EXIST;
-        pointProb[eid] = measureProb;
-      } else {
+      pointPrev[eid] = EDGE_NOT_EXIST;
+      measureProbs[eid] = measureProb;
+    }
+    if (i == 0) {
+      pointProb = measureProbs;
+    } else {
+      double beta = getBeta(gpsTrajectory.getGPSPoint(i - 1), gpsTrajectory.getGPSPoint(i));
+      double maxAllProb = 0;
+      for (int eid: nearByEdges) {
         auto& gpsPoint2 = gpsTrajectory.getGPSPoint(i - 1);
         Point2D p2 = gps2Point2D(gpsPoint2);
         auto& prevProb = prob.at(i - 1);
         double maxProb = 0;
         int prevEdge = EDGE_NOT_EXIST;
         for (auto& edgeProbPair: prevProb) {
+          if (edgeProbPair.second == 0) {
+            continue;
+          }
           double accumProb = edgeProbPair.second * transitionProb(
             p2, edgeProbPair.first, p1, eid, graph, spTable, beta, maxDistDifference
           );
@@ -111,8 +157,12 @@ void MapMatcher::mapMatch(
             prevEdge = edgeProbPair.first;
           }
         }
+        maxAllProb = std::max(maxAllProb, maxProb);
         pointPrev[eid] = prevEdge;
-        pointProb[eid] = maxProb * measureProb;
+        pointProb[eid] = maxProb * measureProbs[eid];
+      }
+      if (maxAllProb == 0) {
+        pointProb = measureProbs;
       }
     }
     // Normalize the probability.
@@ -139,7 +189,7 @@ void MapMatcher::mapMatch(
       double maxProb = 0;
       auto& matchedEdges = prob.at(i);
       for (auto& edgeProbPair: matchedEdges) {
-        if (edgeProbPair.second > maxProb) {
+        if (edgeProbPair.second >= maxProb) {
           maxProb = edgeProbPair.second;
           prevEdge = edgeProbPair.first;
         }
@@ -155,8 +205,21 @@ void MapMatcher::mapMatch(
     if (prevEdge == EDGE_NOT_EXIST) {
       std::reverse(gpsTrajCollector.begin(), gpsTrajCollector.end());
       std::reverse(mmResultCollector.begin(), mmResultCollector.end());
-      gpsTrajectories.emplace_back(gpsTrajCollector);
-      mmTrajectories.emplace_back(mmResultCollector);
+      std::vector<int> edgeSequence;
+      edgeSequence.emplace_back(mmResultCollector.front());
+      auto len = mmResultCollector.size();
+      for (int j = 1; j < len; ++j) {
+        if (mmResultCollector.at(j - 1) != mmResultCollector.at(j)) {
+          spTable.complement(
+            graph,
+            mmResultCollector.at(j - 1),
+            mmResultCollector.at(j),
+            edgeSequence
+          );
+        }
+      }
+      gpsTrajectories.emplace_back(GPSTrajectory(gpsTrajCollector));
+      mmTrajectories.emplace_back(MapMatchedTrajectory(edgeSequence));
       gpsTrajCollector.clear();
       mmResultCollector.clear();
     }
@@ -166,6 +229,5 @@ void MapMatcher::mapMatch(
     for (auto& p: pointProb) {
       maxProb = std::max(maxProb, p.second);
     }
-    std::cout << maxProb << std::endl;
   }
 }

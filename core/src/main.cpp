@@ -66,7 +66,7 @@ int main(int argc, char** argv) {
   gpsReader->readGPSTrajectory(path2, gpsTrajectory);
 //  FileWriter fw2("/Users/songrenchu/Develop/gps.txt", false);
 //  gpsTrajectory.store(fw2);
-  GridIndex gIndex(g, 100, 128);
+  GridIndex gIndex(g, 50, 50);
   FileWriter fw3("/Users/songrenchu/Develop/gridindex3.txt", false);
   gIndex.store(fw3);
 //  gIndex.print();
@@ -92,13 +92,12 @@ int main(int argc, char** argv) {
   MapMatcher matcher;
   std::vector<GPSTrajectory> gpsTrajectories;
   std::vector<MapMatchedTrajectory> mmTrajectories;
-  matcher.mapMatch(spTable, g, gIndex, 4.07, 0.49037673, 200, 2000, gpsTrajectory, gpsTrajectories, mmTrajectories);
+  matcher.mapMatch(spTable, g, gIndex, 4.07, 50, 2000, gpsTrajectory, gpsTrajectories, mmTrajectories);
   
   FileWriter segGPS("/Users/songrenchu/Develop/segGPS.txt", false);
   FileWriter mmResult("/Users/songrenchu/Develop/mmResult.txt", false);
   
   FileWriter mmCheck("/Users/songrenchu/Develop/mmResultForCheck.txt", false);
-  mmCheck.writeEol();
   
   for (auto& gpsT: gpsTrajectories) {
     segGPS.writeChar('=');

@@ -20,7 +20,6 @@ public:
     const Graph& graph,
     const GridIndex& gridIndex,
     double sigmaZ,
-    double beta,
     double maxGPSBias,
     double maxDistDifference,
     const GPSTrajectory& gpsTrajectory,
