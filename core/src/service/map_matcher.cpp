@@ -118,9 +118,6 @@ void MapMatcher::mapMatch(
 
   // Viterbi algorithm for HMM.
   for (int i = 0; i < gpsTrajectory.getLength(); ++i) {
-    if (i % 1000 == 0) {
-      std::cout << i << std::endl;
-    }
     auto& gpsPoint1 = gpsTrajectory.getGPSPoint(i);
     Point2D p1 = gps2Point2D(gpsPoint1);
     std::unordered_set<int> nearByEdges;
