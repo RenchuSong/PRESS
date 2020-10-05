@@ -202,21 +202,22 @@ void MapMatcher::mapMatch(
     if (prevEdge == EDGE_NOT_EXIST) {
       std::reverse(gpsTrajCollector.begin(), gpsTrajCollector.end());
       std::reverse(mmResultCollector.begin(), mmResultCollector.end());
-      std::vector<int> edgeSequence;
-      edgeSequence.emplace_back(mmResultCollector.front());
-      auto len = mmResultCollector.size();
-      for (int j = 1; j < len; ++j) {
-        if (mmResultCollector.at(j - 1) != mmResultCollector.at(j)) {
-          spTable.complement(
-            graph,
-            mmResultCollector.at(j - 1),
-            mmResultCollector.at(j),
-            edgeSequence
-          );
-        }
-      }
+      // Trajectory reformatter is in charge of dedup & complementing the edge sequence.
+//      std::vector<int> edgeSequence;
+//      edgeSequence.emplace_back(mmResultCollector.front());
+//      auto len = mmResultCollector.size();
+//      for (int j = 1; j < len; ++j) {
+//        if (mmResultCollector.at(j - 1) != mmResultCollector.at(j)) {
+//          spTable.complement(
+//            graph,
+//            mmResultCollector.at(j - 1),
+//            mmResultCollector.at(j),
+//            edgeSequence
+//          );
+//        }
+//      }
       gpsTrajectories.emplace_back(GPSTrajectory(gpsTrajCollector));
-      mmTrajectories.emplace_back(MapMatchedTrajectory(edgeSequence));
+      mmTrajectories.emplace_back(MapMatchedTrajectory(mmResultCollector));
       gpsTrajCollector.clear();
       mmResultCollector.clear();
     }

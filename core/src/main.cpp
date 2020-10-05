@@ -90,6 +90,8 @@ int main(int argc, char** argv) {
   SPTable spTable(spTableReader);
   
   MapMatcher matcher;
+  TrajectoryReformatter refomatter;
+
   std::vector<GPSTrajectory> gpsTrajectories;
   std::vector<MapMatchedTrajectory> mmTrajectories;
   matcher.mapMatch(spTable, g, gIndex, 4.07, 50, 2000, gpsTrajectory, gpsTrajectories, mmTrajectories);
@@ -112,6 +114,15 @@ int main(int argc, char** argv) {
       mmCheck.writeInt(g.fromTo.at(eid));
       mmCheck.writeEol();
     }
+  }
+  FileWriter spatialW("/Users/songrenchu/Develop/spatial.txt", false);
+  FileWriter temporalW("/Users/songrenchu/Develop/temporal.txt", false);
+  for (int i = 0; i < mmTrajectories.size(); ++i) {
+    GPSTrajectory& gpsTraj = gpsTrajectories.at(i);
+    MapMatchedTrajectory& mmTraj = mmTrajectories.at(i);
+    PRESSTrajectory pressTraj;
+    refomatter.generateTrajectory(spTable, g, gpsTraj, mmTraj, pressTraj);
+    pressTraj.store(spatialW, temporalW);
   }
   return 0;
   
