@@ -9,20 +9,11 @@
 #include <cassert>
 #include "binary.hpp"
 
+Binary::Binary() { }
+
 // Construct an in-memory binary given the bool array.
 Binary::Binary(const std::vector<bool>& binary) {
-  length = binary.size();
-  int val = 0;
-  for (auto i = 0; i < length; i++) {
-    val = val * 2 + binary[i];
-    if (i % 8 == 7) {
-      this->binary.emplace_back(val);
-      val = 0;
-    }
-  }
-  if (length % 8) {
-    this->binary.emplace_back(val << (8 - length % 8));
-  }
+  setBinary(binary);
 }
 
 // Construct an in-memory binary given the length and char array.
@@ -40,6 +31,23 @@ Binary::Binary(FileReader& binaryReader) {
     binary.emplace_back(binaryReader.nextChar());
   }
 }
+
+void Binary::setBinary(const std::vector<bool>& binary) {
+  length = binary.size();
+  this->binary.clear();
+  int val = 0;
+  for (auto i = 0; i < length; i++) {
+    val = val * 2 + binary[i];
+    if (i % 8 == 7) {
+      this->binary.emplace_back(val);
+      val = 0;
+    }
+  }
+  if (length % 8) {
+    this->binary.emplace_back(val << (8 - length % 8));
+  }
+}
+
 
 // Get binary length.
 size_t Binary::getLength() const {
@@ -86,41 +94,3 @@ void Binary::print() const {
 }
 
 Binary::~Binary() { }
-
-
-//Binary::Binary(FileReader& binaryReader) {
-//  length = binaryReader.nextInt();
-//  for (auto i = 0; i < length / 8; i++) {
-//    auto byte = binaryReader.nextChar();
-//    int mask = 0x80;
-//    for (auto j = 0; j < 8; j++) {
-//      binary.push_back(byte & mask);
-//      mask >>= 1;
-//    }
-//  }
-//  // One more byte if length not divided exactly by 8.
-//  if (length % 8) {
-//    auto byte = binaryReader.nextChar();
-//    int mask = 1 << (length % 8);
-//    for (auto j = 0; j < 8; j++) {
-//      binary.push_back(byte & mask);
-//      mask >>= 1;
-//    }
-//  }
-//}
-
-//void Binary::store(FileWriter& binaryWriter) {
-//  binaryWriter.writeInt((int)length);
-//  int val = 0;
-//  for (auto i = 0; i < length; i++) {
-//    val = val * 2 + binary[i];
-//    if (i % 8 == 7) {
-//      binaryWriter.writeChar(val);
-//      val = 0;
-//    }
-//  }
-//  if (length % 8) {
-//    binaryWriter.writeChar(val);
-//  }
-//}
-

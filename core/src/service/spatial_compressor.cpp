@@ -50,7 +50,7 @@ void SpatialCompressor::frequentSubTrajectoryCompresson(
   const ACAutomaton& acAutomaton,
   const Huffman& huffman,
   const std::vector<int>& spatial,
-  std::vector<bool>& binary
+  Binary& binary
 ) const {
   // Get matched trie nodes sequence.
   std::vector<int> trieNodeSequence;
@@ -73,7 +73,9 @@ void SpatialCompressor::frequentSubTrajectoryCompresson(
   std::reverse(decomposited.begin(), decomposited.end());
 
   // Encode.
-  huffman.encode(decomposited, binary);
+  std::vector<bool> binaryCode;
+  huffman.encode(decomposited, binaryCode);
+  binary.setBinary(binaryCode);
 }
 
 // Hybrid spatial compression.
@@ -83,7 +85,7 @@ void SpatialCompressor::hybridSpatialCompression(
   const ACAutomaton& acAutomaton,
   const Huffman& huffman,
   const std::vector<int>& spatial,
-  std::vector<bool>& binary
+  Binary& binary
 ) const {
   std::vector<int> tmpSpatial;
   shortestPathCompression(graph, spTable, spatial, tmpSpatial);

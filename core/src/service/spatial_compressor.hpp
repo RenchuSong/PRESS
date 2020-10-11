@@ -31,7 +31,7 @@ public:
     const ACAutomaton& acAutomaton,
     const Huffman& huffman,
     const std::vector<int>& spatial,
-    std::vector<bool>& binary
+    Binary& binary
   ) const;
   // Hybrid spatial compression.
   void hybridSpatialCompression(
@@ -40,9 +40,31 @@ public:
     const ACAutomaton& acAutomaton,
     const Huffman& huffman,
     const std::vector<int>& spatial,
-    std::vector<bool>& binary
+    Binary& binary
   ) const;
-
+  // Stage 1. Decompress frequent sub-trajactory.
+  void frequentSubTrajectoryDecompresson(
+    const ACAutomaton& acAutomaton,
+    const Huffman& huffman,
+    const Binary& binary,
+    std::vector<int>& spatial
+  ) const;
+  // Stage 2. Decompress shortest path.
+  void shortestPathDecompression(
+    const Graph& graph,
+    const SPTable& spTable,
+    const std::vector<int>& spatialComp,
+    std::vector<int>& spatial
+  ) const;
+  // Hybrid spatial decompression.
+  void hybridSpatialDecompression(
+    const Graph& graph,
+    const SPTable& spTable,
+    const ACAutomaton& acAutomaton,
+    const Huffman& huffman,
+    const Binary& binary,
+    std::vector<int>& spatial
+  ) const;
   ~SpatialCompressor();
 };
 

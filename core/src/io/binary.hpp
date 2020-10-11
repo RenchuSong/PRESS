@@ -20,9 +20,11 @@ private:
   std::vector<char> binary;
 
 public:
+  Binary();
   Binary(const std::vector<bool>& binary);
   Binary(size_t length, const std::vector<char>& binary);
   Binary(FileReader& binaryReader);
+  void setBinary(const std::vector<bool>& binary);
   size_t getLength() const;
   const std::vector<char>& getBinary() const;
   void getBitArray(std::vector<bool>& result) const;

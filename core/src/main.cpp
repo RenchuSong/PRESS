@@ -127,18 +127,17 @@ int main(int argc, char** argv) {
   Huffman huffman(acAutomaton);
 
   // Compressor services.
-  std::vector<bool> spatialComp;
+  Binary spatialComp;
   std::vector<TemporalPair> tempComp;
   for (auto& pressTraj: pressTrajs) {
     sc.hybridSpatialCompression(g, spTable, acAutomaton, huffman, pressTraj.getSpatialComponent(), spatialComp);
     tc.boundedTemporalCompression(pressTraj.getTemporalComponent(), tempComp, 10, 10);
-    Binary bin(spatialComp);
     PRESSCompressedTrajectory pressCompTraj(spatialComp, tempComp);
     pressCompTraj.store(spatialWComp, temporalWComp);
   }
 
   return 0;
-  
+
 ////  FileWriter fw("/Users/songrenchu/Develop/test2.txt", true);
 ////  fw.writeChar('a');
 ////  fw.writeInt(123);
