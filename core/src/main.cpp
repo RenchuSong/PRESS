@@ -113,6 +113,7 @@ int main(int argc, char** argv) {
     MapMatchedTrajectory& mmTraj = mmTrajectories.at(i);
     PRESSTrajectory pressTraj;
     refomatter.generateTrajectory(spTable, g, gpsTraj, mmTraj, pressTraj);
+    pressTraj.store(spatialW, temporalW);
     pressTrajs.emplace_back(pressTraj);
   }
 
@@ -134,6 +135,30 @@ int main(int argc, char** argv) {
     tc.boundedTemporalCompression(pressTraj.getTemporalComponent(), tempComp, 10, 10);
     PRESSCompressedTrajectory pressCompTraj(spatialComp, tempComp);
     pressCompTraj.store(spatialWComp, temporalWComp);
+
+//    // Shortest path compression result.
+//    std::vector<int> spComResult;
+//    sc.shortestPathCompression(g, spTable, pressTraj.getSpatialComponent(), spComResult);
+//    std::cout << "======" << std::endl;
+//    for (auto edgeId: spComResult) {
+//      std::cout << edgeId << " ";
+//    }
+//    std::cout << std::endl;
+//    std::vector<int> spDecomp;
+//    sc.frequentSubTrajectoryDecompresson(acAutomaton, huffman, pressCompTraj.getSpatialComponent(), spDecomp);
+//    std::cout << "======" << std::endl;
+//    for (auto edgeId: spDecomp) {
+//      std::cout << edgeId << " ";
+//    }
+//    std::cout << std::endl;
+
+    std::cout << ">>>>>>" << std::endl;
+    std::vector<int> spatialDecomp;
+    sc.hybridSpatialDecompression(g, spTable, acAutomaton, huffman, pressCompTraj.getSpatialComponent(), spatialDecomp);
+    for (auto edgeId: spatialDecomp) {
+      std::cout << edgeId << " ";
+    }
+    std::cout << std::endl;
   }
 
   return 0;

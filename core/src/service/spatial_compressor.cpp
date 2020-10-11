@@ -33,7 +33,13 @@ void SpatialCompressor::shortestPathCompression(
   for (size_t i = 1; i < len - 1; i++) {
     const int edgeId = spatial.at(i);
     const int tgtId = graph.getEdge(edgeId).getTargetId();
-    if (spTable.prevEdgeIndex(nodeId, tgtId) != edgeId) {
+    if (
+      (
+        i < len - 2 &&
+        graph.getEdge(spatial.at(i)).getTargetId() != graph.getEdge(spatial.at(i + 1)).getSourceId()
+      ) ||
+      spTable.prevEdgeIndex(nodeId, tgtId) != edgeId
+    ) {
       result.emplace_back(edgeId);
       nodeId = tgtId;
     }
@@ -90,6 +96,63 @@ void SpatialCompressor::hybridSpatialCompression(
   std::vector<int> tmpSpatial;
   shortestPathCompression(graph, spTable, spatial, tmpSpatial);
   frequentSubTrajectoryCompresson(acAutomaton, huffman, tmpSpatial, binary);
+}
+
+// Stage 1. Decompress frequent sub-trajactory.
+void SpatialCompressor::frequentSubTrajectoryDecompresson(
+  const ACAutomaton& acAutomaton,
+  const Huffman& huffman,
+  const Binary& binary,
+ std::vector<int>& spatial
+) const {
+  // Decode to decomposited spatial sequence.
+  std::vector<bool> binaryCode;
+  std::vector<int> decomposited;
+  binary.getBitArray(binaryCode);
+  huffman.decode(binaryCode, decomposited);
+
+  // Recover spatial sequence.
+  spatial.clear();
+  for (int i = (int)decomposited.size() - 1; i >= 0; --i) {
+    int acId = decomposited.at(i);
+    while (acId != ROOT_NODE) {
+      spatial.emplace_back(acAutomaton.getEdge(acId));
+      acId = acAutomaton.getFather(acId);
+    }
+  }
+  std::reverse(spatial.begin(), spatial.end());
+}
+
+// Stage 2. Decompress shortest path.
+void SpatialCompressor::shortestPathDecompression(
+  const Graph& graph,
+  const SPTable& spTable,
+  const std::vector<int>& spatialComp,
+  std::vector<int>& spatial
+) const {
+  spatial.clear();
+  if (spatialComp.size() == 0) {
+    return;
+  }
+  spatial.emplace_back(spatialComp.at(0));
+  auto spatialCompSize = spatialComp.size();
+  for (int i = 1; i < spatialCompSize; ++i) {
+    spTable.complement(graph, spatialComp.at(i - 1), spatialComp.at(i), spatial);
+  }
+}
+
+// Hybrid spatial decompression.
+void SpatialCompressor::hybridSpatialDecompression(
+  const Graph& graph,
+  const SPTable& spTable,
+  const ACAutomaton& acAutomaton,
+  const Huffman& huffman,
+  const Binary& binary,
+  std::vector<int>& spatial
+) const {
+  std::vector<int> tmpSpatial;
+  frequentSubTrajectoryDecompresson(acAutomaton, huffman, binary, tmpSpatial);
+  shortestPathDecompression(graph, spTable, tmpSpatial, spatial);
 }
 
 SpatialCompressor::~SpatialCompressor() { }

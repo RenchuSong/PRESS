@@ -200,7 +200,7 @@ size_t ACAutomaton::getTrieSize() const {
 
 // Given previous Trie matching position, get the next matched trie node.
 int ACAutomaton::getMatch(int prevPos, int edgeId) const {
-  while (prevPos > 0 && trie[prevPos].find(edgeId) == trie[prevPos].end()) {
+  while (prevPos > ROOT_NODE && trie[prevPos].find(edgeId) == trie[prevPos].end()) {
     prevPos = next[prevPos];
   }
   return trie.at(prevPos).at(edgeId);

@@ -16,6 +16,8 @@
 
 #include "./graph.hpp"
 
+const int ROOT_NODE = 0;
+
 class ACAutomaton {
 private:
   // Each Trie node has a map from succeeding edge id in graph to the corresponding trie node index.
