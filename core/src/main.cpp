@@ -33,24 +33,6 @@
 
 
 int main(int argc, char** argv) {
-//  std::vector<std::vector<int> > test;
-//  std::vector<int> tmp;
-//  tmp.emplace_back(1);
-//  tmp.emplace_back(2);
-//  tmp.emplace_back(3);
-//  test.emplace_back(tmp);
-////  tmp.clear();
-//  tmp.emplace_back(4);
-//  tmp.emplace_back(5);
-//  test.emplace_back(tmp);
-//  for (auto& d: test) {
-//    for (auto& s: d) {
-//      std::cout << s << " ";
-//    }
-//    std::cout << std::endl;
-//  }
-//  return 0;
-//  
 //  ::testing::InitGoogleTest(&argc, argv);
 //  return RUN_ALL_TESTS();
   
@@ -92,38 +74,69 @@ int main(int argc, char** argv) {
   MapMatcher matcher;
   TrajectoryReformatter refomatter;
 
+  // Map matcher service.
   std::vector<GPSTrajectory> gpsTrajectories;
   std::vector<MapMatchedTrajectory> mmTrajectories;
   matcher.mapMatch(spTable, g, gIndex, 4.07, 50, 2000, gpsTrajectory, gpsTrajectories, mmTrajectories);
   
-  FileWriter segGPS("/Users/songrenchu/Develop/segGPS.txt", false);
-  FileWriter mmResult("/Users/songrenchu/Develop/mmResult.txt", false);
-  
-  FileWriter mmCheck("/Users/songrenchu/Develop/mmResultForCheck.txt", false);
-  
-  for (auto& gpsT: gpsTrajectories) {
-    segGPS.writeChar('=');
-    segGPS.writeEol();
-    gpsT.store(segGPS);
-  }
-  for (auto& mmR: mmTrajectories) {
-    mmR.store(mmResult);
-    for (auto eid: mmR.getEdgeList()) {
-      mmCheck.writeLong(g.eid2OriginalId.at(eid));
-      mmCheck.writeChar('\t');
-      mmCheck.writeInt(g.fromTo.at(eid));
-      mmCheck.writeEol();
-    }
-  }
+//  FileWriter segGPS("/Users/songrenchu/Develop/segGPS.txt", false);
+//  FileWriter mmResult("/Users/songrenchu/Develop/mmResult.txt", false);
+//
+//  FileWriter mmCheck("/Users/songrenchu/Develop/mmResultForCheck.txt", false);
+//
+//  for (auto& gpsT: gpsTrajectories) {
+//    segGPS.writeChar('=');
+//    segGPS.writeEol();
+//    gpsT.store(segGPS);
+//  }
+//  for (auto& mmR: mmTrajectories) {
+//    mmR.store(mmResult);
+//    for (auto eid: mmR.getEdgeList()) {
+//      mmCheck.writeLong(g.eid2OriginalId.at(eid));
+//      mmCheck.writeChar('\t');
+//      mmCheck.writeInt(g.fromTo.at(eid));
+//      mmCheck.writeEol();
+//    }
+//  }
   FileWriter spatialW("/Users/songrenchu/Develop/spatial.txt", false);
   FileWriter temporalW("/Users/songrenchu/Develop/temporal.txt", false);
+  FileWriter spatialWComp("/Users/songrenchu/Develop/spatial_comp.txt", true);
+  FileWriter temporalWComp("/Users/songrenchu/Develop/temporal_comp.txt", false);
+
+  SpatialCompressor sc;
+  TemporalCompressor tc;
+
+  // Reformatter service.
+  std::vector<PRESSTrajectory> pressTrajs;
   for (int i = 0; i < mmTrajectories.size(); ++i) {
     GPSTrajectory& gpsTraj = gpsTrajectories.at(i);
     MapMatchedTrajectory& mmTraj = mmTrajectories.at(i);
     PRESSTrajectory pressTraj;
     refomatter.generateTrajectory(spTable, g, gpsTraj, mmTraj, pressTraj);
-    pressTraj.store(spatialW, temporalW);
+    pressTrajs.emplace_back(pressTraj);
   }
+
+  // Training AC automaton and huffman tree from the shortest path compression.
+  std::vector<int> spComp;
+  std::vector<std::vector<int> > spCompCollect;
+  for (auto& pressTraj: pressTrajs) {
+    sc.shortestPathCompression(g, spTable, pressTraj.getSpatialComponent(), spComp);
+    spCompCollect.emplace_back(spComp);
+  }
+  ACAutomaton acAutomaton(g, spCompCollect, 3);
+  Huffman huffman(acAutomaton);
+
+  // Compressor services.
+  std::vector<bool> spatialComp;
+  std::vector<TemporalPair> tempComp;
+  for (auto& pressTraj: pressTrajs) {
+    sc.hybridSpatialCompression(g, spTable, acAutomaton, huffman, pressTraj.getSpatialComponent(), spatialComp);
+    tc.boundedTemporalCompression(pressTraj.getTemporalComponent(), tempComp, 10, 10);
+    Binary bin(spatialComp);
+    PRESSCompressedTrajectory pressCompTraj(spatialComp, tempComp);
+    pressCompTraj.store(spatialWComp, temporalWComp);
+  }
+
   return 0;
   
 ////  FileWriter fw("/Users/songrenchu/Develop/test2.txt", true);
