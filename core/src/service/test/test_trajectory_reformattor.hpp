@@ -12,7 +12,7 @@
 #include "gtest/gtest.h"
 
 #include "../../test/mock_test_obj.hpp"
-#include "../../topology/auxiliaries.hpp"
+#include "../../topology/geospatial_structures.hpp"
 #include "../../topology/trajectory.hpp"
 #include "../../util/helper.hpp"
 #include "../trajectory_reformattor.hpp"

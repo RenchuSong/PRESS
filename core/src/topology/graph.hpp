@@ -15,7 +15,7 @@
 
 #include "../io/file_reader.hpp"
 #include "../io/file_writer.hpp"
-#include "auxiliaries.hpp"
+#include "geospatial_structures.hpp"
 
 // Node in graph represents one intersection.
 class Node {

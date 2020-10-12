@@ -12,7 +12,7 @@
 #include <cmath>
 #include <vector>
 
-#include "../topology/auxiliaries.hpp"
+#include "../topology/geospatial_structures.hpp"
 
 // Meters per latitude.
 const double M_PER_LAT = 111195.19;

@@ -12,7 +12,7 @@
 #include <vector>
 #include <unordered_set>
 
-#include "./auxiliaries.hpp"
+#include "./geospatial_structures.hpp"
 #include "./graph.hpp"
 
 class GridIndex {

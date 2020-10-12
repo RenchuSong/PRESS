@@ -12,7 +12,7 @@
 #include "io/binary.hpp"
 #include "topology/graph.hpp"
 #include "topology/trajectory.hpp"
-#include "topology/auxiliaries.hpp"
+#include "topology/geospatial_structures.hpp"
 #include "topology/sp_table.hpp"
 //#include "topology/full_sp_table.hpp"
 #include "util/timer.hpp"

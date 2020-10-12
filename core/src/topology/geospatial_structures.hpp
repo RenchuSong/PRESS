@@ -1,13 +1,13 @@
 //
-//  auxiliaries.hpp
+//  geospatial_structures.hpp
 //  press-v3
 //
 //  Created by Renchu Song on 10/30/19.
 //  Copyright © 2019 Renc. All rights reserved.
 //
 
-#ifndef auxiliaries_hpp
-#define auxiliaries_hpp
+#ifndef geospatial_structures_hpp
+#define geospatial_structures_hpp
 
 #include <iostream>
 
@@ -15,7 +15,7 @@
 struct Point2D {
   double x;
   double y;
-  
+
   Point2D() { };
   Point2D(double x, double y) {
     setPosition(x, y);
@@ -33,7 +33,7 @@ struct Point2D {
 struct GPSPoint {
   double t;
   double latitude, longitude;
-  
+
   GPSPoint(double lat, double lng): GPSPoint(0, lat, lng) { }
   GPSPoint(double t, double lat, double lng): t(t), latitude(lat), longitude(lng) { }
   void print() const {
@@ -45,11 +45,11 @@ struct GPSPoint {
 struct TemporalPair {
   double t;
   double dist;
-  
+
   TemporalPair(double t, double dist): t(t), dist(dist) { }
   void print() const {
     std::cout << "(" << t << ": " << dist << ")";
   }
 };
 
-#endif /* auxiliaries_hpp */
+#endif /* geospatial_structures_hpp */

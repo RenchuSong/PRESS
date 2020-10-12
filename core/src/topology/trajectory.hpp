@@ -14,7 +14,7 @@
 #include "../io/file_reader.hpp"
 #include "../io/file_writer.hpp"
 #include "../io/binary.hpp"
-#include "auxiliaries.hpp"
+#include "geospatial_structures.hpp"
 
 // GPS trajectory.
 class GPSTrajectory {

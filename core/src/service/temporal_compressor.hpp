@@ -11,7 +11,7 @@
 
 #include <vector>
 
-#include "../topology/auxiliaries.hpp"
+#include "../topology/geospatial_structures.hpp"
 
 class TemporalCompressor {
 public:
