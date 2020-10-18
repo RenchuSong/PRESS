@@ -59,11 +59,20 @@ bool intervalThroughMBR(
   const Point2D& maxBound
 );
 
+// Linear interpolate: two points (x1, y1) and (x2, y2), get linear interpolated result at x.
+double linearInterpolate(double x1, double y1, double x2, double y2, double x);
+
 // Check if a point is within MBR x bound [minBound.x, maxBound.x], y bound [minBound.y, maxBound.y]
 bool pointInMBR(const Point2D& point, const Point2D& minBound, const Point2D& maxBound);
 
 // Check if a point is on an interval.
 bool pointOnInterval(const Point2D& point, const Point2D& p1, const Point2D& p2);
+
+// Convert 2D point to GPS point.
+GPSPoint point2D2GPS(const Point2D& point, double t);
+
+// Get the 2D position of dist along with the polyline in definition direction.
+void positionAlongPolyline(const std::vector<Point2D>& polyline, double dist, Point2D& position);
 
 // scalar product of two vectors
 double scalarProduct(const Point2D& u1, const Point2D& u2, const Point2D& v1, const Point2D& v2);

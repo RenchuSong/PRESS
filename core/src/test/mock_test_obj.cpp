@@ -83,7 +83,7 @@ MockTestObjects::MockTestObjects() {
   graph = new Graph(nodeList, edgeList);
   
   // Construct the SP table.
-  spTable = new SPTable(*graph, 200);
+  spTable = new SPTable(*graph, 20000);
 
 //  std::vector<std::vector<int> > sp;
 //  acAutomaton = new ACAutomaton(*graph, sp, 3);

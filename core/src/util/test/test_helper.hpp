@@ -313,6 +313,13 @@ TEST(HelperTest, IntervalThroughMBRTest) {
   EXPECT_FALSE(intervalThroughMBR(p8, p9, p2, p6));
 }
 
+TEST(HelperTest, LinearInterpolateTest) {
+  EXPECT_DOUBLE_EQ(2, linearInterpolate(1, 2, 2, 4, 1));
+  EXPECT_DOUBLE_EQ(2.2, linearInterpolate(1, 2, 2, 4, 1.1));
+  EXPECT_DOUBLE_EQ(3.8, linearInterpolate(1, 2, 2, 4, 1.9));
+  EXPECT_DOUBLE_EQ(4, linearInterpolate(1, 2, 2, 4, 2));
+}
+
 TEST(HelperTest, PointInMBRTest) {
   Point2D p1(-1, -2);
   Point2D p2(3, 4);
@@ -374,6 +381,50 @@ TEST(HelperTest, PointOnIntervalTest) {
   EXPECT_FALSE(pointOnInterval(p7, p5, p6));
   EXPECT_FALSE(pointOnInterval(p8, p3, p11));
   EXPECT_FALSE(pointOnInterval(p9, p8, p7));
+}
+
+TEST(HelperTest, Point2D2GPSTest) {
+  std::vector<GPSPoint> gpsPoints {
+    GPSPoint(10, 44.1, -122.5),
+    GPSPoint(10, -44.1, 122.5),
+    GPSPoint(10, 0, 0),
+    GPSPoint(10, 89.999, 180),
+    GPSPoint(10, -89.999, -180)
+  };
+  for (auto& gps: gpsPoints) {
+    auto point = gps2Point2D(gps);
+    auto convertedBackGPS = point2D2GPS(point, 0);
+    EXPECT_DOUBLE_EQ(gps.latitude, convertedBackGPS.latitude);
+    EXPECT_DOUBLE_EQ(gps.longitude, convertedBackGPS.longitude);
+  }
+}
+
+TEST(HelperTest, PositionAlongPolylineTest) {
+  std::vector<Point2D> shape {
+    Point2D(1, 1),
+    Point2D(3, 1),
+    Point2D(4, 3),
+    Point2D(5, 2)
+  };
+  Point2D result;
+  positionAlongPolyline(shape, 0, result);
+  EXPECT_DOUBLE_EQ(1, result.x);
+  EXPECT_DOUBLE_EQ(1, result.y);
+  positionAlongPolyline(shape, 1.5, result);
+  EXPECT_DOUBLE_EQ(2.5, result.x);
+  EXPECT_DOUBLE_EQ(1, result.y);
+  positionAlongPolyline(shape, 2, result);
+  EXPECT_DOUBLE_EQ(3, result.x);
+  EXPECT_DOUBLE_EQ(1, result.y);
+  positionAlongPolyline(shape, 2 + sqrt(5) / 2, result);
+  EXPECT_DOUBLE_EQ(3.5, result.x);
+  EXPECT_DOUBLE_EQ(2, result.y);
+  positionAlongPolyline(shape, 2 + sqrt(5), result);
+  EXPECT_DOUBLE_EQ(4, result.x);
+  EXPECT_DOUBLE_EQ(3, result.y);
+  positionAlongPolyline(shape, 2 + sqrt(5) + sqrt(2), result);
+  EXPECT_DOUBLE_EQ(5, result.x);
+  EXPECT_DOUBLE_EQ(2, result.y);
 }
 
 TEST(HelperTest, ScalarProductTest) {

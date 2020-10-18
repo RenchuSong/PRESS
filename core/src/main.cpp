@@ -19,6 +19,7 @@
 #include "service/spatial_compressor.hpp"
 #include "service/temporal_compressor.hpp"
 #include "service/map_matcher.hpp"
+#include "service/query_processor.hpp"
 #include <vector>
 #include <deque>
 #include "topology/ac_automaton.hpp"
@@ -33,8 +34,8 @@
 
 
 int main(int argc, char** argv) {
-//  ::testing::InitGoogleTest(&argc, argv);
-//  return RUN_ALL_TESTS();
+  ::testing::InitGoogleTest(&argc, argv);
+  return RUN_ALL_TESTS();
   
   auto graphReader = Factory::getGraphReader(GraphReaderType::SEATTLE_SAMPLE_ROADNET);
   Graph g;
@@ -159,6 +160,24 @@ int main(int argc, char** argv) {
       std::cout << edgeId << " ";
     }
     std::cout << std::endl;
+  }
+  
+  // Query precessor
+  std::cout.precision(17);
+  QueryProcessor queryProcessor;
+  Point2D whereAtResult;
+  for (auto& pressTraj: pressTrajs) {
+    double start = pressTraj.getTemporalComponent().at(0).t;
+    queryProcessor.whereAt(g, pressTraj, start, whereAtResult);
+    point2D2GPS(whereAtResult, start).print();
+    queryProcessor.whereAt(g, pressTraj, start + 10, whereAtResult);
+    point2D2GPS(whereAtResult, start + 10).print();
+    queryProcessor.whereAt(g, pressTraj, start + 100, whereAtResult);
+    point2D2GPS(whereAtResult, start + 100).print();
+    queryProcessor.whereAt(g, pressTraj, start + 1000, whereAtResult);
+    point2D2GPS(whereAtResult, start + 1000).print();
+    queryProcessor.whereAt(g, pressTraj, start + 10000, whereAtResult);
+    whereAtResult.print();
   }
 
   return 0;

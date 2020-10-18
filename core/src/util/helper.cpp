@@ -120,6 +120,11 @@ bool intervalThroughMBR(
       || intervalIntersect(p1, p2, maxBound, p4);
 }
 
+// Linear interpolate: two points (x1, y1) and (x2, y2), get linear interpolated result at x.
+double linearInterpolate(double x1, double y1, double x2, double y2, double x) {
+  return (x - x1) * (y2 - y1) / (x2 - x1) + y1;
+}
+
 // Check if a point is in an MBR.
 bool pointInMBR(const Point2D& point, const Point2D& minBound, const Point2D& maxBound) {
   return point.x >= minBound.x && point.y >= minBound.y
@@ -130,6 +135,35 @@ bool pointInMBR(const Point2D& point, const Point2D& minBound, const Point2D& ma
 bool pointOnInterval(const Point2D& point, const Point2D& p1, const Point2D& p2) {
   return fabs(vectorProduct(p1, point, p1, p2)) <= 1e-8
       && scalarProduct(point, p1, point, p2) <= 0;
+}
+
+// Convert 2D point to GPS point.
+GPSPoint point2D2GPS(const Point2D& point, double t) {
+  // TODO: eliminate unnecessary copy.
+  return GPSPoint(
+    t,
+    point.y / M_PER_LAT,
+    point.x / M_PER_LONG / cos(deg2rad(point.y / M_PER_LAT))
+  );
+}
+
+// Get the 2D position of dist along with the polyline in definition direction.
+void positionAlongPolyline(const std::vector<Point2D>& polyline, double dist, Point2D& position) {
+  auto geoSize = polyline.size();
+  for (int i = 1; i < geoSize; ++i) {
+    double len = euclideanDistance(polyline.at(i - 1), polyline.at(i));
+    if (len < dist) {
+      dist -= len;
+    } else {
+      auto& point1 = polyline.at(i - 1);
+      auto& point2 = polyline.at(i);
+      position.setPosition(
+        linearInterpolate(0, point1.x, len, point2.x, dist),
+        linearInterpolate(0, point1.y, len, point2.y, dist)
+      );
+      return;
+    }
+  }
 }
 
 // scalar product of two vectors
