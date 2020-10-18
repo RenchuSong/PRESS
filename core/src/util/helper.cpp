@@ -122,6 +122,9 @@ bool intervalThroughMBR(
 
 // Linear interpolate: two points (x1, y1) and (x2, y2), get linear interpolated result at x.
 double linearInterpolate(double x1, double y1, double x2, double y2, double x) {
+  if (x1 == x2) {
+    return y1;
+  }
   return (x - x1) * (y2 - y1) / (x2 - x1) + y1;
 }
 
@@ -133,7 +136,7 @@ bool pointInMBR(const Point2D& point, const Point2D& minBound, const Point2D& ma
 
 // Check if a point is on an interval.
 bool pointOnInterval(const Point2D& point, const Point2D& p1, const Point2D& p2) {
-  return fabs(vectorProduct(p1, point, p1, p2)) <= 1e-8
+  return fabs(vectorProduct(p1, point, p1, p2)) <= 1e-6
       && scalarProduct(point, p1, point, p2) <= 0;
 }
 

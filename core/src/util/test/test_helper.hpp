@@ -318,6 +318,7 @@ TEST(HelperTest, LinearInterpolateTest) {
   EXPECT_DOUBLE_EQ(2.2, linearInterpolate(1, 2, 2, 4, 1.1));
   EXPECT_DOUBLE_EQ(3.8, linearInterpolate(1, 2, 2, 4, 1.9));
   EXPECT_DOUBLE_EQ(4, linearInterpolate(1, 2, 2, 4, 2));
+  EXPECT_DOUBLE_EQ(2, linearInterpolate(1, 2, 1, 4, 1));
 }
 
 TEST(HelperTest, PointInMBRTest) {

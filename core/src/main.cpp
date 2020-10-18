@@ -168,16 +168,22 @@ int main(int argc, char** argv) {
   Point2D whereAtResult;
   for (auto& pressTraj: pressTrajs) {
     double start = pressTraj.getTemporalComponent().at(0).t;
-    queryProcessor.whereAt(g, pressTraj, start, whereAtResult);
-    point2D2GPS(whereAtResult, start).print();
-    queryProcessor.whereAt(g, pressTraj, start + 10, whereAtResult);
-    point2D2GPS(whereAtResult, start + 10).print();
-    queryProcessor.whereAt(g, pressTraj, start + 100, whereAtResult);
-    point2D2GPS(whereAtResult, start + 100).print();
+    for (int t = 0; t < 200; ++t) {
+      queryProcessor.whereAt(g, pressTraj, start + t, whereAtResult);
+      point2D2GPS(whereAtResult, start + t).print();
+      std::cout << std::endl << queryProcessor.whenAt(g, pressTraj, whereAtResult) - start << std::endl;
+    }
+//    queryProcessor.whereAt(g, pressTraj, start + 10, whereAtResult);
+//    point2D2GPS(whereAtResult, start + 10).print();
+//    std::cout << std::endl << queryProcessor.whenAt(g, pressTraj, whereAtResult) - start << std::endl;
+//    queryProcessor.whereAt(g, pressTraj, start + 100, whereAtResult);
+//    point2D2GPS(whereAtResult, start + 100).print();
+//    std::cout << std::endl << queryProcessor.whenAt(g, pressTraj, whereAtResult) - start << std::endl;
     queryProcessor.whereAt(g, pressTraj, start + 1000, whereAtResult);
     point2D2GPS(whereAtResult, start + 1000).print();
-    queryProcessor.whereAt(g, pressTraj, start + 10000, whereAtResult);
-    whereAtResult.print();
+    std::cout << std::endl << queryProcessor.whenAt(g, pressTraj, whereAtResult) - start << std::endl;
+//    queryProcessor.whereAt(g, pressTraj, start + 10000, whereAtResult);
+//    point2D2GPS(whereAtResult, start + 10000).print();
   }
 
   return 0;
