@@ -34,8 +34,8 @@
 
 
 int main(int argc, char** argv) {
-  ::testing::InitGoogleTest(&argc, argv);
-  return RUN_ALL_TESTS();
+//  ::testing::InitGoogleTest(&argc, argv);
+//  return RUN_ALL_TESTS();
   
   auto graphReader = Factory::getGraphReader(GraphReaderType::SEATTLE_SAMPLE_ROADNET);
   Graph g;
@@ -184,6 +184,18 @@ int main(int argc, char** argv) {
     std::cout << std::endl << queryProcessor.whenAt(g, pressTraj, whereAtResult) - start << std::endl;
 //    queryProcessor.whereAt(g, pressTraj, start + 10000, whereAtResult);
 //    point2D2GPS(whereAtResult, start + 10000).print();
+    
+    for (int i = 100; i < 300; i++) {
+      for (int j = i; j < 300; j++) {
+        std::cout << queryProcessor.range(
+          g, pressTraj, start + i, start + j,
+          g.getEdge(pressTraj.getSpatialComponent().at(2)).getShape().at(0),
+          g.getEdge(pressTraj.getSpatialComponent().at(3)).getShape().at(1)
+        );
+      }
+      std::cout << std::endl;
+    }
+
   }
 
   return 0;
