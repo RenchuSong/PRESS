@@ -26,6 +26,7 @@
 #include "topology/huffman.hpp"
 #include "./user_defined/factory.hpp"
 #include "./topology/grid_index.hpp"
+#include "./topology/auxiliary.hpp"
 
 #include "gtest/gtest.h"
 #include "util/test/test_helper.hpp"
@@ -71,6 +72,7 @@ int main(int argc, char** argv) {
 //  spTable.store(spTableWriter);
   FileReader spTableReader("/Users/songrenchu/Develop/spTable_bin.txt", true);
   SPTable spTable(spTableReader);
+  Auxiliary auxiliary(g, spTable);
   
   MapMatcher matcher;
   TrajectoryReformatter refomatter;

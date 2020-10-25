@@ -9,8 +9,19 @@
 #ifndef auxiliary_hpp
 #define auxiliary_hpp
 
+#include "./graph.hpp"
+#include "./sp_table.hpp"
+
+class SPTable;
+
 class Auxiliary {
+private:
+  size_t nodeNumber;
+  // Stores the road network distance between pair of nodes.
+  std::vector<std::unordered_map<int, double> > nodePairSPDist;
+
 public:
+  Auxiliary(const Graph& graph, const SPTable& spTable);
 };
 
 #endif /* auxiliary_hpp */

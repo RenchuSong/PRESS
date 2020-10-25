@@ -15,6 +15,7 @@
 
 #include "../io/file_reader.hpp"
 #include "../io/file_writer.hpp"
+#include "./auxiliary.hpp"
 #include "./graph.hpp"
 
 const int EDGE_NOT_EXIST = -1;
@@ -24,7 +25,8 @@ class SPTable {
 private:
   size_t nodeNumber;
   std::vector<std::unordered_map<int, int> > prevEdge;
-  
+  friend class Auxiliary;
+
 public:
   // Read optimized SP table from the file.
   SPTable(FileReader& spReader);
