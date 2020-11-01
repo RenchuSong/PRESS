@@ -173,8 +173,26 @@ int main(int argc, char** argv) {
   for (int idx = 0; idx < pressTrajs.size(); ++idx) {
     auto& pressTraj = pressTrajs.at(idx);
     auto& pressCompTraj = pressCompTrajs.at(idx);
+
+    // Decode comparison
+    std::cout << "hhhhhhh" << std::endl;
+    std::vector<int> decodeSeq;
+    std::vector<bool> bitArray;
+    pressCompTraj.getSpatialComponent().getBitArray(bitArray);
+    huffman.decode(bitArray, decodeSeq);
+    for (auto e: decodeSeq) {
+      std::cout << e << " ";
+    }
+    std::cout << std::endl;
+    int dd = 0;
+    int eid = 0;
+    while ((eid = huffman.decodeNext(pressCompTraj.getSpatialComponent(), dd)) != DECODE_FINISH) {
+      std::cout << eid << " ";
+    }
+    std::cout << std::endl;
+
     double start = pressTraj.getTemporalComponent().at(0).t;
-    for (int t = 0; t < 3600; t += 5) {
+    for (int t = 0; t < 3600; t += 2) {
       queryProcessor.whereAt(g, pressTraj, start + t, whereAtResult);
       queryProcessor.whereAt(g, spTable, huffman, acAutomaton, auxiliary, pressCompTraj, start + t, whereAtResult2);
       std::cout << euclideanDistance(whereAtResult, whereAtResult2) << " " << queryProcessor.whenAt(g, pressTraj, whereAtResult) - start << " ";

@@ -186,6 +186,7 @@ int Huffman::decodeNext(const Binary& binary, int& idx) const {
     auto c = binary.getBitByIndex(idx);
     index = c ? huffman.at(index).second : huffman.at(index).first;
     if (index < 0) {
+      ++idx;
       return -index;
     }
   }

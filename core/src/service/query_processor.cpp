@@ -189,7 +189,6 @@ void QueryProcessor::whereAt(
 ) {
   // Calculate d in temporal component at t.
   double d = getTravelDistanceAtTimestamp(graph, press.getTemporalComponent(), timeStamp);
-
   // Get position.
   auto& binary = press.getSpatialComponent();
   int idx = 0;
