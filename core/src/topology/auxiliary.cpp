@@ -79,4 +79,8 @@ double Auxiliary::getSPDistance(size_t srcIndex, size_t tgtIndex) const {
   }
 }
 
+void Auxiliary::print() const {
+  // TODO
+}
+
 Auxiliary::~Auxiliary() { }
