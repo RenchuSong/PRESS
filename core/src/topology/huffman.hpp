@@ -15,6 +15,8 @@
 #include "./ac_automaton.hpp"
 #include "../io/binary.hpp"
 
+const int DECODE_FINISH = -1;
+
 class Huffman {
 private:
   // Huffman tree size.
@@ -42,6 +44,8 @@ public:
   void encode(const std::vector<int>& spatial, std::vector<bool>& binary) const;
   // Decode binary to AC automaton node sequence.
   void decode(const std::vector<bool>& binary, std::vector<int>& spatial) const;
+  // Decode the next trie node. Return DECODE_FINISH if nothing to decode.
+  int decodeNext(const Binary& binary, int& idx) const;
 
   ~Huffman();
 };

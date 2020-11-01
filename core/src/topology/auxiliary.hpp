@@ -22,9 +22,11 @@ private:
   // Stores the road network distance between pair of nodes.
   size_t nodeNumber;
   std::vector<std::unordered_map<int, double> > nodePairSPDist;
-  // Stores the distance of each Trie node in ACActomaton.
+  // Stores the distance and starting/ending node of each Trie node in ACActomaton.
   size_t trieSize;
   std::vector<double> trieNodeDist;
+  std::vector<int> trieNodeStartNode;
+  std::vector<int> trieNodeEndNode;
 
 public:
   // Construct auxiliary structure for queries on PRESSCompressedTrajectory.
@@ -37,6 +39,10 @@ public:
   double getSPDistance(size_t srcIndex, size_t tgtIndex) const;
   // Get the trie node distance.
   double getTrieNodeDistance(size_t index) const;
+  // Get the trie node start node.
+  int getTrieNodeStartNode(size_t index) const;
+  // Get the trie node end node.
+  int getTrieNodeEndNode(size_t index) const;
   void print() const;
   ~Auxiliary();
 };

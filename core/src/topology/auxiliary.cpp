@@ -53,9 +53,11 @@ Auxiliary::Auxiliary(const Graph& graph, const SPTable& spTable, const ACAutomat
     }
     nodePairSPDist.emplace_back(targetSPDist);
   }
-  // Trie node distance.
+  // Trie node distance, start node and end node.
   trieSize = acAutomaton.getTrieSize();
   trieNodeDist.emplace_back(0);
+  trieNodeStartNode.emplace_back(-1);
+  trieNodeEndNode.emplace_back(-1);
   for (int i = 1; i < trieSize; ++i) {
     int father = acAutomaton.getFather(i);
     auto& fatherEdge = graph.getEdge(acAutomaton.getEdge(father));
@@ -65,6 +67,12 @@ Auxiliary::Auxiliary(const Graph& graph, const SPTable& spTable, const ACAutomat
       edge.getDistance() +
       getSPDistance(fatherEdge.getTargetId(), edge.getSourceId())
     );
+    if (father == ROOT_NODE) {
+      trieNodeStartNode.emplace_back(edge.getSourceId());
+    } else {
+      trieNodeStartNode.emplace_back(trieNodeStartNode.at(father));
+    }
+    trieNodeEndNode.emplace_back(edge.getTargetId());
   }
 }
 
@@ -97,6 +105,18 @@ double Auxiliary::getSPDistance(size_t srcIndex, size_t tgtIndex) const {
 double Auxiliary::getTrieNodeDistance(size_t index) const {
   assert(index < trieSize);
   return trieNodeDist.at(index);
+}
+
+// Get the trie node start node.
+int Auxiliary::getTrieNodeStartNode(size_t index) const {
+  assert(index < trieSize);
+  return trieNodeStartNode.at(index);
+}
+
+// Get the trie node end node.
+int Auxiliary::getTrieNodeEndNode(size_t index) const {
+  assert(index < trieSize);
+  return trieNodeEndNode.at(index);
 }
 
 void Auxiliary::print() const {

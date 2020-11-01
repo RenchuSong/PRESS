@@ -178,4 +178,18 @@ void Huffman::decode(const std::vector<bool>& binary, std::vector<int>& spatial)
   }
 }
 
+// Decode the next trie node. Return DECODE_FINISH if nothing to decode.
+int Huffman::decodeNext(const Binary& binary, int& idx) const {
+  auto size = binary.getLength();
+  int index = 0;
+  for (; idx < size; ++idx) {
+    auto c = binary.getBitByIndex(idx);
+    index = c ? huffman.at(index).second : huffman.at(index).first;
+    if (index < 0) {
+      return -index;
+    }
+  }
+  return DECODE_FINISH;
+}
+
 Huffman::~Huffman() { }

@@ -37,6 +37,24 @@ double getTravelDistanceAtTimestamp(
   return d;
 }
 
+// Get the 2D position along an edge sequence of distance dist.
+void getPositionAlongEdgeSequence(
+  const Graph& graph,
+  const std::vector<int>& edgeSequence,
+  double dist,
+  Point2D& result
+) {
+  for (int edgeId: edgeSequence) {
+    double len = graph.getEdge(edgeId).getDistance();
+    if (len < dist) {
+      dist -= len;
+    } else {
+      positionAlongPolyline(graph.getEdge(edgeId).getShape(), dist, result);
+      return;
+    }
+  }
+}
+
 // WhereAt query on original PRESS trajectory.
 void QueryProcessor::whereAt(
   const Graph& graph,
@@ -48,15 +66,7 @@ void QueryProcessor::whereAt(
   double d = getTravelDistanceAtTimestamp(graph, press.getTemporalComponent(), timeStamp);
 
   // Get position from spatial component.
-  for (int edgeId: press.getSpatialComponent()) {
-    double len = graph.getEdge(edgeId).getDistance();
-    if (len < d) {
-      d -= len;
-    } else {
-      positionAlongPolyline(graph.getEdge(edgeId).getShape(), d, result);
-      return;
-    }
-  }
+  getPositionAlongEdgeSequence(graph, press.getSpatialComponent(), d, result);
 }
 
 // WhenAt query on original PRESS trajectory.
@@ -169,6 +179,9 @@ bool QueryProcessor::range(
 // WhereAt query on compressed PRESS trajectory.
 void QueryProcessor::whereAt(
   const Graph& graph,
+  const SPTable& spTable,
+  const Huffman& huffman,
+  const ACAutomaton& acAutomaton,
   const Auxiliary& auxiliary,
   const PRESSCompressedTrajectory& press,
   double timeStamp,
@@ -176,5 +189,63 @@ void QueryProcessor::whereAt(
 ) {
   // Calculate d in temporal component at t.
   double d = getTravelDistanceAtTimestamp(graph, press.getTemporalComponent(), timeStamp);
-  
+
+  // Get position.
+  auto& binary = press.getSpatialComponent();
+  int idx = 0;
+  int preTrieNode = -1;
+  int trieNode = -1;
+  bool start = true;
+  while ((trieNode = huffman.decodeNext(binary, idx)) != DECODE_FINISH) {
+    // Check the gap between two trie nodes.
+    if (!start) {
+      int startNode = auxiliary.getTrieNodeEndNode(preTrieNode);
+      int endNode = auxiliary.getTrieNodeStartNode(trieNode);
+      double gapDist = auxiliary.getSPDistance(startNode, endNode);
+      if (d <= gapDist) {
+        std::vector<int> edgeSequence;
+        spTable.complementNode(graph, startNode, endNode, edgeSequence);
+        getPositionAlongEdgeSequence(graph, edgeSequence, d, result);
+        return;
+      }
+      d -= gapDist;
+    }
+    start = false;
+    preTrieNode = trieNode;
+    // Skip the complete trie node.
+    if (auxiliary.getTrieNodeDistance(trieNode) <= d) {
+      d -= auxiliary.getTrieNodeDistance(trieNode);
+      continue;
+    }
+    // Decode the trie node and find the exact position.
+    std::vector<int> edges;
+    int trieIdx = trieNode;
+    while (trieIdx != ROOT_NODE) {
+      edges.emplace_back(acAutomaton.getEdge(trieIdx));
+      trieIdx = acAutomaton.getFather(trieIdx);
+    }
+    std::reverse(edges.begin(), edges.end());
+    if (d <= graph.getEdge(edges.at(0)).getDistance()) {
+      positionAlongPolyline(graph.getEdge(edges.at(0)).getShape(), d, result);
+      return;
+    }
+    d -= graph.getEdge(edges.at(0)).getDistance();
+    for (int i = 1; i < edges.size(); ++i) {
+      int startNode = graph.getEdge(edges.at(i - 1)).getTargetId();
+      int endNode = graph.getEdge(edges.at(i)).getSourceId();
+      double gapDist = auxiliary.getSPDistance(startNode, endNode);
+      if (d <= gapDist) {
+        std::vector<int> edgeSequence;
+        spTable.complementNode(graph, startNode, endNode, edgeSequence);
+        getPositionAlongEdgeSequence(graph, edgeSequence, d, result);
+        return;
+      }
+      d -= gapDist;
+      if (d <= graph.getEdge(edges.at(i)).getDistance()) {
+        positionAlongPolyline(graph.getEdge(edges.at(i)).getShape(), d, result);
+        return;
+      }
+      d -= graph.getEdge(edges.at(i)).getDistance();
+    }
+  }
 }

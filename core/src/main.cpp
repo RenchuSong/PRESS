@@ -33,7 +33,6 @@
 #include "util/test/test_timer.hpp"
 #include "service/test/test_trajectory_reformattor.hpp"
 
-
 int main(int argc, char** argv) {
 //  ::testing::InitGoogleTest(&argc, argv);
 //  return RUN_ALL_TESTS();
@@ -72,8 +71,7 @@ int main(int argc, char** argv) {
 //  spTable.store(spTableWriter);
   FileReader spTableReader("/Users/songrenchu/Develop/spTable_bin.txt", true);
   SPTable spTable(spTableReader);
-  Auxiliary auxiliary(g, spTable);
-  
+
   MapMatcher matcher;
   TrajectoryReformatter refomatter;
 
@@ -129,6 +127,7 @@ int main(int argc, char** argv) {
   }
   ACAutomaton acAutomaton(g, spCompCollect, 3);
   Huffman huffman(acAutomaton);
+  Auxiliary auxiliary(g, spTable, acAutomaton);
 
   // Compressor services.
   Binary spatialComp;

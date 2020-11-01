@@ -37,6 +37,8 @@ public:
   int prevEdgeIndex(size_t srcIndex, size_t tgtIndex) const;
   // Append the shortest path sequence (edge1, edge2] to container.
   void complement(const Graph& graph, int edge1, int edge2, std::vector<int>& container) const;
+  // Append the shortest path sequence (node1, node2) to container.
+  void complementNode(const Graph& graph, int node1, int node2, std::vector<int>& container) const;
   void print() const;
   ~SPTable();
 };

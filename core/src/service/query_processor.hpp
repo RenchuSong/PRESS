@@ -12,6 +12,7 @@
 #include "../topology/auxiliary.hpp"
 #include "../topology/geospatial_structures.hpp"
 #include "../topology/graph.hpp"
+#include "../topology/huffman.hpp"
 #include "../topology/trajectory.hpp"
 
 class QueryProcessor {
@@ -41,6 +42,9 @@ public:
   // WhereAt query on compressed PRESS trajectory.
   void whereAt(
     const Graph& graph,
+    const SPTable& spTable,
+    const Huffman& huffman,
+    const ACAutomaton& acAutomaton,
     const Auxiliary& auxiliary,
     const PRESSCompressedTrajectory& press,
     double timeStamp,

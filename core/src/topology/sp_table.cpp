@@ -121,15 +121,27 @@ void SPTable::complement(
   int edge2,
   std::vector<int>& container
 ) const {
-  std::vector<int> tmpPath;
   auto node1 = graph.getEdge(edge1).getTargetId();
-  while (edge2 != EDGE_NOT_EXIST) {
-    tmpPath.emplace_back(edge2);
-    auto node2 = graph.getEdge(edge2).getSourceId();
-    if (node1 == node2) {
+  auto node2 = graph.getEdge(edge2).getSourceId();
+  complementNode(graph, node1, node2, container);
+  container.emplace_back(edge2);
+}
+
+// Append the shortest path sequence (node1, node2) to container.
+void SPTable::complementNode(
+  const Graph& graph,
+  int node1,
+  int node2,
+  std::vector<int>& container
+) const {
+  std::vector<int> tmpPath;
+  while (node1 != node2) {
+    int edge2 = prevEdgeIndex(node1, node2);
+    if (edge2 == EDGE_NOT_EXIST) {
       break;
     }
-    edge2 = prevEdgeIndex(node1, node2);
+    tmpPath.emplace_back(edge2);
+    node2 = graph.getEdge(edge2).getSourceId();
   }
   std::reverse(tmpPath.begin(), tmpPath.end());
   container.insert(container.end(), tmpPath.begin(), tmpPath.end());
