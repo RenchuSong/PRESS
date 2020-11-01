@@ -6,6 +6,8 @@
 //  Copyright © 2020 Renc. All rights reserved.
 //
 
+#include <cassert>
+
 #include "auxiliary.hpp"
 
 void findDistance(
@@ -51,3 +53,30 @@ Auxiliary::Auxiliary(const Graph& graph, const SPTable& spTable) {
     nodePairSPDist.emplace_back(targetSPDist);
   }
 }
+
+Auxiliary::Auxiliary(FileReader& auxReader) {
+  // TODO
+}
+
+void Auxiliary::store(FileWriter& auxWriter) {
+  // TODO
+}
+
+// Get the node number.
+size_t Auxiliary::getNodeNumber() const {
+  return nodeNumber;
+}
+
+// Get the shortest path distance between two nodes.
+double Auxiliary::getSPDistance(size_t srcIndex, size_t tgtIndex) const {
+  assert(srcIndex < nodeNumber && tgtIndex < nodeNumber);
+  auto& pairDist = nodePairSPDist.at(srcIndex);
+  if (pairDist.find((int)tgtIndex) != pairDist.end()) {
+    return pairDist.at((int)tgtIndex);
+  } else {
+    // This means the sequence is not consecutive, in this case treat as new trajectory segment.
+    return 0;
+  }
+}
+
+Auxiliary::~Auxiliary() { }
