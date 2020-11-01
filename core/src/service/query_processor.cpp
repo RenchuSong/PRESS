@@ -14,13 +14,13 @@
 // Get how long distance the vehicle travelled along the trajectory at timeStamp.
 double getTravelDistanceAtTimestamp(
   const Graph& graph,
-  const PRESSTrajectory& press,
+  const std::vector<TemporalPair>& temporalComponent,
   double timeStamp
 ) {
   double d = -1;
   bool hasResult = false;
-  auto& temporalComponent = press.getTemporalComponent();
-  for (int i = 1; i < press.getTemporalLength(); ++i) {
+  auto tempSize = temporalComponent.size();
+  for (int i = 1; i < tempSize; ++i) {
     double t1 = temporalComponent.at(i - 1).t;
     double t2 = temporalComponent.at(i).t;
     if (t1 <= timeStamp && t2 >= timeStamp) {
@@ -45,7 +45,7 @@ void QueryProcessor::whereAt(
   Point2D& result
 ) {
   // Calculate d in temporal component at t.
-  double d = getTravelDistanceAtTimestamp(graph, press, timeStamp);
+  double d = getTravelDistanceAtTimestamp(graph, press.getTemporalComponent(), timeStamp);
 
   // Get position from spatial component.
   for (int edgeId: press.getSpatialComponent()) {
@@ -114,8 +114,8 @@ bool QueryProcessor::range(
 ) {
   assert(t2 >= t1);
   // Travel distance range.
-  double d1 = getTravelDistanceAtTimestamp(graph, press, t1);
-  double d2 = getTravelDistanceAtTimestamp(graph, press, t2);
+  double d1 = getTravelDistanceAtTimestamp(graph, press.getTemporalComponent(), t1);
+  double d2 = getTravelDistanceAtTimestamp(graph, press.getTemporalComponent(), t2);
 
   double dist = 0;
   int state = 0; // 0: init; 1: cut from d1; 2: cut from d2.
@@ -164,4 +164,17 @@ bool QueryProcessor::range(
     }
   }
   return false;
+}
+
+// WhereAt query on compressed PRESS trajectory.
+void QueryProcessor::whereAt(
+  const Graph& graph,
+  const Auxiliary& auxiliary,
+  const PRESSCompressedTrajectory& press,
+  double timeStamp,
+  Point2D& result
+) {
+  // Calculate d in temporal component at t.
+  double d = getTravelDistanceAtTimestamp(graph, press.getTemporalComponent(), timeStamp);
+  
 }
