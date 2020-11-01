@@ -225,6 +225,28 @@ int main(int argc, char** argv) {
     }
 
   }
+  
+  Timer timer;
+  timer.start();
+  for (int idx = 0; idx < pressTrajs.size(); ++idx) {
+    auto& pressTraj = pressTrajs.at(idx);
+    double start = pressTraj.getTemporalComponent().at(0).t;
+    for (int t = 0; t < 6000; t++) {
+      queryProcessor.whereAt(g, pressTraj, start + t, whereAtResult);
+    }
+  }
+
+  std::cout << "Original whereAt: " << timer.getMilliSeconds() << std::endl;
+  timer.reset();
+  for (int idx = 0; idx < pressTrajs.size(); ++idx) {
+    auto& pressCompTraj = pressCompTrajs.at(idx);
+    double start = pressCompTraj.getTemporalComponent().at(0).t;
+    for (int t = 0; t < 6000; t++) {
+      queryProcessor.whereAt(g, spTable, huffman, acAutomaton, auxiliary, pressCompTraj, start + t, whereAtResult2);
+    }
+  }
+
+  std::cout << "Compressed whereAt: " << timer.getMilliSeconds() << std::endl;
 
   return 0;
 
