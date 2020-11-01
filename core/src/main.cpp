@@ -132,11 +132,13 @@ int main(int argc, char** argv) {
   // Compressor services.
   Binary spatialComp;
   std::vector<TemporalPair> tempComp;
+  std::vector<PRESSCompressedTrajectory> pressCompTrajs;
   for (auto& pressTraj: pressTrajs) {
     sc.hybridSpatialCompression(g, spTable, acAutomaton, huffman, pressTraj.getSpatialComponent(), spatialComp);
     tc.boundedTemporalCompression(pressTraj.getTemporalComponent(), tempComp, 10, 10);
     PRESSCompressedTrajectory pressCompTraj(spatialComp, tempComp);
     pressCompTraj.store(spatialWComp, temporalWComp);
+    pressCompTrajs.emplace_back(pressCompTraj);
 
 //    // Shortest path compression result.
 //    std::vector<int> spComResult;
@@ -167,12 +169,19 @@ int main(int argc, char** argv) {
   std::cout.precision(17);
   QueryProcessor queryProcessor;
   Point2D whereAtResult;
-  for (auto& pressTraj: pressTrajs) {
+  Point2D whereAtResult2;
+  for (int idx = 0; idx < pressTrajs.size(); ++idx) {
+    auto& pressTraj = pressTrajs.at(idx);
+    auto& pressCompTraj = pressCompTrajs.at(idx);
     double start = pressTraj.getTemporalComponent().at(0).t;
-    for (int t = 0; t < 200; ++t) {
+    for (int t = 0; t < 3600; t += 5) {
       queryProcessor.whereAt(g, pressTraj, start + t, whereAtResult);
+      queryProcessor.whereAt(g, spTable, huffman, acAutomaton, auxiliary, pressCompTraj, start + t, whereAtResult2);
+      std::cout << euclideanDistance(whereAtResult, whereAtResult2) << " " << queryProcessor.whenAt(g, pressTraj, whereAtResult) - start << " ";
       point2D2GPS(whereAtResult, start + t).print();
-      std::cout << std::endl << queryProcessor.whenAt(g, pressTraj, whereAtResult) - start << std::endl;
+      std::cout << " ";
+      point2D2GPS(whereAtResult2, start + t).print();
+      std::cout << std::endl;
     }
 //    queryProcessor.whereAt(g, pressTraj, start + 10, whereAtResult);
 //    point2D2GPS(whereAtResult, start + 10).print();
