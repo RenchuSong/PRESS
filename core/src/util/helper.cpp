@@ -70,6 +70,12 @@ double euclideanDistance(const Point2D& p1, const Point2D& p2) {
   return sqrt((p1.x - p2.x) * (p1.x - p2.x) + (p1.y - p2.y) * (p1.y - p2.y));
 }
 
+// Extend MBR.
+void extendMBR(std::pair<Point2D, Point2D>& mbr, const Point2D& other) {
+  mbr.first.setPosition(std::min(mbr.first.x, other.x), std::min(mbr.first.y, other.y));
+  mbr.second.setPosition(std::max(mbr.second.x, other.x), std::max(mbr.second.y, other.y));
+}
+
 // Convert GPS point to 2D point.
 Point2D gps2Point2D(const GPSPoint& gpsPoint) {
   // TODO: eliminate unnecessary copy.

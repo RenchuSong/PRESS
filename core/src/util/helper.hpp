@@ -38,6 +38,9 @@ double distProjAlongInterval(const Point2D& point, const Point2D& end1, const Po
 // Euclidean distance between 2 points.
 double euclideanDistance(const Point2D& p1, const Point2D& p2);
 
+// Extend MBR.
+void extendMBR(std::pair<Point2D, Point2D>& mbr, const Point2D& other);
+
 // Convert GPS point to 2D point.
 Point2D gps2Point2D(const GPSPoint& gpsPoint);
 

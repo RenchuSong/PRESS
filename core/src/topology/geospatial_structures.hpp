@@ -20,6 +20,9 @@ struct Point2D {
   Point2D(double x, double y) {
     setPosition(x, y);
   }
+  Point2D(const Point2D& other) {
+    setPosition(other.x, other.y);
+  }
   void setPosition(double x, double y) {
     this->x = x;
     this->y = y;

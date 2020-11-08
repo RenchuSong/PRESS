@@ -19,14 +19,20 @@ class SPTable;
 
 class Auxiliary {
 private:
-  // Stores the road network distance between pair of nodes.
   size_t nodeNumber;
+  size_t trieSize;
+  // Stores the road network distance between pair of nodes.
   std::vector<std::unordered_map<int, double> > nodePairSPDist;
   // Stores the distance and starting/ending node of each Trie node in ACActomaton.
-  size_t trieSize;
   std::vector<double> trieNodeDist;
   std::vector<int> trieNodeStartNode;
   std::vector<int> trieNodeEndNode;
+  // Stores the MBR of each edge in graph.
+  std::vector<std::pair<Point2D, Point2D> > edgeMBR;
+  // Stores the MBR of the shortest path of each pair of nodes in SP table.
+  std::vector<std::unordered_map<int, std::pair<Point2D, Point2D> > > nodePairMBR;
+  // Stores the MBR of each Trie node in ACAutomaton.
+  std::vector<std::pair<Point2D, Point2D> > trieNodeMBR;
 
 public:
   // Construct auxiliary structure for queries on PRESSCompressedTrajectory.
@@ -43,6 +49,14 @@ public:
   int getTrieNodeStartNode(size_t index) const;
   // Get the trie node end node.
   int getTrieNodeEndNode(size_t index) const;
+  // Get the shortest path distance between two nodes.
+  std::pair<Point2D, Point2D> getNodePairMBR(
+    const Graph& graph,
+    size_t srcIndex,
+    size_t tgtIndex
+  ) const;
+  // Get the trie node MBR.
+  const std::pair<Point2D, Point2D>& getTrieNodeMBR(size_t index) const;
   void print() const;
   ~Auxiliary();
 };
