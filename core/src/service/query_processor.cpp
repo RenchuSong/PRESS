@@ -55,6 +55,65 @@ void getPositionAlongEdgeSequence(
   }
 }
 
+// Get timestamp of person traveled for dist on temporal component.
+double getTimeOfTravelDistanceAtTemportalComponent(
+  const std::vector<TemporalPair>& temporalComponent,
+  double dist
+) {
+  auto len = temporalComponent.size();
+  for (int i = 1; i < len; ++i) {
+    double d1 = temporalComponent.at(i - 1).dist;
+    double d2 = temporalComponent.at(i).dist;
+    if (d1 <= dist && d2 >= dist) {
+      double t1 = temporalComponent.at(i - 1).t;
+      double t2 = temporalComponent.at(i).t;
+      return linearInterpolate(d1, t1, d2, t2, dist);
+    }
+  }
+  
+  throw "Internal error: should not be here.";
+}
+
+// Check if the position is on an edge, and update the distance.
+bool positionOnEdgeWithDistance(
+  const Graph& graph,
+  int edgeId,
+  const Point2D& position,
+  double& dist
+) {
+  auto& edge = graph.getEdge(edgeId);
+  auto& shape = edge.getShape();
+  bool onEdge = false;
+  for (int i = 1; i < shape.size(); ++i) {
+    if (pointOnInterval(position, shape.at(i - 1), shape.at(i))) {
+      onEdge = true;
+      break;
+    }
+  }
+  if (!onEdge) {
+    dist += edge.getDistance();
+    return false;
+  } else {
+    dist += distProjAlongGeo(position, shape);
+    return true;
+  }
+}
+
+// Check if the position is on an edge sequence, and update the distance.
+bool positionOnEdgeSequenceWithDistance(
+  const Graph& graph,
+  const std::vector<int>& edgeSequence,
+  const Point2D& position,
+  double& dist
+) {
+  for (auto& edge: edgeSequence) {
+    if (positionOnEdgeWithDistance(graph, edge, position, dist)) {
+      return true;
+    }
+  }
+  return false;
+}
+
 // WhereAt query on original PRESS trajectory.
 void QueryProcessor::whereAt(
   const Graph& graph,
@@ -78,19 +137,7 @@ double QueryProcessor::whenAt(
   double dist = 0;
   bool hasResult = false;
   for (int edgeId: press.getSpatialComponent()) {
-    auto& edge = graph.getEdge(edgeId);
-    auto& shape = edge.getShape();
-    bool onEdge = false;
-    for (int i = 1; i < shape.size(); ++i) {
-      if (pointOnInterval(position, shape.at(i - 1), shape.at(i))) {
-        onEdge = true;
-        break;
-      }
-    }
-    if (!onEdge) {
-      dist += edge.getDistance();
-    } else {
-      dist += distProjAlongGeo(position, shape);
+    if (positionOnEdgeWithDistance(graph, edgeId, position, dist)) {
       hasResult = true;
       break;
     }
@@ -99,18 +146,7 @@ double QueryProcessor::whenAt(
     throw "Trajectory never passed this position.";
   }
 
-  auto& temporalComponent = press.getTemporalComponent();
-  for (int i = 1; i < press.getTemporalLength(); ++i) {
-    double d1 = temporalComponent.at(i - 1).dist;
-    double d2 = temporalComponent.at(i).dist;
-    if (d1 <= dist && d2 >= dist) {
-      double t1 = temporalComponent.at(i - 1).t;
-      double t2 = temporalComponent.at(i).t;
-      return linearInterpolate(d1, t1, d2, t2, dist);
-    }
-  }
-
-  throw "Internal error: should not be here.";
+  return getTimeOfTravelDistanceAtTemportalComponent(press.getTemporalComponent(), dist);
 }
 
 // Range query on original PRESS trajectory.
@@ -247,4 +283,91 @@ void QueryProcessor::whereAt(
       d -= graph.getEdge(edges.at(i)).getDistance();
     }
   }
+}
+
+// WhenAt query on compressed PRESS trajectory.
+double QueryProcessor::whenAt(
+  const Graph& graph,
+  const SPTable& spTable,
+  const Huffman& huffman,
+  const ACAutomaton& acAutomaton,
+  const Auxiliary& auxiliary,
+  const PRESSCompressedTrajectory& press,
+  const Point2D& position
+) {
+  double dist = 0;
+  bool hasResult = false;
+  auto& binary = press.getSpatialComponent();
+  int idx = 0;
+  int preTrieNode = -1;
+  int trieNode = -1;
+  bool start = true;
+  while ((trieNode = huffman.decodeNext(binary, idx)) != DECODE_FINISH) {
+    // Check the gap between two trie nodes.
+    if (!start) {
+      int startNode = auxiliary.getTrieNodeEndNode(preTrieNode);
+      int endNode = auxiliary.getTrieNodeStartNode(trieNode);
+      const auto& mbr = auxiliary.getNodePairMBR(graph, startNode, endNode);
+      if (!pointInMBR(position, mbr.first, mbr.second)) {
+        // Skip the gap
+        dist += auxiliary.getSPDistance(startNode, endNode);
+      } else {
+        // Check the edge sequence.
+        std::vector<int> edgeSequence;
+        spTable.complementNode(graph, startNode, endNode, edgeSequence);
+        if (positionOnEdgeSequenceWithDistance(graph, edgeSequence, position, dist)) {
+          hasResult = true;
+          break;
+        }
+      }
+    }
+    start = false;
+    preTrieNode = trieNode;
+    // Skip the complete trie node.
+    auto& mbr = auxiliary.getTrieNodeMBR(trieNode);
+    if (!pointInMBR(position, mbr.first, mbr.second)) {
+      dist += auxiliary.getTrieNodeDistance(trieNode);
+      continue;
+    }
+    // Decode the trie node and find the exact distance.
+    std::vector<int> edges;
+    int trieIdx = trieNode;
+    while (trieIdx != ROOT_NODE) {
+      edges.emplace_back(acAutomaton.getEdge(trieIdx));
+      trieIdx = acAutomaton.getFather(trieIdx);
+    }
+    std::reverse(edges.begin(), edges.end());
+    if (positionOnEdgeWithDistance(graph, edges.at(0), position, dist)) {
+      hasResult = true;
+      break;
+    }
+    for (int i = 1; i < edges.size(); ++i) {
+      int startNode = graph.getEdge(edges.at(i - 1)).getTargetId();
+      int endNode = graph.getEdge(edges.at(i)).getSourceId();
+      const auto& mbr = auxiliary.getNodePairMBR(graph, startNode, endNode);
+      if (!pointInMBR(position, mbr.first, mbr.second)) {
+        dist += auxiliary.getSPDistance(startNode, endNode);
+      } else {
+        // Check the edge sequence.
+        std::vector<int> edgeSequence;
+        spTable.complementNode(graph, startNode, endNode, edgeSequence);
+        if (positionOnEdgeSequenceWithDistance(graph, edgeSequence, position, dist)) {
+          hasResult = true;
+          break;
+        }
+      }
+      if (positionOnEdgeWithDistance(graph, edges.at(i), position, dist)) {
+        hasResult = true;
+        break;
+      }
+    }
+    if (hasResult) {
+      break;
+    }
+  }
+  if (!hasResult) {
+    throw "Trajectory never passed this position.";
+  }
+
+  return getTimeOfTravelDistanceAtTemportalComponent(press.getTemporalComponent(), dist);
 }

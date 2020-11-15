@@ -170,6 +170,7 @@ int main(int argc, char** argv) {
   QueryProcessor queryProcessor;
   Point2D whereAtResult;
   Point2D whereAtResult2;
+  std::vector<Point2D> positions;
   for (int idx = 0; idx < pressTrajs.size(); ++idx) {
     auto& pressTraj = pressTrajs.at(idx);
     auto& pressCompTraj = pressCompTrajs.at(idx);
@@ -192,7 +193,7 @@ int main(int argc, char** argv) {
     std::cout << std::endl;
 
     double start = pressTraj.getTemporalComponent().at(0).t;
-    for (int t = 0; t < 3600; t += 2) {
+    for (int t = 0; t < 6000; t++) {
       queryProcessor.whereAt(g, pressTraj, start + t, whereAtResult);
       queryProcessor.whereAt(g, spTable, huffman, acAutomaton, auxiliary, pressCompTraj, start + t, whereAtResult2);
       std::cout << euclideanDistance(whereAtResult, whereAtResult2) << " " << queryProcessor.whenAt(g, pressTraj, whereAtResult) - start << " ";
@@ -200,6 +201,7 @@ int main(int argc, char** argv) {
       std::cout << " ";
       point2D2GPS(whereAtResult2, start + t).print();
       std::cout << std::endl;
+      positions.emplace_back(whereAtResult);
     }
 //    queryProcessor.whereAt(g, pressTraj, start + 10, whereAtResult);
 //    point2D2GPS(whereAtResult, start + 10).print();
@@ -226,6 +228,17 @@ int main(int argc, char** argv) {
 
   }
   
+  for (int idx = 0; idx < pressTrajs.size(); ++idx) {
+    auto& pressTraj = pressTrajs.at(idx);
+    auto& pressCompTraj = pressCompTrajs.at(idx);
+    double start = pressTraj.getTemporalComponent().at(0).t;
+    for (auto& position: positions) {
+      double t1 = queryProcessor.whenAt(g, pressTraj, position) - start;
+      double t2 = queryProcessor.whenAt(g, spTable, huffman, acAutomaton, auxiliary, pressCompTraj, position) - start;
+      std::cout << t1 << " " << t2 << " " << t1 - t2 << std::endl;
+    }
+  }
+  
   Timer timer;
   timer.start();
   for (int idx = 0; idx < pressTrajs.size(); ++idx) {
@@ -247,6 +260,24 @@ int main(int argc, char** argv) {
   }
 
   std::cout << "Compressed whereAt: " << timer.getMilliSeconds() << std::endl;
+  
+  timer.reset();
+  for (int idx = 0; idx < pressTrajs.size(); ++idx) {
+    auto& pressTraj = pressTrajs.at(idx);
+    for (auto& position: positions) {
+      queryProcessor.whenAt(g, pressTraj, position);
+    }
+  }
+  std::cout << "Original whenAt: " << timer.getMilliSeconds() << std::endl;
+  timer.reset();
+  
+  for (int idx = 0; idx < pressTrajs.size(); ++idx) {
+    auto& pressCompTraj = pressCompTrajs.at(idx);
+    for (auto& position: positions) {
+      queryProcessor.whenAt(g, spTable, huffman, acAutomaton, auxiliary, pressCompTraj, position);
+    }
+  }
+  std::cout << "Compressed whenAt: " << timer.getMilliSeconds() << std::endl;
 
   return 0;
 

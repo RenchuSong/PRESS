@@ -53,6 +53,9 @@ public:
   // WhenAt query on compressed PRESS trajectory.
   double whenAt(
     const Graph& graph,
+    const SPTable& spTable,
+    const Huffman& huffman,
+    const ACAutomaton& acAutomaton,
     const Auxiliary& auxiliary,
     const PRESSCompressedTrajectory& press,
     const Point2D& position
