@@ -21,4 +21,4 @@ It will download a sample trajectory and WA state roadnet from my google drive.
 You can change the file paths in main.cpp to run it.
 TODO: parameterize the file path
 
-To get the initial experiment code, switch to main branch and take a look at v1 folder.
+To get the initial experiment code, switch to master branch and take a look at v1 folder.
