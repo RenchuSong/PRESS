@@ -134,6 +134,16 @@ double linearInterpolate(double x1, double y1, double x2, double y2, double x) {
   return (x - x1) * (y2 - y1) / (x2 - x1) + y1;
 }
 
+// Check if two MBRs intersect.
+bool mbrIntersectWithMBR(
+  const Point2D& low1,
+  const Point2D& high1,
+  const Point2D& low2,
+  const Point2D& high2
+) {
+  return low1.x <= high2.x && low2.x <= high1.x && low1.y <= high2.y && low2.y <= high1.y;
+}
+
 // Check if a point is in an MBR.
 bool pointInMBR(const Point2D& point, const Point2D& minBound, const Point2D& maxBound) {
   return point.x >= minBound.x && point.y >= minBound.y

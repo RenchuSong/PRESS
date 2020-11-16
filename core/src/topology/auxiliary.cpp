@@ -124,7 +124,8 @@ Auxiliary::Auxiliary(const Graph& graph, const SPTable& spTable, const ACAutomat
     trieNodeEndNode.emplace_back(edge.getTargetId());
   }
   // MBR of each edge in the graph.
-  for (int i = 0; i < graph.getEdgeNumber(); ++i) {
+  edgeNumber = graph.getEdgeNumber();
+  for (int i = 0; i < edgeNumber; ++i) {
     auto& shape = graph.getEdge(i).getShape();
     auto mbr = std::make_pair(Point2D(shape.at(0)), Point2D(shape.at(0)));
     for (auto& point: shape) {
@@ -226,6 +227,12 @@ std::pair<Point2D, Point2D> Auxiliary::getNodePairMBR(
 const std::pair<Point2D, Point2D>& Auxiliary::getTrieNodeMBR(size_t index) const {
   assert(index < trieSize);
   return trieNodeMBR.at(index);
+}
+
+// Get the edge MBR.
+const std::pair<Point2D, Point2D>& Auxiliary::getEdgeMBR(size_t index) const {
+  assert(index < edgeNumber);
+  return edgeMBR.at(index);
 }
 
 void Auxiliary::print() const {

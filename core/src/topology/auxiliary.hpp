@@ -20,6 +20,7 @@ class SPTable;
 class Auxiliary {
 private:
   size_t nodeNumber;
+  size_t edgeNumber;
   size_t trieSize;
   // Stores the road network distance between pair of nodes.
   std::vector<std::unordered_map<int, double> > nodePairSPDist;
@@ -57,6 +58,8 @@ public:
   ) const;
   // Get the trie node MBR.
   const std::pair<Point2D, Point2D>& getTrieNodeMBR(size_t index) const;
+  // Get the edge MBR.
+  const std::pair<Point2D, Point2D>& getEdgeMBR(size_t index) const;
   void print() const;
   ~Auxiliary();
 };

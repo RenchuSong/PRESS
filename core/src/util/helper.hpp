@@ -65,6 +65,14 @@ bool intervalThroughMBR(
 // Linear interpolate: two points (x1, y1) and (x2, y2), get linear interpolated result at x.
 double linearInterpolate(double x1, double y1, double x2, double y2, double x);
 
+// Check if two MBRs intersect.
+bool mbrIntersectWithMBR(
+  const Point2D& low1,
+  const Point2D& high1,
+  const Point2D& low2,
+  const Point2D& high2
+);
+
 // Check if a point is within MBR x bound [minBound.x, maxBound.x], y bound [minBound.y, maxBound.y]
 bool pointInMBR(const Point2D& point, const Point2D& minBound, const Point2D& maxBound);
 

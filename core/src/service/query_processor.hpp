@@ -63,6 +63,9 @@ public:
   // Range query on compressed PRESS trajectory.
   bool range(
     const Graph& graph,
+    const SPTable& spTable,
+    const Huffman& huffman,
+    const ACAutomaton& acAutomaton,
     const Auxiliary& auxiliary,
     const PRESSCompressedTrajectory& press,
     double t1,
