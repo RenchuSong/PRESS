@@ -11,7 +11,7 @@ PRESS
 
 ## V3
 V3 version is the re-written version of the experiments for better code quality and ease of use.
-This is an ongoing effort. Currently only core algorithms of PRESS is finished. core/src/main.cpp includes sample code how to call the components of PRESS.
+This is an ongoing effort. Currently only core algorithms of PRESS are finished. core/src/main.cpp includes sample code how to call the components of PRESS.
 
 To compile the binary, run:
 ```
