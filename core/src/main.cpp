@@ -19,10 +19,12 @@
 #include "topology/sp_table.hpp"
 //#include "topology/full_sp_table.hpp"
 #include "util/timer.hpp"
+#include "util/helper.hpp"
 #include "service/spatial_compressor.hpp"
 #include "service/temporal_compressor.hpp"
 #include "service/map_matcher.hpp"
 #include "service/query_processor.hpp"
+#include "service/trajectory_reformattor.hpp"
 #include <vector>
 #include <deque>
 #include "topology/ac_automaton.hpp"
@@ -31,10 +33,10 @@
 #include "./topology/grid_index.hpp"
 #include "./topology/auxiliary.hpp"
 
-#include "gtest/gtest.h"
-#include "util/test/test_helper.hpp"
-#include "util/test/test_timer.hpp"
-#include "service/test/test_trajectory_reformattor.hpp"
+//#include "gtest/gtest.h"
+//#include "util/test/test_helper.hpp"
+//#include "util/test/test_timer.hpp"
+//#include "service/test/test_trajectory_reformattor.hpp"
 
 int main(int argc, char** argv) {
 //  ::testing::InitGoogleTest(&argc, argv);
