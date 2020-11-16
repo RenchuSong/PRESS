@@ -7,6 +7,9 @@
 //
 
 #include <iostream>
+#include <stdlib.h>     /* srand, rand */
+#include <time.h>       /* time */
+
 #include "io/file_reader.hpp"
 #include "io/file_writer.hpp"
 #include "io/binary.hpp"
@@ -225,7 +228,17 @@ int main(int argc, char** argv) {
       }
       std::cout << std::endl;
     }
-
+    
+    for (int i = 100; i < 300; i++) {
+      for (int j = i; j < 300; j++) {
+        std::cout << queryProcessor.range(
+          g, spTable, huffman, acAutomaton, auxiliary, pressCompTraj, start + i, start + j,
+          g.getEdge(pressTraj.getSpatialComponent().at(2)).getShape().at(0),
+          g.getEdge(pressTraj.getSpatialComponent().at(3)).getShape().at(1)
+        );
+      }
+      std::cout << std::endl;
+    }
   }
   
   for (int idx = 0; idx < pressTrajs.size(); ++idx) {
@@ -279,6 +292,86 @@ int main(int argc, char** argv) {
   }
   std::cout << "Compressed whenAt: " << timer.getMilliSeconds() << std::endl;
 
+  auto mbr = auxiliary.getEdgeMBR(pressTrajs.at(0).getSpatialComponent().at(0));
+  for (auto& edgeId: pressTrajs.at(0).getSpatialComponent()) {
+    const auto& mbr2 = auxiliary.getEdgeMBR(edgeId);
+    extendMBR(mbr, mbr2.first);
+    extendMBR(mbr, mbr2.second);
+  }
+  double minT = pressTrajs.at(0).getTemporalComponent().at(0).t;
+  double maxT = pressTrajs.at(0).getTemporalComponent().at(pressTrajs.at(0).getTemporalComponent().size() - 1).t;
+  srand(time(NULL));
+  std::vector<std::pair<Point2D, Point2D> > ranges;
+  std::vector<std::pair<double, double> > tRanges;
+  std::vector<bool> oriRange;
+  std::vector<bool> compRange;
+  for (int i = 0; i < 5000; ++i) {
+    int x1 = rand() % 10000;
+    int x2 = rand() % (10000 - x1);
+    int y1 = rand() % 10000;
+    int y2 = rand() % (10000 - y1);
+    int t1 = rand() % 10000;
+    int t2 = rand() % (10000 - t1);
+    ranges.emplace_back(std::make_pair(
+                                       Point2D(
+                                               linearInterpolate(0, mbr.first.x, 10000, mbr.second.x, x1),
+                                               linearInterpolate(0, mbr.first.y, 10000, mbr.second.y, y1)
+                                               ),
+                                       Point2D(
+                                               linearInterpolate(0, mbr.first.x, 10000, mbr.second.x, x1 + x2),
+                                               linearInterpolate(0, mbr.first.y, 10000, mbr.second.y, y1 + y2)
+                                               )
+                                       )
+                        );
+    tRanges.emplace_back(std::make_pair(
+                                        linearInterpolate(0, minT, 10000, maxT, t1),
+                                        linearInterpolate(0, minT, 10000, maxT, t1 + t2)
+                                        )
+                         );
+  }
+  
+  timer.reset();
+  for (int idx = 0; idx < pressTrajs.size(); ++idx) {
+    auto& pressTraj = pressTrajs.at(idx);
+    for (int i = 0; i < 5000; ++i) {
+      oriRange.push_back(queryProcessor.range(
+                           g, pressTraj,
+                           tRanges.at(i).first, tRanges.at(i).second,
+                           ranges.at(i).first, ranges.at(i).second
+                           ));
+    }
+  }
+  std::cout << "Original range: " << timer.getMilliSeconds() << std::endl;
+  timer.reset();
+
+  for (int idx = 0; idx < pressTrajs.size(); ++idx) {
+    auto& pressCompTraj = pressCompTrajs.at(idx);
+    for (int i = 0; i < 5000; ++i) {
+      compRange.push_back(queryProcessor.range(
+                           g, spTable, huffman, acAutomaton, auxiliary, pressCompTraj,
+                           tRanges.at(i).first, tRanges.at(i).second,
+                           ranges.at(i).first, ranges.at(i).second
+                           ));
+    }
+  }
+  std::cout << "Compressed range: " << timer.getMilliSeconds() << std::endl;
+
+  int counter = 0;
+  int trueCounter = 0;
+  int falseCounter = 0;
+  for (int i = 0; i < 5000; i++) {
+    if (oriRange.at(i)) {
+      ++trueCounter;
+    } else {
+      ++falseCounter;
+    }
+    if (oriRange.at(i) == compRange.at(i)) {
+      counter++;
+    }
+  }
+  std::cout << "range precision " << (double) counter / 5000 << std::endl;
+  std::cout << "range true " << trueCounter << " false " << falseCounter << std::endl;
+  
   return 0;
 
 ////  FileWriter fw("/Users/songrenchu/Develop/test2.txt", true);

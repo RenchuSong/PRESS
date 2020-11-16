@@ -513,7 +513,7 @@ bool QueryProcessor::range(
       if (dist + gapDist <= d1) {
         // Skip the whole SP pair.
         dist += gapDist;
-      } else if (dist <= d1 && dist + gapDist >= d2) {
+      } else if (dist >= d1 && dist + gapDist <= d2) {
         // Add the whole SP pair.
         spPairsToCheck.emplace_back(std::make_pair(startNode, endNode));
         dist += gapDist;
@@ -609,7 +609,7 @@ bool QueryProcessor::range(
       if (dist + gapDist <= d1) {
         // Skip the whole SP pair.
         dist += gapDist;
-      } else if (dist <= d1 && dist + gapDist >= d2) {
+      } else if (dist >= d1 && dist + gapDist <= d2) {
         // Add the whole SP pair.
         spPairsToCheck.emplace_back(std::make_pair(startNode, endNode));
         dist += gapDist;
@@ -711,6 +711,10 @@ bool QueryProcessor::range(
   }
   // For Trie Nodes.
   for (auto trieNode: trieNodesToCheck) {
+    auto& mbr = auxiliary.getTrieNodeMBR(trieNode);
+    if (!mbrIntersectWithMBR(lowerBound, upperBound, mbr.first, mbr.second)) {
+      continue;
+    }
     // Decode the trie node and find the exact stuff to check.
     std::vector<int> edges;
     int trieIdx = trieNode;
