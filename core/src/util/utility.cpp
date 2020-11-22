@@ -10,10 +10,16 @@
 
 #include <sstream>
 #include <fstream>
+#include <sys/stat.h>
 
-std::string readFile(char* path) {
+std::string readFile(const char* path) {
   std::ifstream input(path);
   std::stringstream sstr;
   while(input >> sstr.rdbuf());
   return sstr.str();
+}
+
+bool fileExists(const char* name) {
+  struct stat buffer;
+  return (stat (name, &buffer) == 0);
 }

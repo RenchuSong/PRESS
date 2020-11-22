@@ -11,6 +11,7 @@
 
 #include <iostream>
 
-std::string readFile(char* path);
+std::string readFile(const char* path);
+bool fileExists(const std::string& name);
 
 #endif /* utility_hpp */

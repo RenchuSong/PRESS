@@ -46,8 +46,9 @@ int main(int argc, char** argv) {
   auto& logsFolder = coreConfig.get("logs").get<std::string>();
   // Config logger.
   FILELog::ReportingLevel() = TLogLevel::ldebug;
-  FILE* log_fd = fopen((logsFolder + "core.log").c_str(), "a");
+  FILE* log_fd = fopen((logsFolder + "press_core_admin.log").c_str(), "a");
   Output2FILE::Stream() = log_fd;
+  // Flag if roadnetwork and auxiliary trajectory structures are constructed.
   FILE_LOG(TLogLevel::linfo) << tmpFolder << " " << dataFolder << " " << logsFolder;
 
   return 0;
