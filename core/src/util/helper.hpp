@@ -94,4 +94,7 @@ double slope(double x1, double y1, double x2, double y2);
 // vector product of two vectors
 double vectorProduct(const Point2D& u1, const Point2D& u2, const Point2D& v1, const Point2D& v2);
 
+// Read a file as a string.
+
+
 #endif /* helper_hpp */
