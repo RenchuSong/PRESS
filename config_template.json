@@ -1,0 +1,7 @@
+{
+  "core": {
+    "tmp":"[ROOT]/core/tmp/",
+    "data":"[ROOT]/data/",
+    "logs":"[ROOT]/core/logs/"
+  }
+}

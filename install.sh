@@ -20,12 +20,9 @@ g++ -o ${DIR}/bin/press_core -std=c++11 press_d.cpp */*.cpp */*/*.cpp
 fail_on_err "Building PRESS Core Failed"
 cd ${DIR}
 
-printf "${BLUE}Generating PRESS Core Config ...${NC}\n"
-rm ${DIR_CORE}/src/config
-touch ${DIR_CORE}/src/config
-fail_on_err "Failed to create PRESS Core config file"
-echo ${DIR_CORE}/tmp/ >> ${DIR_CORE}/src/config
-echo ${DIR}/data/ >> ${DIR_CORE}/src/config
+printf "${BLUE}Generating Config File ...${NC}\n"
+sed "s+\[ROOT\]+${DIR}+g" ${DIR}/config_template.json > ${DIR}/config.json
+fail_on_err "Failed to generate config file"
 
 printf "${BLUE}Downloading Sample Data ...${NC}\n"
 cd ${DIR}/data
