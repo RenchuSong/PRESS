@@ -16,7 +16,7 @@ function fail_on_err {
 
 printf "${BLUE}Building PRESS Core ...${NC}\n"
 cd ${DIR_CORE}/src
-g++ -o ${DIR}/bin/press_core -std=c++11 press_d.cpp */*.cpp */*/*.cpp
+g++ -o ${DIR}/bin/press_core -std=c++11 main.cpp */*.cpp */*/*.cpp
 fail_on_err "Building PRESS Core Failed"
 cd ${DIR}
 
