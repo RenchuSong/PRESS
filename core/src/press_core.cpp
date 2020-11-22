@@ -27,6 +27,8 @@
 //#include "user_defined/factory.hpp"
 
 #include <csignal>
+#include <sys/types.h>
+#include <sys/stat.h>
 
 #include "util/utility.hpp"
 #include "third_party/picojson.h"
@@ -62,7 +64,7 @@ int main(int argc, char** argv) {
   std::string err = picojson::parse(configJson, configRaw);
   if (!err.empty()) {
     std::cerr << "Failed to parse config file (" << argv[1] << "): " << err << std::endl;
-    exit(1);
+    exit(EXIT_FAILURE);
   }
   // Get config entries.
   auto& coreConfig = configJson.get("core");
@@ -74,6 +76,23 @@ int main(int argc, char** argv) {
   FILELog::ReportingLevel() = getLogLevel(logLevel);
   FILE* log_fd = fopen((logsFolder + "press_core_admin.log").c_str(), "a");
   Output2FILE::Stream() = log_fd;
+  // Daemonize.
+  pid_t pid, sid;
+  pid = fork();
+  if (pid < 0) {
+    exit(EXIT_FAILURE);
+  }
+  if (pid > 0) {
+    exit(EXIT_SUCCESS);
+  }
+  umask(0);
+  sid = setsid();
+  if (sid < 0) {
+    exit(EXIT_FAILURE);
+  }
+  close(STDIN_FILENO);
+  close(STDOUT_FILENO);
+  close(STDERR_FILENO);
   // Register signal handler
   signal(SIGABRT, signalHandler);
   signal(SIGFPE, signalHandler);
@@ -83,8 +102,10 @@ int main(int argc, char** argv) {
   FILE_LOG(TLogLevel::linfo) << "PRESS core started.";
   // Handle requests.
   while (true) {
-    
+    FILE_LOG(TLogLevel::linfo) << "I'm alive.";
+    std::cout << "test" << std::endl;
+    sleep(1);
   }
 
-  return 0;
+  return EXIT_SUCCESS;
 }
