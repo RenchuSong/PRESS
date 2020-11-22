@@ -34,13 +34,31 @@
 #include "third_party/picojson.h"
 #include "third_party/log.h"
 
-// Handle system signals
-void signalHandler(int signum) {
-  FILE_LOG(TLogLevel::linfo) << "Interrupt signal (" << signum << ") received. Exit PRESS core.";
-  exit(signum);
-}
+// Config for PRESS core.
+struct CoreConfig {
+  std::string tmpFolder;
+  std::string dataFolder;
+  std::string logsFolder;
+  std::string logLevel;
+  
+  CoreConfig(char* configPath) {
+    std::string configRaw = readFile(configPath);
+    picojson::value configJson;
+    std::string err = picojson::parse(configJson, configRaw);
+    if (!err.empty()) {
+      std::cerr << "Failed to parse config file (" << configPath << "): " << err << std::endl;
+      exit(EXIT_FAILURE);
+    }
+    // Get config entries.
+    auto& coreConfig = configJson.get("core");
+    tmpFolder = coreConfig.get("tmp").get<std::string>();
+    dataFolder = coreConfig.get("data").get<std::string>();
+    logsFolder = coreConfig.get("logs").get<std::string>();
+    logLevel = coreConfig.get("log_level").get<std::string>();
+  }
+};
 
-// Get log level.
+// Config logger for PRESS core.
 TLogLevel getLogLevel(std::string& level) {
   if (level == "ERROR") {
     return TLogLevel::lerror;
@@ -56,27 +74,20 @@ TLogLevel getLogLevel(std::string& level) {
   }
   return TLogLevel::linfo;
 }
-
-int main(int argc, char** argv) {
-  // Read config file.
-  std::string configRaw = readFile(argv[1]);
-  picojson::value configJson;
-  std::string err = picojson::parse(configJson, configRaw);
-  if (!err.empty()) {
-    std::cerr << "Failed to parse config file (" << argv[1] << "): " << err << std::endl;
-    exit(EXIT_FAILURE);
-  }
-  // Get config entries.
-  auto& coreConfig = configJson.get("core");
-  std::string& tmpFolder = coreConfig.get("tmp").get<std::string>();
-  auto& dataFolder = coreConfig.get("data").get<std::string>();
-  auto& logsFolder = coreConfig.get("logs").get<std::string>();
-  auto& logLevel = coreConfig.get("log_level").get<std::string>();
-  // Config logger.
-  FILELog::ReportingLevel() = getLogLevel(logLevel);
-  FILE* log_fd = fopen((logsFolder + "press_core_admin.log").c_str(), "a");
+void configLogger(CoreConfig& config) {
+  FILELog::ReportingLevel() = getLogLevel(config.logLevel);
+  FILE* log_fd = fopen((config.logsFolder + "press_core_admin.log").c_str(), "a");
   Output2FILE::Stream() = log_fd;
-  // Daemonize.
+}
+
+// Handle system signals
+void signalHandler(int signum) {
+  FILE_LOG(TLogLevel::linfo) << "Interrupt signal (" << signum << ") received. Exit PRESS core.";
+  exit(signum);
+}
+
+// Daemonize.
+void daemonize() {
   pid_t pid, sid;
   pid = fork();
   if (pid < 0) {
@@ -93,12 +104,27 @@ int main(int argc, char** argv) {
   close(STDIN_FILENO);
   close(STDOUT_FILENO);
   close(STDERR_FILENO);
-  // Register signal handler
+}
+
+// Register signal handlers.
+void registerSignalHandler() {
   signal(SIGABRT, signalHandler);
   signal(SIGFPE, signalHandler);
   signal(SIGINT, signalHandler);
   signal(SIGSEGV, signalHandler);
   signal(SIGTERM, signalHandler);
+}
+
+int main(int argc, char** argv) {
+  // Read config file.
+  CoreConfig config(argv[1]);
+  // Config logger.
+  configLogger(config);
+  // Daemonize.
+  daemonize();
+  // Register signal handlers.
+  registerSignalHandler();
+
   FILE_LOG(TLogLevel::linfo) << "PRESS core started.";
   // Handle requests.
   while (true) {
