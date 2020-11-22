@@ -26,9 +26,34 @@
 //#include "service/trajectory_reformattor.hpp"
 //#include "user_defined/factory.hpp"
 
+#include <csignal>
+
 #include "util/utility.hpp"
 #include "third_party/picojson.h"
 #include "third_party/log.h"
+
+// Handle system signals
+void signalHandler(int signum) {
+  FILE_LOG(TLogLevel::linfo) << "Interrupt signal (" << signum << ") received. Exit PRESS core.";
+  exit(signum);
+}
+
+// Get log level.
+TLogLevel getLogLevel(std::string& level) {
+  if (level == "ERROR") {
+    return TLogLevel::lerror;
+  }
+  if (level == "INFO") {
+    return TLogLevel::linfo;
+  }
+  if (level == "WARN") {
+    return TLogLevel::lwarning;
+  }
+  if (level == "DEBUG") {
+    return TLogLevel::ldebug;
+  }
+  return TLogLevel::linfo;
+}
 
 int main(int argc, char** argv) {
   // Read config file.
@@ -37,19 +62,29 @@ int main(int argc, char** argv) {
   std::string err = picojson::parse(configJson, configRaw);
   if (!err.empty()) {
     std::cerr << "Failed to parse config file (" << argv[1] << "): " << err << std::endl;
-    return 1;
+    exit(1);
   }
   // Get config entries.
   auto& coreConfig = configJson.get("core");
   std::string& tmpFolder = coreConfig.get("tmp").get<std::string>();
   auto& dataFolder = coreConfig.get("data").get<std::string>();
   auto& logsFolder = coreConfig.get("logs").get<std::string>();
+  auto& logLevel = coreConfig.get("log_level").get<std::string>();
   // Config logger.
-  FILELog::ReportingLevel() = TLogLevel::ldebug;
+  FILELog::ReportingLevel() = getLogLevel(logLevel);
   FILE* log_fd = fopen((logsFolder + "press_core_admin.log").c_str(), "a");
   Output2FILE::Stream() = log_fd;
-  // Flag if roadnetwork and auxiliary trajectory structures are constructed.
-  FILE_LOG(TLogLevel::linfo) << tmpFolder << " " << dataFolder << " " << logsFolder;
+  // Register signal handler
+  signal(SIGABRT, signalHandler);
+  signal(SIGFPE, signalHandler);
+  signal(SIGINT, signalHandler);
+  signal(SIGSEGV, signalHandler);
+  signal(SIGTERM, signalHandler);
+  FILE_LOG(TLogLevel::linfo) << "PRESS core started.";
+  // Handle requests.
+  while (true) {
+    
+  }
 
   return 0;
 }

@@ -2,6 +2,7 @@
   "core": {
     "tmp":"[ROOT]/core/tmp/",
     "data":"[ROOT]/data/",
-    "logs":"[ROOT]/core/logs/"
+    "logs":"[ROOT]/core/logs/",
+    "log_level":"DEBUG"
   }
 }
