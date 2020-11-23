@@ -29,6 +29,7 @@
 #include <csignal>
 #include <sys/types.h>
 #include <sys/stat.h>
+#include <fstream>
 
 #include "util/utility.hpp"
 #include "third_party/picojson.h"
@@ -115,6 +116,34 @@ void registerSignalHandler() {
   signal(SIGTERM, signalHandler);
 }
 
+struct ReqRespHelper {
+  std::string inPath;
+  std::string outPath;
+  std::ifstream reqStream;
+  std::ofstream respStream;
+  std::string data;
+  ReqRespHelper(char* inPath, const char* outPath): inPath(inPath), outPath(outPath) { }
+  std::string& readNext() {
+    reqStream.open(inPath, std::ifstream::in);
+    if (!reqStream.is_open()) {
+      FILE_LOG(TLogLevel::lerror) << "Fail to open request stream.";
+      exit(EXIT_FAILURE);
+    }
+    std::getline(reqStream, data);
+    reqStream.close();
+    return data;
+  }
+  void writeNext(std::string& data) {
+    respStream.open(outPath, std::ofstream::out);
+    if (!respStream.is_open()) {
+      FILE_LOG(TLogLevel::lerror) << "Fail to open response stream.";
+      exit(EXIT_FAILURE);
+    }
+    respStream << data;
+    respStream.close();
+  }
+};
+
 int main(int argc, char** argv) {
   // Read config file.
   CoreConfig config(argv[1]);
@@ -124,13 +153,15 @@ int main(int argc, char** argv) {
   daemonize();
   // Register signal handlers.
   registerSignalHandler();
-
+  // Open communication channel.
+  ReqRespHelper reqRespHelper(argv[2], argv[3]);
   FILE_LOG(TLogLevel::linfo) << "PRESS core started.";
   // Handle requests.
   while (true) {
-    FILE_LOG(TLogLevel::linfo) << "I'm alive.";
-    std::cout << "test" << std::endl;
-    sleep(1);
+    auto& input = reqRespHelper.readNext();
+    FILE_LOG(TLogLevel::linfo) << "Receive packet >> " << input;
+    reqRespHelper.writeNext(input);
+    FILE_LOG(TLogLevel::linfo) << "Responded";
   }
 
   return EXIT_SUCCESS;
