@@ -9,7 +9,7 @@
 //#include "io/file_reader.hpp"
 //#include "io/file_writer.hpp"
 //#include "io/binary.hpp"
-//#include "topology/graph.hpp"
+#include "topology/graph.hpp"
 //#include "topology/trajectory.hpp"
 //#include "topology/geospatial_structures.hpp"
 //#include "topology/sp_table.hpp"
@@ -24,7 +24,7 @@
 //#include "service/map_matcher.hpp"
 //#include "service/query_processor.hpp"
 //#include "service/trajectory_reformattor.hpp"
-//#include "user_defined/factory.hpp"
+#include "user_defined/factory.hpp"
 
 #include <csignal>
 #include <sys/types.h>
@@ -35,6 +35,11 @@
 #include "third_party/picojson.h"
 #include "third_party/log.h"
 
+// Global states and storage.
+bool isRoadnetReady = false;
+std::string roadnetName;
+Graph roadnet;
+
 // Config for PRESS core.
 struct CoreConfig {
   std::string tmpFolder;
@@ -42,7 +47,7 @@ struct CoreConfig {
   std::string logsFolder;
   std::string logLevel;
   
-  CoreConfig(char* configPath) {
+  void setConfig(char* configPath) {
     std::string configRaw = readFile(configPath);
     picojson::value configJson;
     std::string err = picojson::parse(configJson, configRaw);
@@ -58,6 +63,7 @@ struct CoreConfig {
     logLevel = coreConfig.get("log_level").get<std::string>();
   }
 };
+CoreConfig config;
 
 // Config logger for PRESS core.
 TLogLevel getLogLevel(std::string& level) {
@@ -75,7 +81,7 @@ TLogLevel getLogLevel(std::string& level) {
   }
   return TLogLevel::linfo;
 }
-void configLogger(CoreConfig& config) {
+void configLogger() {
   FILELog::ReportingLevel() = getLogLevel(config.logLevel);
   FILE* log_fd = fopen((config.logsFolder + "press_core_admin.log").c_str(), "a");
   Output2FILE::Stream() = log_fd;
@@ -116,13 +122,39 @@ void registerSignalHandler() {
   signal(SIGTERM, signalHandler);
 }
 
+// Clear everything.
+void clearSystem() {
+  isRoadnetReady = false;
+}
+
+// Error response.
+std::string errorResponse(std::string errMsg) {
+  return std::string("{\"success\": false, \"message\": \"") + errMsg + "\"}";
+}
+
+// Handle read roadnet from ${DATA}/[folder]/road_network.txt
+void handleReadRoadnetFromFile(picojson::value& requestJson, std::string& response) {
+  clearSystem();
+  auto& folder = requestJson.get("folder").get<std::string>();
+  auto graphReaderType = getGraphReaderType(requestJson.get("graphReaderType").get<std::string>());
+  auto graphReader = Factory::getGraphReader(graphReaderType);
+  roadnetName = folder;
+  graphReader->readGraph(config.dataFolder + folder + "/road_network.txt", roadnet);
+  isRoadnetReady = true;
+  response = std::string("{\"success\": true, \"message\": \"Roadnet of dataset ")
+    + folder + " is loaded.\"}";
+}
+
 struct ReqRespHelper {
   std::string inPath;
   std::string outPath;
   std::ifstream reqStream;
   std::ofstream respStream;
   std::string data;
+  std::string response;
+
   ReqRespHelper(char* inPath, const char* outPath): inPath(inPath), outPath(outPath) { }
+
   std::string& readNext() {
     reqStream.open(inPath, std::ifstream::in);
     if (!reqStream.is_open()) {
@@ -133,6 +165,7 @@ struct ReqRespHelper {
     reqStream.close();
     return data;
   }
+
   void writeNext(std::string& data) {
     respStream.open(outPath, std::ofstream::out);
     if (!respStream.is_open()) {
@@ -142,15 +175,43 @@ struct ReqRespHelper {
     respStream << data;
     respStream.close();
   }
+
+  void handleRequest(std::string& request) {
+    // Parse request.
+    picojson::value requestJson;
+    std::string err = picojson::parse(requestJson, request);
+    if (!err.empty()) {
+      FILE_LOG(TLogLevel::lerror) << "Failed to parse request (" << request << ")";
+      auto errResp = errorResponse("Failed to parse request.");
+      writeNext(errResp);
+      return;
+    }
+    try {
+      auto& cmd = requestJson.get("cmd").get<std::string>();
+      // Handles each type of requests.
+      if (cmd == "read_roadnet_from_file") {
+        handleReadRoadnetFromFile(requestJson, response);
+      } else {
+        FILE_LOG(TLogLevel::lerror) << "Unknown request: " << request;
+        response = errorResponse("Unknown request.");
+      }
+      writeNext(response);
+      FILE_LOG(TLogLevel::ldebug) << "Responded packet << " << response;
+    } catch (...) {
+      FILE_LOG(TLogLevel::lerror) << "Failed to handle request (" << request << ")";
+      auto errResp = errorResponse("Failed to handle request.");
+      writeNext(errResp);
+    }
+  }
 };
 
 int main(int argc, char** argv) {
   // Read config file.
-  CoreConfig config(argv[1]);
+  config.setConfig(argv[1]);
   // Config logger.
-  configLogger(config);
+  configLogger();
   // Daemonize.
-  daemonize();
+//  daemonize();
   // Register signal handlers.
   registerSignalHandler();
   // Open communication channel.
@@ -158,10 +219,10 @@ int main(int argc, char** argv) {
   FILE_LOG(TLogLevel::linfo) << "PRESS core started.";
   // Handle requests.
   while (true) {
-    auto& input = reqRespHelper.readNext();
-    FILE_LOG(TLogLevel::linfo) << "Receive packet >> " << input;
-    reqRespHelper.writeNext(input);
-    FILE_LOG(TLogLevel::linfo) << "Responded";
+    auto& request = reqRespHelper.readNext();
+    FILE_LOG(TLogLevel::linfo) << "Request received >> " << request;
+    reqRespHelper.handleRequest(request);
+    FILE_LOG(TLogLevel::linfo) << "Response sent";
   }
 
   return EXIT_SUCCESS;

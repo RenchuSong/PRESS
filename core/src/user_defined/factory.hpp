@@ -13,7 +13,7 @@
 
 #include "./gps_trajectory_readers/gps_trajectory_reader_base.hpp"
 #include "./graph_readers/graph_reader_base.hpp"
-
+#include "../third_party/log.h"
 
 // Different types of graph readers.
 enum GraphReaderType {
@@ -21,12 +21,17 @@ enum GraphReaderType {
   // [USER DEFINE]: Define your own graph reader types here.
 };
 
+// Get graph reader type from string name.
+GraphReaderType getGraphReaderType(const std::string& graphReaderType);
+
 // Different types of GPS trajectory readers.
 enum GPSTrajectoryReaderType {
   SEATTLE_SAMPLE_GPS,
   // [USER DEFINE]: Define your own GPS trajectory reader types here.
 };
 
+// Get GPS trajectory reader type from string name.
+GPSTrajectoryReaderType getGPSTrajectoryReaderType(const std::string& gpsTrajectoryReaderType);
 
 /**
  * A simple factory pattern interface for users to provide customized implementations of

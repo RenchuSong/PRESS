@@ -16,6 +16,28 @@
 #include "./graph_readers/graph_reader_seattle_sample.hpp"
 // [USER DEFINE]: Include your own graph reader types here.
 
+// Get graph reader type from string name.
+GraphReaderType getGraphReaderType(const std::string& graphReaderType) {
+  if (graphReaderType == "SEATTLE_SAMPLE_ROADNET") {
+    return GraphReaderType::SEATTLE_SAMPLE_ROADNET;
+  }
+  // [USER DEFINE]: Define your own graph reader types mapping here.
+  
+  FILE_LOG(TLogLevel::lerror) << "Undefined graph reader type: " << graphReaderType;
+  throw "Undefined graph reader type";
+}
+
+// Get GPS trajectory reader type from string name.
+GPSTrajectoryReaderType getGPSTrajectoryReaderType(const std::string& gpsTrajectoryReaderType) {
+  if (gpsTrajectoryReaderType == "SEATTLE_SAMPLE_GPS") {
+    return GPSTrajectoryReaderType::SEATTLE_SAMPLE_GPS;
+  }
+  // [USER DEFINE]: Define your own GPS trajectory reader types here.
+  
+  FILE_LOG(TLogLevel::lerror) << "Undefined gps trajectory reader type: "
+    << gpsTrajectoryReaderType;
+  throw "Undefined gps trajectory reader type";
+}
 
 std::shared_ptr<GraphReaderBase> Factory::getGraphReader(const GraphReaderType grType) {
   switch (grType) {
@@ -26,7 +48,7 @@ std::shared_ptr<GraphReaderBase> Factory::getGraphReader(const GraphReaderType g
   }
   
   // Should not go to this point. Check above if you handled all graph reader types.
-  assert(false);
+  throw "Undefined graph reader type";
 }
 
 std::shared_ptr<GPSTrajectoryReaderBase> Factory::getGPSTrajectoryReader(
@@ -40,5 +62,5 @@ std::shared_ptr<GPSTrajectoryReaderBase> Factory::getGPSTrajectoryReader(
   }
   
   // Should not go to this point. Check above if you handled all gps trajectory reader types.
-  assert(false);
+  throw "Undefined gps trajectory reader type";
 }
