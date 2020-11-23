@@ -12,6 +12,7 @@
 #include <iostream>
 
 std::string readFile(const char* path);
-bool fileExists(const std::string& name);
+bool fileExists(const char* name);
+bool createFolder(const std::string& dirName);
 
 #endif /* utility_hpp */

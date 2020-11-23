@@ -7,7 +7,7 @@
 //
 
 //#include "io/file_reader.hpp"
-//#include "io/file_writer.hpp"
+#include "io/file_writer.hpp"
 //#include "io/binary.hpp"
 #include "topology/graph.hpp"
 //#include "topology/trajectory.hpp"
@@ -132,7 +132,12 @@ std::string errorResponse(std::string errMsg) {
   return std::string("{\"success\": false, \"message\": \"") + errMsg + "\"}";
 }
 
-// Handle read roadnet from ${DATA}/[folder]/road_network.txt
+// Success response with message.
+std::string successResponse(std::string msg) {
+  return std::string("{\"success\": true, \"message\": \"") + msg + "\"}";
+}
+
+// Handle read roadnet from ${DATA_FOLDER}/[folder]/road_network.txt
 void handleReadRoadnetFromFile(picojson::value& requestJson, std::string& response) {
   clearSystem();
   auto& folder = requestJson.get("folder").get<std::string>();
@@ -141,8 +146,25 @@ void handleReadRoadnetFromFile(picojson::value& requestJson, std::string& respon
   roadnetName = folder;
   graphReader->readGraph(config.dataFolder + folder + "/road_network.txt", roadnet);
   isRoadnetReady = true;
-  response = std::string("{\"success\": true, \"message\": \"Roadnet of dataset ")
-    + folder + " is loaded.\"}";
+  response = successResponse("Roadnet of dataset " + folder + " is loaded.");
+}
+
+// Handle dump roadnet to ${TMP_FOLDER}/[folder]/road_network.bin
+void handleDumpRoadnetToBinary(picojson::value& requestJson, std::string& response) {
+  if (!isRoadnetReady) {
+    response = errorResponse("Roadnet is not ready.");
+    return;
+  }
+  auto folder = config.tmpFolder + requestJson.get("folder").get<std::string>();
+  if (!fileExists(folder.c_str()) && !createFolder(folder)) {
+    FILE_LOG(TLogLevel::lerror) << "Failed to create storage folder: " << folder;
+    response = successResponse("Failed to create storage folder.");
+    return;
+  }
+  auto fileName = folder + "/road_network.bin";
+  FileWriter graphWriter(fileName.c_str(), true);
+  roadnet.store(graphWriter);
+  response = successResponse("Roadnet is dumped to " + fileName + ".");
 }
 
 struct ReqRespHelper {
@@ -191,6 +213,8 @@ struct ReqRespHelper {
       // Handles each type of requests.
       if (cmd == "read_roadnet_from_file") {
         handleReadRoadnetFromFile(requestJson, response);
+      } else if (cmd == "dump_roadnet_to_binary") {
+        handleDumpRoadnetToBinary(requestJson, response);
       } else {
         FILE_LOG(TLogLevel::lerror) << "Unknown request: " << request;
         response = errorResponse("Unknown request.");
