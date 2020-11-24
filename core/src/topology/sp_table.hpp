@@ -28,10 +28,13 @@ private:
   friend class Auxiliary;
 
 public:
+  SPTable();
   // Read optimized SP table from the file.
   SPTable(FileReader& spReader);
   // Calculate optimized SP table of the graph. Only store edges within the maxDist.
   SPTable(Graph& graph, double maxDist);
+  void build(Graph& graph, double maxDist);
+  void load(FileReader& spReader);
   void store(FileWriter& spWriter);
   size_t getNodeNumber() const;
   int prevEdgeIndex(size_t srcIndex, size_t tgtIndex) const;

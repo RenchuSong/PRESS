@@ -82,12 +82,21 @@ int main(int argc, char** argv) {
   // Dump grid index to binary.
   reqRespHelper.writeNext("{\"Cmd\":\"DumpGridIndexToBinary\", \"Folder\":\"WA_roadnetwork\"}");
   reqRespHelper.explainResponse(reqRespHelper.readNext());
+  // Build SP table.
+  reqRespHelper.writeNext("{\"Cmd\":\"BuildSPTable\", \"MaxDist\":4000}");
+  reqRespHelper.explainResponse(reqRespHelper.readNext());
+  // Dump SP table to binary.
+  reqRespHelper.writeNext("{\"Cmd\":\"DumpSPTableToBinary\", \"Folder\":\"WA_roadnetwork\"}");
+  reqRespHelper.explainResponse(reqRespHelper.readNext());
 
   // Load roadnet from binary.
   reqRespHelper.writeNext("{\"Cmd\":\"LoadRoadnetFromBinary\", \"Folder\":\"WA_roadnetwork\"}");
   reqRespHelper.explainResponse(reqRespHelper.readNext());
   // Load grid index from binary.
   reqRespHelper.writeNext("{\"Cmd\":\"LoadGridIndexFromBinary\", \"Folder\":\"WA_roadnetwork\"}");
+  reqRespHelper.explainResponse(reqRespHelper.readNext());
+  // Load SP table from binary.
+  reqRespHelper.writeNext("{\"Cmd\":\"LoadSPTableFromBinary\", \"Folder\":\"WA_roadnetwork\"}");
   reqRespHelper.explainResponse(reqRespHelper.readNext());
 
   return EXIT_SUCCESS;

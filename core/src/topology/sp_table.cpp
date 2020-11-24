@@ -10,8 +10,20 @@
 
 #include "sp_table.hpp"
 
+SPTable::SPTable() { }
+
 // Read the optimized SP table from a file.
 SPTable::SPTable(FileReader& spReader) {
+  load(spReader);
+}
+
+// Calculate the optimized SP table of a given graph.
+// Dijkstra algorithm.
+SPTable::SPTable(Graph& graph, double maxDist) {
+  build(graph, maxDist);
+}
+
+void SPTable::load(FileReader& spReader) {
   nodeNumber = spReader.nextInt();
   for (auto i = 0; i < nodeNumber; i++) {
     std::unordered_map<int, int> nodePrevEdge;
@@ -27,7 +39,7 @@ SPTable::SPTable(FileReader& spReader) {
 
 // Calculate the optimized SP table of a given graph.
 // Dijkstra algorithm.
-SPTable::SPTable(Graph& graph, double maxDist) {
+void SPTable::build(Graph& graph, double maxDist) {
   nodeNumber = graph.getNodeNumber();
   std::cout << nodeNumber << std::endl;
   

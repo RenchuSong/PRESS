@@ -10,7 +10,7 @@
 #include "topology/graph.hpp"
 //#include "topology/trajectory.hpp"
 //#include "topology/geospatial_structures.hpp"
-//#include "topology/sp_table.hpp"
+#include "topology/sp_table.hpp"
 #include "topology/grid_index.hpp"
 //#include "topology/auxiliary.hpp"
 //#include "topology/ac_automaton.hpp"
@@ -36,14 +36,11 @@
 // Global states and storage.
 bool roadnetReady = false;
 bool gridIndexReady = false;
+bool spTableReady = false;
 std::string roadnetName;
 Graph roadnet;
 GridIndex gridIndex;
-
-enum Component {
-  ROADNET,
-  GRID_INDEX,
-};
+SPTable spTable;
 
 // Config for PRESS core.
 struct CoreConfig {
@@ -51,7 +48,7 @@ struct CoreConfig {
   std::string dataFolder;
   std::string logsFolder;
   std::string logLevel;
-  
+
   void setConfig(char* configPath) {
     std::string configRaw = readFile(configPath);
     picojson::value configJson;
@@ -127,16 +124,26 @@ void registerSignalHandler() {
   signal(SIGTERM, signalHandler);
 }
 
+enum Component {
+  ROADNET,
+  GRID_INDEX,
+  SP_TABLE,
+};
 // Clear a component.
 void clearComponent(Component comp) {
   switch (comp) {
     case Component::ROADNET: {
       roadnetReady = false;
       gridIndexReady = false;
+      spTableReady = false;
       break;
     }
     case Component::GRID_INDEX: {
       gridIndexReady = false;
+      break;
+    }
+    case Component::SP_TABLE: {
+      spTableReady = false;
       break;
     }
   }
@@ -253,6 +260,53 @@ void handleLoadGridIndexFromBinary(picojson::value& requestJson, std::string& re
   response = successResponse("Grid index is loaded from " + fileName + ".");
 }
 
+// Handle build SP table from loaded roadnet.
+void handleBuildSPTable(picojson::value& requestJson, std::string& response) {
+  if (!roadnetReady) {
+    response = errorResponse("Roadnet is not ready.");
+    return;
+  }
+  clearComponent(Component::SP_TABLE);
+  auto maxDist = requestJson.get("MaxDist").get<double>();
+  spTable.build(roadnet, maxDist);
+  spTableReady = true;
+  response = successResponse("Built SP table from roadnet " + roadnetName + ".");
+}
+
+// Handle dump SP table to ${TMP_FOLDER}/[folder]/sp_table.bin
+void handleDumpSPTableToBinary(picojson::value& requestJson, std::string& response) {
+  if (!spTableReady) {
+    response = errorResponse("SP table is not ready.");
+    return;
+  }
+  auto folder = config.tmpFolder + requestJson.get("Folder").get<std::string>();
+  if (!fileExists(folder.c_str()) && !createFolder(folder)) {
+    FILE_LOG(TLogLevel::lerror) << "Failed to create storage folder: " << folder;
+    response = errorResponse("Failed to create storage folder.");
+    return;
+  }
+  auto fileName = folder + "/sp_table.bin";
+  FileWriter spTableWriter(fileName.c_str(), true);
+  spTable.store(spTableWriter);
+  response = successResponse("SP table is dumped to " + fileName + ".");
+}
+
+// Handle load SP table from ${TMP_FOLDER}/[folder]/sp_table.bin
+void handleLoadSPTableFromBinary(picojson::value& requestJson, std::string& response) {
+  clearComponent(Component::SP_TABLE);
+  auto folder = config.tmpFolder + requestJson.get("Folder").get<std::string>();
+  auto fileName = folder + "/sp_table.bin";
+  if (!fileExists(fileName.c_str())) {
+    FILE_LOG(TLogLevel::lerror) << "SP table binary file does not exist: " << fileName;
+    response = errorResponse("Failed to load SP table.");
+    return;
+  }
+  FileReader spTableReader(fileName.c_str(), true);
+  spTable.load(spTableReader);
+  spTableReady = true;
+  response = successResponse("SP table is loaded from " + fileName + ".");
+}
+
 struct ReqRespHelper {
   std::string inPath;
   std::string outPath;
@@ -309,6 +363,12 @@ struct ReqRespHelper {
         handleDumpGridIndexToBinary(requestJson, response);
       } else if (cmd == "LoadGridIndexFromBinary") {
         handleLoadGridIndexFromBinary(requestJson, response);
+      } else if (cmd == "BuildSPTable") {
+        handleBuildSPTable(requestJson, response);
+      } else if (cmd == "DumpSPTableToBinary") {
+        handleDumpSPTableToBinary(requestJson, response);
+      } else if (cmd == "LoadSPTableFromBinary") {
+        handleLoadSPTableFromBinary(requestJson, response);
       } else {
         FILE_LOG(TLogLevel::lerror) << "Unknown request: " << request;
         response = errorResponse("Unknown request.");
