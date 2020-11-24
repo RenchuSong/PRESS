@@ -156,9 +156,15 @@ std::string successResponse(std::string msg) {
 void handleReadRoadnetFromDataSource(picojson::value& requestJson, std::string& response) {
   clearComponent(Component::ROADNET);
   auto& folder = requestJson.get("Folder").get<std::string>();
+  auto fileName = config.dataFolder + folder + "/road_network.txt";
+  if (!fileExists(fileName.c_str())) {
+    FILE_LOG(TLogLevel::lerror) << "Data source file doesn't exist: " << folder;
+    response = errorResponse("Data source file doesn't exist.");
+    return;
+  }
   auto graphReaderType = getGraphReaderType(requestJson.get("GraphReaderType").get<std::string>());
   auto graphReader = Factory::getGraphReader(graphReaderType);
-  graphReader->readGraph(config.dataFolder + folder + "/road_network.txt", roadnet);
+  graphReader->readGraph(fileName, roadnet);
   roadnetReady = true;
   roadnetName = folder;
   response = successResponse("Roadnet of dataset " + folder + " is loaded.");
@@ -209,7 +215,6 @@ void handleBuildGridIndex(picojson::value& requestJson, std::string& response) {
   auto gridWidth = requestJson.get("CellWidth").get<double>();
   auto gridHeight = requestJson.get("CellHeight").get<double>();
   gridIndex.build(roadnet, gridWidth, gridHeight);
-  auto folder = config.tmpFolder + requestJson.get("Folder").get<std::string>();
   gridIndexReady = true;
   response = successResponse("Built grid index from roadnet " + roadnetName + ".");
 }
