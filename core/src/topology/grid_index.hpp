@@ -28,12 +28,15 @@ private:
   std::vector<std::unordered_set<int> > index;
 
 public:
+  GridIndex();
   // Build grid index given graph and index cell width/height.
   GridIndex(Graph& graph, double width, double height);
   // Load grid index from file.
   GridIndex(FileReader& gridIndexReader);
   // Search nearby edges.
   void search(const Point2D& position, double dist, std::unordered_set<int>& edges) const;
+  void load(FileReader& gridIndexReader);
+  void build(Graph& graph, double width, double height);
   void store(FileWriter& gridIndexWriter);
   void print() const;
   ~GridIndex();

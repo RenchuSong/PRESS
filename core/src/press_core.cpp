@@ -11,7 +11,7 @@
 //#include "topology/trajectory.hpp"
 //#include "topology/geospatial_structures.hpp"
 //#include "topology/sp_table.hpp"
-//#include "topology/grid_index.hpp"
+#include "topology/grid_index.hpp"
 //#include "topology/auxiliary.hpp"
 //#include "topology/ac_automaton.hpp"
 //#include "topology/huffman.hpp"
@@ -34,9 +34,16 @@
 #include "third_party/log.h"
 
 // Global states and storage.
-bool isRoadnetReady = false;
+bool roadnetReady = false;
+bool gridIndexReady = false;
 std::string roadnetName;
 Graph roadnet;
+GridIndex gridIndex;
+
+enum Component {
+  ROADNET,
+  GRID_INDEX,
+};
 
 // Config for PRESS core.
 struct CoreConfig {
@@ -120,9 +127,19 @@ void registerSignalHandler() {
   signal(SIGTERM, signalHandler);
 }
 
-// Clear everything.
-void clearSystem() {
-  isRoadnetReady = false;
+// Clear a component.
+void clearComponent(Component comp) {
+  switch (comp) {
+    case Component::ROADNET: {
+      roadnetReady = false;
+      gridIndexReady = false;
+      break;
+    }
+    case Component::GRID_INDEX: {
+      gridIndexReady = false;
+      break;
+    }
+  }
 }
 
 // Error response.
@@ -137,19 +154,19 @@ std::string successResponse(std::string msg) {
 
 // Handle read roadnet from ${DATA_FOLDER}/[folder]/road_network.txt
 void handleReadRoadnetFromDataSource(picojson::value& requestJson, std::string& response) {
-  clearSystem();
+  clearComponent(Component::ROADNET);
   auto& folder = requestJson.get("Folder").get<std::string>();
   auto graphReaderType = getGraphReaderType(requestJson.get("GraphReaderType").get<std::string>());
   auto graphReader = Factory::getGraphReader(graphReaderType);
   graphReader->readGraph(config.dataFolder + folder + "/road_network.txt", roadnet);
-  isRoadnetReady = true;
+  roadnetReady = true;
   roadnetName = folder;
   response = successResponse("Roadnet of dataset " + folder + " is loaded.");
 }
 
 // Handle dump roadnet to ${TMP_FOLDER}/[folder]/road_network.bin
-void handleDumpRoadnetToBianary(picojson::value& requestJson, std::string& response) {
-  if (!isRoadnetReady) {
+void handleDumpRoadnetToBinary(picojson::value& requestJson, std::string& response) {
+  if (!roadnetReady) {
     response = errorResponse("Roadnet is not ready.");
     return;
   }
@@ -167,7 +184,7 @@ void handleDumpRoadnetToBianary(picojson::value& requestJson, std::string& respo
 
 // Handle load roadnet from ${TMP_FOLDER}/[folder]/road_network.bin
 void handleLoadRoadnetFromBinary(picojson::value& requestJson, std::string& response) {
-  isRoadnetReady = false;
+  clearComponent(Component::ROADNET);
   auto folder = config.tmpFolder + requestJson.get("Folder").get<std::string>();
   auto fileName = folder + "/road_network.bin";
   if (!fileExists(fileName.c_str())) {
@@ -177,9 +194,58 @@ void handleLoadRoadnetFromBinary(picojson::value& requestJson, std::string& resp
   }
   FileReader graphReader(fileName.c_str(), true);
   roadnet.load(graphReader);
-  isRoadnetReady = true;
+  roadnetReady = true;
   roadnetName = folder;
   response = successResponse("Roadnet is loaded from " + fileName + ".");
+}
+
+// Handle build grid index from loaded roadnet.
+void handleBuildGridIndex(picojson::value& requestJson, std::string& response) {
+  if (!roadnetReady) {
+    response = errorResponse("Roadnet is not ready.");
+    return;
+  }
+  clearComponent(Component::GRID_INDEX);
+  auto gridWidth = requestJson.get("CellWidth").get<double>();
+  auto gridHeight = requestJson.get("CellHeight").get<double>();
+  gridIndex.build(roadnet, gridWidth, gridHeight);
+  auto folder = config.tmpFolder + requestJson.get("Folder").get<std::string>();
+  gridIndexReady = true;
+  response = successResponse("Built grid index from roadnet " + roadnetName + ".");
+}
+
+// Handle dump grid index to ${TMP_FOLDER}/[folder]/grid_index.bin
+void handleDumpGridIndexToBinary(picojson::value& requestJson, std::string& response) {
+  if (!gridIndexReady) {
+    response = errorResponse("Grid index is not ready.");
+    return;
+  }
+  auto folder = config.tmpFolder + requestJson.get("Folder").get<std::string>();
+  if (!fileExists(folder.c_str()) && !createFolder(folder)) {
+    FILE_LOG(TLogLevel::lerror) << "Failed to create storage folder: " << folder;
+    response = errorResponse("Failed to create storage folder.");
+    return;
+  }
+  auto fileName = folder + "/grid_index.bin";
+  FileWriter gridIndexWriter(fileName.c_str(), true);
+  gridIndex.store(gridIndexWriter);
+  response = successResponse("Grid index is dumped to " + fileName + ".");
+}
+
+// Handle load grid index from ${TMP_FOLDER}/[folder]/grid_index.bin
+void handleLoadGridIndexFromBinary(picojson::value& requestJson, std::string& response) {
+  clearComponent(Component::GRID_INDEX);
+  auto folder = config.tmpFolder + requestJson.get("Folder").get<std::string>();
+  auto fileName = folder + "/grid_index.bin";
+  if (!fileExists(fileName.c_str())) {
+    FILE_LOG(TLogLevel::lerror) << "Grid index binary file does not exist: " << fileName;
+    response = errorResponse("Failed to load grid index.");
+    return;
+  }
+  FileReader gridIndexReader(fileName.c_str(), true);
+  gridIndex.load(gridIndexReader);
+  gridIndexReady = true;
+  response = successResponse("Grid index is loaded from " + fileName + ".");
 }
 
 struct ReqRespHelper {
@@ -228,16 +294,30 @@ struct ReqRespHelper {
       // Handles each type of requests.
       if (cmd == "ReadRoadnetFromDataSource") {
         handleReadRoadnetFromDataSource(requestJson, response);
-      } else if (cmd == "DumpRoadnetToBianary") {
-        handleDumpRoadnetToBianary(requestJson, response);
+      } else if (cmd == "DumpRoadnetToBinary") {
+        handleDumpRoadnetToBinary(requestJson, response);
       } else if (cmd == "LoadRoadnetFromBinary") {
         handleLoadRoadnetFromBinary(requestJson, response);
+      } else if (cmd == "BuildGridIndex") {
+        handleBuildGridIndex(requestJson, response);
+      } else if (cmd == "DumpGridIndexToBinary") {
+        handleDumpGridIndexToBinary(requestJson, response);
+      } else if (cmd == "LoadGridIndexFromBinary") {
+        handleLoadGridIndexFromBinary(requestJson, response);
       } else {
         FILE_LOG(TLogLevel::lerror) << "Unknown request: " << request;
         response = errorResponse("Unknown request.");
       }
       writeNext(response);
       FILE_LOG(TLogLevel::ldebug) << "Responded packet << " << response;
+    } catch (const std::exception& ex) {
+      FILE_LOG(TLogLevel::lerror) << "Failed to handle request (" << request << "): " << ex.what();
+      auto errResp = errorResponse("Failed to handle request.");
+      writeNext(errResp);
+    } catch (const std::string& ex) {
+      FILE_LOG(TLogLevel::lerror) << "Failed to handle request (" << request << "): " << ex;
+      auto errResp = errorResponse("Failed to handle request.");
+      writeNext(errResp);
     } catch (...) {
       FILE_LOG(TLogLevel::lerror) << "Failed to handle request (" << request << ")";
       auto errResp = errorResponse("Failed to handle request.");

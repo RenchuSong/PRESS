@@ -10,6 +10,8 @@
 #include <cassert>
 #include <string>
 
+#include "../third_party/log.h"
+
 #include "./gps_trajectory_readers/gps_trajectory_reader_seattle_sample.hpp"
 // [USER DEFINE]: Include your own gps trajectory reader types here.
 

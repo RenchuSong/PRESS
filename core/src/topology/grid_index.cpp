@@ -13,15 +13,86 @@
 #include <iostream>
 
 #include "../util/helper.hpp"
+#include "../third_party/log.h"
 
 // Return cell (x, y) in grid (col, row)
 int getCellIndex(int col, int x, int y) {
   return y * col + x;
 }
 
+GridIndex::GridIndex() { }
+
 // Build grid index given graph and index cell width/height.
-GridIndex::GridIndex(Graph& graph, double width, double height): gridWidth(width), gridHeight(height) {
-  assert(width > 0 && height > 0);
+GridIndex::GridIndex(Graph& graph, double width, double height) {
+  build(graph, width, height);
+}
+
+// Read grid index from file.
+GridIndex::GridIndex(FileReader& gridIndexReader) {
+  load(gridIndexReader);
+}
+
+// Search nearby edges.
+void GridIndex::search(const Point2D& position, double dist, std::unordered_set<int>& edges) const {
+  edges.clear();
+
+  // Find the cells.
+  int col = (int)round((maxPoint.x - minPoint.x) / gridWidth);
+  int row = (int)round((maxPoint.y - minPoint.y) / gridHeight);
+  int col1 = std::max((int)floor((position.x - dist - minPoint.x) / gridWidth), 0);
+  int row1 = std::max((int)floor((position.y - dist - minPoint.y) / gridHeight), 0);
+  int col2 = std::min((int)floor((position.x + dist - minPoint.x) / gridWidth), col - 1);
+  int row2 = std::min((int)floor((position.y + dist - minPoint.y) / gridHeight), row - 1);
+
+  // Collect the results.
+  for (int r = row1; r <= row2; ++r) {
+    for (int c = col1; c <= col2; ++c) {
+      // If the cell's distance to the point is larger than dist, skip.
+      Point2D p1(c * gridWidth + minPoint.x, r * gridHeight + minPoint.y);
+      Point2D p2((c + 1) * gridWidth + minPoint.x, r * gridHeight + minPoint.y);
+      Point2D p3(c * gridWidth + minPoint.x, (r + 1) * gridHeight + minPoint.y);
+      Point2D p4((c + 1) * gridWidth + minPoint.x, (r + 1) * gridHeight + minPoint.y);
+      if (
+        distPoint2Interval(position, p1, p2) > dist &&
+        distPoint2Interval(position, p1, p3) > dist &&
+        distPoint2Interval(position, p2, p4) > dist &&
+        distPoint2Interval(position, p3, p4) > dist
+      ) {
+        continue;
+      }
+
+      int cellIndex = getCellIndex(col, c, r);
+      edges.insert(index.at(cellIndex).begin(), index.at(cellIndex).end());
+    }
+  }
+}
+
+// Read grid index from file.
+void GridIndex::load(FileReader& gridIndexReader) {
+  gridWidth = (gridIndexReader.nextDouble());
+  gridHeight = (gridIndexReader.nextDouble());
+  minPoint.setPosition(gridIndexReader.nextDouble(), gridIndexReader.nextDouble());
+  maxPoint.setPosition(gridIndexReader.nextDouble(), gridIndexReader.nextDouble());
+  int gridSize = gridIndexReader.nextInt();
+  for (auto i = 0; i < gridSize; ++i) {
+    int edgeNumber = gridIndexReader.nextInt();
+    std::unordered_set<int> edges;
+    for (auto j = 0; j < edgeNumber; ++j) {
+      edges.insert(gridIndexReader.nextInt());
+    }
+    index.emplace_back(edges);
+  }
+}
+
+void GridIndex::build(Graph& graph, double width, double height) {
+  if (width <= 0 || height <= 0) {
+    FILE_LOG(TLogLevel::lerror)
+      << "Cannot build grid index with non-positive cell width or height: "
+      << width << ", " << height;
+    throw "Cannot build grid index with non-positive cell width or height.";
+  }
+  gridWidth = width;
+  gridHeight = height;
   // Get the boundary of the graph.
   minPoint = graph.getNode(0).getPosition();
   maxPoint = graph.getNode(0).getPosition();
@@ -81,59 +152,6 @@ GridIndex::GridIndex(Graph& graph, double width, double height): gridWidth(width
           }
         }
       }
-    }
-  }
-}
-
-// Read grid index from file.
-GridIndex::GridIndex(FileReader& gridIndexReader):
-  gridWidth(gridIndexReader.nextDouble()),
-  gridHeight(gridIndexReader.nextDouble()),
-  minPoint(gridIndexReader.nextDouble(), gridIndexReader.nextDouble()),
-  maxPoint(gridIndexReader.nextDouble(), gridIndexReader.nextDouble())
-{
-  int gridSize = gridIndexReader.nextInt();
-  for (auto i = 0; i < gridSize; ++i) {
-    int edgeNumber = gridIndexReader.nextInt();
-    std::unordered_set<int> edges;
-    for (auto j = 0; j < edgeNumber; ++j) {
-      edges.insert(gridIndexReader.nextInt());
-    }
-    index.emplace_back(edges);
-  }
-}
-
-// Search nearby edges.
-void GridIndex::search(const Point2D& position, double dist, std::unordered_set<int>& edges) const {
-  edges.clear();
-
-  // Find the cells.
-  int col = (int)round((maxPoint.x - minPoint.x) / gridWidth);
-  int row = (int)round((maxPoint.y - minPoint.y) / gridHeight);
-  int col1 = std::max((int)floor((position.x - dist - minPoint.x) / gridWidth), 0);
-  int row1 = std::max((int)floor((position.y - dist - minPoint.y) / gridHeight), 0);
-  int col2 = std::min((int)floor((position.x + dist - minPoint.x) / gridWidth), col - 1);
-  int row2 = std::min((int)floor((position.y + dist - minPoint.y) / gridHeight), row - 1);
-
-  // Collect the results.
-  for (int r = row1; r <= row2; ++r) {
-    for (int c = col1; c <= col2; ++c) {
-      // If the cell's distance to the point is larger than dist, skip.
-      Point2D p1(c * gridWidth + minPoint.x, r * gridHeight + minPoint.y);
-      Point2D p2((c + 1) * gridWidth + minPoint.x, r * gridHeight + minPoint.y);
-      Point2D p3(c * gridWidth + minPoint.x, (r + 1) * gridHeight + minPoint.y);
-      Point2D p4((c + 1) * gridWidth + minPoint.x, (r + 1) * gridHeight + minPoint.y);
-      if (
-        distPoint2Interval(position, p1, p2) > dist &&
-        distPoint2Interval(position, p1, p3) > dist &&
-        distPoint2Interval(position, p2, p4) > dist &&
-        distPoint2Interval(position, p3, p4) > dist
-      ) {
-        continue;
-      }
-
-      int cellIndex = getCellIndex(col, c, r);
-      edges.insert(index.at(cellIndex).begin(), index.at(cellIndex).end());
     }
   }
 }

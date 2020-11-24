@@ -13,7 +13,6 @@
 
 #include "./gps_trajectory_readers/gps_trajectory_reader_base.hpp"
 #include "./graph_readers/graph_reader_base.hpp"
-#include "../third_party/log.h"
 
 // Different types of graph readers.
 enum GraphReaderType {
