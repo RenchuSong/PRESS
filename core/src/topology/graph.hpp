@@ -83,6 +83,8 @@ public:
   size_t getEdgeNumber() const;
   const Edge& getEdge(size_t index) const;
   const std::vector<Edge>& getEdgeList() const;
+  // Load from a file.
+  void load(FileReader& graphReader);
   // Store the graph into a file.
   void store(FileWriter& graphWriter);
   void print() const;

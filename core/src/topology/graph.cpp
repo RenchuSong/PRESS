@@ -123,27 +123,7 @@ Graph::Graph() { }
 
 // Construct the graph from a file.
 Graph::Graph(FileReader& graphReader) {
-  // Load the nodes.
-  nodeNumber = graphReader.nextInt();
-  for (auto i = 0; i < nodeNumber; i++) {
-    nodeList.emplace_back(Node(graphReader.nextDouble(), graphReader.nextDouble()));
-    auto& node = nodeList.back();
-    auto edgeSize = graphReader.nextInt();
-    for (auto j = 0; j < edgeSize; j++) {
-      node.addEdge(graphReader.nextInt());
-    }
-  }
-
-  // Load the edges.
-  edgeNumber = graphReader.nextInt();
-  for (auto i = 0; i < edgeNumber; i++) {
-    edgeList.emplace_back(Edge(graphReader.nextInt(), graphReader.nextInt()));
-    auto& edge = edgeList.back();
-    auto shapeSize = graphReader.nextInt();
-    for (auto j = 0; j < shapeSize; j++) {
-      edge.addPosition(graphReader.nextDouble(), graphReader.nextDouble());
-    }
-  }
+  load(graphReader);
 }
 
 Graph::Graph(const std::vector<Node>& nodeList, const std::vector<Edge>& edgeList) {
@@ -197,6 +177,30 @@ const Edge& Graph::getEdge(size_t index) const {
 // Get the edge list.
 const std::vector<Edge>& Graph::getEdgeList() const {
   return edgeList;
+}
+
+void Graph::load(FileReader& graphReader) {
+  // Load the nodes.
+  nodeNumber = graphReader.nextInt();
+  for (auto i = 0; i < nodeNumber; i++) {
+    nodeList.emplace_back(Node(graphReader.nextDouble(), graphReader.nextDouble()));
+    auto& node = nodeList.back();
+    auto edgeSize = graphReader.nextInt();
+    for (auto j = 0; j < edgeSize; j++) {
+      node.addEdge(graphReader.nextInt());
+    }
+  }
+  
+  // Load the edges.
+  edgeNumber = graphReader.nextInt();
+  for (auto i = 0; i < edgeNumber; i++) {
+    edgeList.emplace_back(Edge(graphReader.nextInt(), graphReader.nextInt()));
+    auto& edge = edgeList.back();
+    auto shapeSize = graphReader.nextInt();
+    for (auto j = 0; j < shapeSize; j++) {
+      edge.addPosition(graphReader.nextDouble(), graphReader.nextDouble());
+    }
+  }
 }
 
 // Store the graph into a file.
