@@ -13,9 +13,7 @@
 #include <fstream>
 
 #include "third_party/picojson.h"
-
 #include "util/utility.hpp"
-#include <vector>
 
 struct ReqRespHelper {
   std::string inPath;
@@ -71,9 +69,9 @@ struct ReqRespHelper {
 
 int main(int argc, char** argv) {
 //  std::vector<std::string> files;
-//  listDirectory("/Users/songrenchu/Develop/PRESS/core/tmp/WA_roadnetwork_and_single_trajectory/gps_trajectories/", files);
-//  
+//  listDirectory("/Users/songrenchu/Develop/PRESS/core/tmp/WA_roadnetwork_and_single_trajectory/press_trajectories/", files);
 //  for (auto& file: files) std::cout << file << std::endl;
+//  std::cout << clearDirectory("/Users/songrenchu/Develop/PRESS/core/tmp/WA_roadnetwork_and_single_trajectory/press_trajectories/") << std::endl;
 //  return 0;
 
   // Open communication channel.
@@ -106,6 +104,12 @@ int main(int argc, char** argv) {
   // Dump map matched trajectories to binary.
   reqRespHelper.writeNext("{\"Cmd\":\"DumpMapMatchedTrajectoriesToBinary\"}");
   reqRespHelper.explainResponse(reqRespHelper.readNext());
+  // Reformat GPS trajectories and map matched trajectories as PRESS trajectories.
+  reqRespHelper.writeNext("{\"Cmd\":\"ReformatTrajectories\"}");
+  reqRespHelper.explainResponse(reqRespHelper.readNext());
+  // Dump PRESS trajectories to binary.
+  reqRespHelper.writeNext("{\"Cmd\":\"DumpPRESSTrajectoriesToBinary\"}");
+  reqRespHelper.explainResponse(reqRespHelper.readNext());
 
   // Load roadnet from binary.
   reqRespHelper.writeNext("{\"Cmd\":\"LoadRoadnetFromBinary\", \"Folder\":\"WA_roadnetwork_and_single_trajectory\"}");
@@ -121,6 +125,9 @@ int main(int argc, char** argv) {
   reqRespHelper.explainResponse(reqRespHelper.readNext());
   // Load map matched trajectories from binary.
   reqRespHelper.writeNext("{\"Cmd\":\"LoadMapMatchedTrajectoriesFromBinary\", \"Folder\":\"WA_roadnetwork_and_single_trajectory\"}");
+  reqRespHelper.explainResponse(reqRespHelper.readNext());
+  // Load PRESS trajectories from binary.
+  reqRespHelper.writeNext("{\"Cmd\":\"LoadPRESSTrajectoriesFromBinary\", \"Folder\":\"WA_roadnetwork_and_single_trajectory\"}");
   reqRespHelper.explainResponse(reqRespHelper.readNext());
 
   return EXIT_SUCCESS;

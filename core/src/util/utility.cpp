@@ -48,18 +48,5 @@ bool listDirectory(const std::string& dirName, std::vector<std::string>& fileNam
 }
 
 bool clearDirectory(const std::string& dirName) {
-  DIR *dir;
-  struct dirent *ent;
-  if ((dir = opendir(dirName.c_str())) != NULL) {
-    while ((ent = readdir(dir)) != NULL) {
-      if (ent->d_name[0] == '.') {
-        continue;
-      }
-      remove((dirName + ent->d_name).c_str());
-    }
-    closedir(dir);
-    return true;
-  } else {
-    return false;
-  }
+  return system(("rm -rf " + dirName + "*").c_str()) == 0;
 }

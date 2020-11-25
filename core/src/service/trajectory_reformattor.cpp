@@ -6,11 +6,11 @@
 //  Copyright © 2020 Renc. All rights reserved.
 //
 
-#include <cassert>
 #include <vector>
 
 #include "trajectory_reformattor.hpp"
 #include "../util/helper.hpp"
+#include "../third_party/log.h"
 
 void TrajectoryReformatter::generateTrajectory(
   const SPTable& spTable,
@@ -20,7 +20,11 @@ void TrajectoryReformatter::generateTrajectory(
   PRESSTrajectory& pressTrajectory
 ) const {
   // GPS trajectory and map matched trajectory should have same length.
-  assert (gpsTrajectory.getLength() == mmTrajectory.getLength());
+  if (gpsTrajectory.getLength() != mmTrajectory.getLength()) {
+    FILE_LOG(TLogLevel::lerror)
+      << "GPS trajectory and map matched trajectory have different length.";
+    throw "GPS trajectory and map matched trajectory have different length.";
+  }
 
   std::vector<int> spatialComponent;
   std::vector<TemporalPair> temporalComponent;

@@ -17,7 +17,7 @@
 //#include "service/temporal_compressor.hpp"
 
 //#include "service/query_processor.hpp"
-//#include "service/trajectory_reformattor.hpp"
+
 
 #include <csignal>
 #include <fstream>
@@ -26,6 +26,7 @@
 #include <vector>
 
 #include "service/map_matcher.hpp"
+#include "service/trajectory_reformattor.hpp"
 #include "third_party/log.h"
 #include "third_party/picojson.h"
 #include "topology/graph.hpp"
@@ -45,6 +46,7 @@ GridIndex gridIndex;
 SPTable spTable;
 std::vector<GPSTrajectory> gpsTrajectories;
 std::vector<MapMatchedTrajectory> mapMatchedTrajectories;
+std::vector<PRESSTrajectory> pressTrajectories;
 
 // Config for PRESS core.
 struct CoreConfig {
@@ -133,6 +135,7 @@ enum Component {
   GRID_INDEX,
   SP_TABLE,
   MAP_MATCHER,
+  RE_FORMATTER,
 };
 // Clear a component.
 void clearComponent(Component comp) {
@@ -143,6 +146,7 @@ void clearComponent(Component comp) {
       spTableReady = false;
       gpsTrajectories.clear();
       mapMatchedTrajectories.clear();
+      pressTrajectories.clear();
       break;
     }
     case Component::GRID_INDEX: {
@@ -151,11 +155,18 @@ void clearComponent(Component comp) {
     }
     case Component::SP_TABLE: {
       spTableReady = false;
+      gpsTrajectories.clear();
+      mapMatchedTrajectories.clear();
+      pressTrajectories.clear();
       break;
     }
     case Component::MAP_MATCHER: {
       gpsTrajectories.clear();
       mapMatchedTrajectories.clear();
+      break;
+    }
+    case Component::RE_FORMATTER: {
+      pressTrajectories.clear();
       break;
     }
   }
@@ -374,7 +385,7 @@ void handleAddGPSTrajectoryAndMapMatch(picojson::value& requestJson, std::string
 // Handle clear original and map matched GPS trajectories.
 void handleClearGPSAndMapMatchedTrajectories(picojson::value& requestJson, std::string& response) {
   clearComponent(Component::MAP_MATCHER);
-  response = successResponse("Added original and map matched GPS trajectory.");
+  response = successResponse("Cleared original and map matched GPS trajectories.");
 }
 
 // Handle dump GPS trajectories to ${TMP_FOLDER}/[roadnetName]/gps_trajectories/[0 .. (n - 1)].bin
@@ -441,6 +452,10 @@ void handleLoadGPSTrajectoriesFromBinary(picojson::value& requestJson, std::stri
     response = errorResponse("Roadnet is not ready or roadnet mismatch with GPS trajectories.");
     return;
   }
+  if (!spTableReady) {
+    response = errorResponse("SP table is not ready.");
+    return;
+  }
   auto folderName = config.tmpFolder + folder + "/gps_trajectories/";
   std::vector<std::string> files;
   if (!listDirectory(folderName, files)) {
@@ -469,6 +484,10 @@ void handleLoadMapMatchedTrajectoriesFromBinary(
     );
     return;
   }
+  if (!spTableReady) {
+    response = errorResponse("SP table is not ready.");
+    return;
+  }
   auto folderName = config.tmpFolder + folder + "/map_matched_trajectories/";
   std::vector<std::string> files;
   if (!listDirectory(folderName, files)) {
@@ -483,6 +502,106 @@ void handleLoadMapMatchedTrajectoriesFromBinary(
   }
   response = successResponse("Map matched trajectories are loaded from " + folderName + ".");
 }
+
+// Handle reformat trajectories.
+void handleReformatTrajectories(picojson::value& requestJson, std::string& response) {
+  if (!roadnetReady) {
+    response = errorResponse("Roadnet is not ready.");
+    return;
+  }
+  if (!spTableReady) {
+    response = errorResponse("SP table is not ready.");
+    return;
+  }
+  if (gpsTrajectories.size() != mapMatchedTrajectories.size()) {
+    response = errorResponse("GPS trajectories and map matched trajectories count are not same.");
+    return;
+  }
+  pressTrajectories.clear();
+  TrajectoryReformatter refomatter;
+  for (int i = 0; i < gpsTrajectories.size(); ++i) {
+    PRESSTrajectory pressTrajectory;
+    refomatter.generateTrajectory(
+      spTable,
+      roadnet,
+      gpsTrajectories.at(i),
+      mapMatchedTrajectories.at(i),
+      pressTrajectory
+    );
+    pressTrajectories.emplace_back(pressTrajectory);
+  }
+  response = successResponse(
+    "Re-formatted GPS and map matched trajectories into PRESS trajectory."
+  );
+}
+
+// Handle clear PRESS trajectories.
+void handleClearPRESSTrajectories(picojson::value& requestJson, std::string& response) {
+  clearComponent(Component::RE_FORMATTER);
+  response = successResponse("Cleared PRESS trajectories.");
+}
+
+// Handle dump PRESS trajectories to
+// ${TMP_FOLDER}/[roadnetName]/press_trajectories/[0 .. (n - 1)].bin
+void handleDumpPRESSTrajectoriesToBinary(picojson::value& requestJson, std::string& response) {
+  if (!roadnetReady) {
+    response = errorResponse("Roadnet is not ready.");
+    return;
+  }
+  auto pressFolderName = config.tmpFolder + roadnetName + "/press_trajectories/";
+  if (!fileExists(pressFolderName.c_str()) && !createFolder(pressFolderName)) {
+    FILE_LOG(TLogLevel::lerror) << "Failed to create storage folder: " << pressFolderName;
+    response = errorResponse("Failed to create storage folder.");
+    return;
+  }
+  if (!clearDirectory(pressFolderName)) {
+    FILE_LOG(TLogLevel::lerror) << "Failed to clear storage folder: " << pressFolderName;
+    response = errorResponse("Failed to clear storage folder.");
+    return;
+  }
+  for (int i = 0; i < pressTrajectories.size(); ++i) {
+    auto pressTrajectoryFolder = pressFolderName + std::to_string(i) + "/";
+    if (!createFolder(pressTrajectoryFolder)) {
+      FILE_LOG(TLogLevel::lerror) << "Failed to create press folder: " << pressFolderName;
+      response = errorResponse("Failed to create press folder.");
+      return;
+    }
+    auto spatialName = pressTrajectoryFolder + "spatial.bin";
+    FileWriter spatialWriter(spatialName.c_str(), true);
+    auto temporalName = pressTrajectoryFolder + "temporal.bin";
+    FileWriter temporalWriter(temporalName.c_str(), true);
+    pressTrajectories.at(i).store(spatialWriter, temporalWriter);
+  }
+  response = successResponse("PRESS trajectories are dumped to " + pressFolderName + ".");
+}
+
+// Handle load PRESS trajectories from ${TMP_FOLDER}/[folder]/press_trajectories/[0 .. (n - 1)].bin
+void handleLoadPRESSTrajectoriesFromBinary(picojson::value& requestJson, std::string& response) {
+  auto folder = requestJson.get("Folder").get<std::string>();
+  if (!roadnetReady || folder != roadnetName) {
+    response = errorResponse("Roadnet is not ready or roadnet mismatch with PRESS trajectories.");
+    return;
+  }
+  if (!spTableReady) {
+    response = errorResponse("SP table is not ready.");
+    return;
+  }
+  auto folderName = config.tmpFolder + folder + "/press_trajectories/";
+  std::vector<std::string> files;
+  if (!listDirectory(folderName, files)) {
+    FILE_LOG(TLogLevel::lerror) << "Fail to list PRESS trajectory folder: " << folderName;
+    response = errorResponse("Fail to list PRESS trajectory folder.");
+    return;
+  }
+  pressTrajectories.clear();
+  for (auto& file: files) {
+    FileReader spatialReader((folderName + file + "/spatial.bin").c_str(), true);
+    FileReader temporalReader((folderName + file + "/temporal.bin").c_str(), true);
+    pressTrajectories.emplace_back(PRESSTrajectory(spatialReader, temporalReader));
+  }
+  response = successResponse("PRESS trajectories are loaded from " + folderName + ".");
+}
+
 
 struct ReqRespHelper {
   std::string inPath;
@@ -558,6 +677,14 @@ struct ReqRespHelper {
         handleLoadGPSTrajectoriesFromBinary(requestJson, response);
       } else if (cmd == "LoadMapMatchedTrajectoriesFromBinary") {
         handleLoadMapMatchedTrajectoriesFromBinary(requestJson, response);
+      } else if (cmd == "ReformatTrajectories") {
+        handleReformatTrajectories(requestJson, response);
+      } else if (cmd == "ClearPRESSTrajectories") {
+        handleClearPRESSTrajectories(requestJson, response);
+      } else if (cmd == "DumpPRESSTrajectoriesToBinary") {
+        handleDumpPRESSTrajectoriesToBinary(requestJson, response);
+      } else if (cmd == "LoadPRESSTrajectoriesFromBinary") {
+        handleLoadPRESSTrajectoriesFromBinary(requestJson, response);
       } else {
         FILE_LOG(TLogLevel::lerror) << "Unknown request: " << request;
         response = errorResponse("Unknown request.");
