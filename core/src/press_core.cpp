@@ -382,6 +382,10 @@ void handleDumpGPSTrajectoriesToBinary(
   picojson::value& requestJson,
   std::string& response
 ) {
+  if (!roadnetReady) {
+    response = errorResponse("Roadnet is not ready.");
+    return;
+  }
   auto gpsFolderName = config.tmpFolder + roadnetName + "/gps_trajectories/";
   if (!fileExists(gpsFolderName.c_str()) && !createFolder(gpsFolderName)) {
     FILE_LOG(TLogLevel::lerror) << "Failed to create storage folder: " << gpsFolderName;
@@ -407,6 +411,10 @@ void handleDumpMapMatchedTrajectoriesToBinary(
   picojson::value& requestJson,
   std::string& response
 ) {
+  if (!roadnetReady) {
+    response = errorResponse("Roadnet is not ready.");
+    return;
+  }
   auto mmFolderName = config.tmpFolder + roadnetName + "/map_matched_trajectories/";
   if (!fileExists(mmFolderName.c_str()) && !createFolder(mmFolderName)) {
     FILE_LOG(TLogLevel::lerror) << "Failed to create storage folder: " << mmFolderName;
