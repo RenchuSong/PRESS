@@ -69,6 +69,7 @@ void GridIndex::search(const Point2D& position, double dist, std::unordered_set<
 
 // Read grid index from file.
 void GridIndex::load(FileReader& gridIndexReader) {
+  clear();
   gridWidth = (gridIndexReader.nextDouble());
   gridHeight = (gridIndexReader.nextDouble());
   minPoint.setPosition(gridIndexReader.nextDouble(), gridIndexReader.nextDouble());
@@ -91,6 +92,7 @@ void GridIndex::build(Graph& graph, double width, double height) {
       << width << ", " << height;
     throw "Cannot build grid index with non-positive cell width or height.";
   }
+  clear();
   gridWidth = width;
   gridHeight = height;
   // Get the boundary of the graph.
@@ -193,6 +195,10 @@ void GridIndex::print() const {
     }
     std::cout << std::endl;
   }
+}
+
+void GridIndex::clear() {
+  index.clear();
 }
 
 GridIndex::~GridIndex() { }

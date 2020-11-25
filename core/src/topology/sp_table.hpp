@@ -43,6 +43,7 @@ public:
   // Append the shortest path sequence (node1, node2) to container.
   void complementNode(const Graph& graph, int node1, int node2, std::vector<int>& container) const;
   void print() const;
+  void clear();
   ~SPTable();
 };
 

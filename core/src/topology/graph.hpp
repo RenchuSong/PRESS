@@ -88,6 +88,7 @@ public:
   // Store the graph into a file.
   void store(FileWriter& graphWriter);
   void print() const;
+  void clear();
   ~Graph();
   
   // FIXME: hack for check MM result. Should be removed.

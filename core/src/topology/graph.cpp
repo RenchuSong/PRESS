@@ -131,11 +131,10 @@ Graph::Graph(const std::vector<Node>& nodeList, const std::vector<Edge>& edgeLis
 }
 
 void Graph::setGraph(const std::vector<Node>& nodeList, const std::vector<Edge>& edgeList) {
+  clear();
   nodeNumber = nodeList.size();
-  this->nodeList.clear();
   this->nodeList.insert(this->nodeList.end(), nodeList.begin(), nodeList.end());
   edgeNumber = edgeList.size();
-  this->edgeList.clear();
   this->edgeList.insert(this->edgeList.end(), edgeList.begin(), edgeList.end());
 }
 
@@ -180,6 +179,7 @@ const std::vector<Edge>& Graph::getEdgeList() const {
 }
 
 void Graph::load(FileReader& graphReader) {
+  clear();
   // Load the nodes.
   nodeNumber = graphReader.nextInt();
   for (auto i = 0; i < nodeNumber; i++) {
@@ -244,6 +244,13 @@ void Graph::store(FileWriter& graphWriter) {
     }
     graphWriter.writeEol();
   }
+}
+
+void Graph::clear() {
+  nodeNumber = 0;
+  edgeNumber = 0;
+  nodeList.clear();
+  edgeList.clear();
 }
 
 // Print the graph for debug.

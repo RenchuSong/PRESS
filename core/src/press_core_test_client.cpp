@@ -14,6 +14,9 @@
 
 #include "third_party/picojson.h"
 
+#include "util/utility.hpp"
+#include <vector>
+
 struct ReqRespHelper {
   std::string inPath;
   std::string outPath;
@@ -67,6 +70,12 @@ struct ReqRespHelper {
 };
 
 int main(int argc, char** argv) {
+//  std::vector<std::string> files;
+//  listDirectory("/Users/songrenchu/Develop/PRESS/core/tmp/WA_roadnetwork_and_single_trajectory/gps_trajectories/", files);
+//  
+//  for (auto& file: files) std::cout << file << std::endl;
+//  return 0;
+
   // Open communication channel.
   ReqRespHelper reqRespHelper(argv[1], argv[2]);
 
@@ -74,29 +83,44 @@ int main(int argc, char** argv) {
   reqRespHelper.writeNext("{\"Cmd\":\"ReadRoadnetFromDataSource\", \"Folder\":\"WA_roadnetwork_and_single_trajectory\", \"GraphReaderType\":\"SEATTLE_SAMPLE_ROADNET\"}");
   reqRespHelper.explainResponse(reqRespHelper.readNext());
   // Dump roadnet to binary.
-  reqRespHelper.writeNext("{\"Cmd\":\"DumpRoadnetToBinary\", \"Folder\":\"WA_roadnetwork\"}");
+  reqRespHelper.writeNext("{\"Cmd\":\"DumpRoadnetToBinary\"}");
   reqRespHelper.explainResponse(reqRespHelper.readNext());
   // Build grid index.
   reqRespHelper.writeNext("{\"Cmd\":\"BuildGridIndex\", \"CellWidth\":50, \"CellHeight\":50}");
   reqRespHelper.explainResponse(reqRespHelper.readNext());
   // Dump grid index to binary.
-  reqRespHelper.writeNext("{\"Cmd\":\"DumpGridIndexToBinary\", \"Folder\":\"WA_roadnetwork\"}");
+  reqRespHelper.writeNext("{\"Cmd\":\"DumpGridIndexToBinary\"}");
   reqRespHelper.explainResponse(reqRespHelper.readNext());
   // Build SP table.
   reqRespHelper.writeNext("{\"Cmd\":\"BuildSPTable\", \"MaxDist\":4000}");
   reqRespHelper.explainResponse(reqRespHelper.readNext());
   // Dump SP table to binary.
-  reqRespHelper.writeNext("{\"Cmd\":\"DumpSPTableToBinary\", \"Folder\":\"WA_roadnetwork\"}");
+  reqRespHelper.writeNext("{\"Cmd\":\"DumpSPTableToBinary\"}");
+  reqRespHelper.explainResponse(reqRespHelper.readNext());
+  // Add GPS trajectory and map match.
+  reqRespHelper.writeNext("{\"Cmd\":\"AddGPSTrajectoryAndMapMatch\", \"FileName\":\"WA_roadnetwork_and_single_trajectory/gps_data.txt\", \"SigmaZ\":4.07, \"MaxGPSBias\":50, \"MaxDistDifference\":2000, \"GPSTrajectoryReaderType\":\"SEATTLE_SAMPLE_GPS\"}");
+  reqRespHelper.explainResponse(reqRespHelper.readNext());
+  // Dump GPS trajectories to binary.
+  reqRespHelper.writeNext("{\"Cmd\":\"DumpGPSTrajectoriesToBinary\"}");
+  reqRespHelper.explainResponse(reqRespHelper.readNext());
+  // Dump map matched trajectories to binary.
+  reqRespHelper.writeNext("{\"Cmd\":\"DumpMapMatchedTrajectoriesToBinary\"}");
   reqRespHelper.explainResponse(reqRespHelper.readNext());
 
   // Load roadnet from binary.
-  reqRespHelper.writeNext("{\"Cmd\":\"LoadRoadnetFromBinary\", \"Folder\":\"WA_roadnetwork\"}");
+  reqRespHelper.writeNext("{\"Cmd\":\"LoadRoadnetFromBinary\", \"Folder\":\"WA_roadnetwork_and_single_trajectory\"}");
   reqRespHelper.explainResponse(reqRespHelper.readNext());
   // Load grid index from binary.
-  reqRespHelper.writeNext("{\"Cmd\":\"LoadGridIndexFromBinary\", \"Folder\":\"WA_roadnetwork\"}");
+  reqRespHelper.writeNext("{\"Cmd\":\"LoadGridIndexFromBinary\", \"Folder\":\"WA_roadnetwork_and_single_trajectory\"}");
   reqRespHelper.explainResponse(reqRespHelper.readNext());
   // Load SP table from binary.
-  reqRespHelper.writeNext("{\"Cmd\":\"LoadSPTableFromBinary\", \"Folder\":\"WA_roadnetwork\"}");
+  reqRespHelper.writeNext("{\"Cmd\":\"LoadSPTableFromBinary\", \"Folder\":\"WA_roadnetwork_and_single_trajectory\"}");
+  reqRespHelper.explainResponse(reqRespHelper.readNext());
+  // Load GPS trajectories from binary.
+  reqRespHelper.writeNext("{\"Cmd\":\"LoadGPSTrajectoriesFromBinary\", \"Folder\":\"WA_roadnetwork_and_single_trajectory\"}");
+  reqRespHelper.explainResponse(reqRespHelper.readNext());
+  // Load map matched trajectories from binary.
+  reqRespHelper.writeNext("{\"Cmd\":\"LoadMapMatchedTrajectoriesFromBinary\", \"Folder\":\"WA_roadnetwork_and_single_trajectory\"}");
   reqRespHelper.explainResponse(reqRespHelper.readNext());
 
   return EXIT_SUCCESS;

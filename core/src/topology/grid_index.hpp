@@ -39,6 +39,7 @@ public:
   void build(Graph& graph, double width, double height);
   void store(FileWriter& gridIndexWriter);
   void print() const;
+  void clear();
   ~GridIndex();
 };
 

@@ -24,6 +24,7 @@ SPTable::SPTable(Graph& graph, double maxDist) {
 }
 
 void SPTable::load(FileReader& spReader) {
+  clear();
   nodeNumber = spReader.nextInt();
   for (auto i = 0; i < nodeNumber; i++) {
     std::unordered_map<int, int> nodePrevEdge;
@@ -40,16 +41,13 @@ void SPTable::load(FileReader& spReader) {
 // Calculate the optimized SP table of a given graph.
 // Dijkstra algorithm.
 void SPTable::build(Graph& graph, double maxDist) {
+  clear();
   nodeNumber = graph.getNodeNumber();
-  std::cout << nodeNumber << std::endl;
-  
+
   // Calculate all-pair shortest paths.
   for (auto i = 0; i < nodeNumber; i++) {
-    if (i % 10000 == 0) {
-      std::cout << i << std::endl;
-    }
     std::unordered_map<int, int> nodePrevEdge;
-    
+
     double minDist[nodeNumber];
     int prev[nodeNumber];
     for (auto j = 0; j < nodeNumber; j++) {
@@ -57,15 +55,15 @@ void SPTable::build(Graph& graph, double maxDist) {
       prev[j] = EDGE_NOT_EXIST;
     }
     minDist[i] = 0;
-    
+
     // Priority queue to hold the distance.
     std::priority_queue<
-    std::pair<double, int>,
-    std::vector<std::pair<double, int> >,
-    std::greater<std::pair<double, int> >
+      std::pair<double, int>,
+      std::vector<std::pair<double, int> >,
+      std::greater<std::pair<double, int> >
     > queue;
     queue.push(std::make_pair(0, i));
-    
+
     // Loop nodeNumber times, always pop the node with smallest distance.
     while (!queue.empty()) {
       auto& candidate = queue.top();
@@ -169,6 +167,11 @@ void SPTable::print() const {
     }
     std::cout << std::endl;
   }
+}
+
+void SPTable::clear() {
+  nodeNumber = 0;
+  prevEdge.clear();
 }
 
 SPTable::~SPTable() { }

@@ -7,11 +7,7 @@
 //
 
 //#include "io/binary.hpp"
-#include "topology/graph.hpp"
-//#include "topology/trajectory.hpp"
-//#include "topology/geospatial_structures.hpp"
-#include "topology/sp_table.hpp"
-#include "topology/grid_index.hpp"
+
 //#include "topology/auxiliary.hpp"
 //#include "topology/ac_automaton.hpp"
 //#include "topology/huffman.hpp"
@@ -19,19 +15,25 @@
 //#include "util/helper.hpp"
 //#include "service/spatial_compressor.hpp"
 //#include "service/temporal_compressor.hpp"
-//#include "service/map_matcher.hpp"
+
 //#include "service/query_processor.hpp"
 //#include "service/trajectory_reformattor.hpp"
-#include "user_defined/factory.hpp"
 
 #include <csignal>
-#include <sys/types.h>
-#include <sys/stat.h>
 #include <fstream>
+#include <sys/stat.h>
+#include <sys/types.h>
+#include <vector>
 
-#include "util/utility.hpp"
-#include "third_party/picojson.h"
+#include "service/map_matcher.hpp"
 #include "third_party/log.h"
+#include "third_party/picojson.h"
+#include "topology/graph.hpp"
+#include "topology/grid_index.hpp"
+#include "topology/sp_table.hpp"
+#include "topology/trajectory.hpp"
+#include "user_defined/factory.hpp"
+#include "util/utility.hpp"
 
 // Global states and storage.
 bool roadnetReady = false;
@@ -41,6 +43,8 @@ std::string roadnetName;
 Graph roadnet;
 GridIndex gridIndex;
 SPTable spTable;
+std::vector<GPSTrajectory> gpsTrajectories;
+std::vector<MapMatchedTrajectory> mapMatchedTrajectories;
 
 // Config for PRESS core.
 struct CoreConfig {
@@ -128,6 +132,7 @@ enum Component {
   ROADNET,
   GRID_INDEX,
   SP_TABLE,
+  MAP_MATCHER,
 };
 // Clear a component.
 void clearComponent(Component comp) {
@@ -136,6 +141,8 @@ void clearComponent(Component comp) {
       roadnetReady = false;
       gridIndexReady = false;
       spTableReady = false;
+      gpsTrajectories.clear();
+      mapMatchedTrajectories.clear();
       break;
     }
     case Component::GRID_INDEX: {
@@ -144,6 +151,11 @@ void clearComponent(Component comp) {
     }
     case Component::SP_TABLE: {
       spTableReady = false;
+      break;
+    }
+    case Component::MAP_MATCHER: {
+      gpsTrajectories.clear();
+      mapMatchedTrajectories.clear();
       break;
     }
   }
@@ -177,19 +189,19 @@ void handleReadRoadnetFromDataSource(picojson::value& requestJson, std::string& 
   response = successResponse("Roadnet of dataset " + folder + " is loaded.");
 }
 
-// Handle dump roadnet to ${TMP_FOLDER}/[folder]/road_network.bin
+// Handle dump roadnet to ${TMP_FOLDER}/[roadnetName]/road_network.bin
 void handleDumpRoadnetToBinary(picojson::value& requestJson, std::string& response) {
   if (!roadnetReady) {
     response = errorResponse("Roadnet is not ready.");
     return;
   }
-  auto folder = config.tmpFolder + requestJson.get("Folder").get<std::string>();
-  if (!fileExists(folder.c_str()) && !createFolder(folder)) {
-    FILE_LOG(TLogLevel::lerror) << "Failed to create storage folder: " << folder;
+  auto folderName = config.tmpFolder + roadnetName + "/";
+  if (!fileExists(folderName.c_str()) && !createFolder(folderName)) {
+    FILE_LOG(TLogLevel::lerror) << "Failed to create storage folder: " << folderName;
     response = errorResponse("Failed to create storage folder.");
     return;
   }
-  auto fileName = folder + "/road_network.bin";
+  auto fileName = folderName + "road_network.bin";
   FileWriter graphWriter(fileName.c_str(), true);
   roadnet.store(graphWriter);
   response = successResponse("Roadnet is dumped to " + fileName + ".");
@@ -198,8 +210,8 @@ void handleDumpRoadnetToBinary(picojson::value& requestJson, std::string& respon
 // Handle load roadnet from ${TMP_FOLDER}/[folder]/road_network.bin
 void handleLoadRoadnetFromBinary(picojson::value& requestJson, std::string& response) {
   clearComponent(Component::ROADNET);
-  auto folder = config.tmpFolder + requestJson.get("Folder").get<std::string>();
-  auto fileName = folder + "/road_network.bin";
+  auto folder = requestJson.get("Folder").get<std::string>();
+  auto fileName = config.tmpFolder + folder + "/road_network.bin";
   if (!fileExists(fileName.c_str())) {
     FILE_LOG(TLogLevel::lerror) << "Roadnet binary file does not exist: " << fileName;
     response = errorResponse("Failed to load roadnet.");
@@ -226,19 +238,19 @@ void handleBuildGridIndex(picojson::value& requestJson, std::string& response) {
   response = successResponse("Built grid index from roadnet " + roadnetName + ".");
 }
 
-// Handle dump grid index to ${TMP_FOLDER}/[folder]/grid_index.bin
+// Handle dump grid index to ${TMP_FOLDER}/[roadnetName]/grid_index.bin
 void handleDumpGridIndexToBinary(picojson::value& requestJson, std::string& response) {
   if (!gridIndexReady) {
     response = errorResponse("Grid index is not ready.");
     return;
   }
-  auto folder = config.tmpFolder + requestJson.get("Folder").get<std::string>();
-  if (!fileExists(folder.c_str()) && !createFolder(folder)) {
-    FILE_LOG(TLogLevel::lerror) << "Failed to create storage folder: " << folder;
+  auto folderName = config.tmpFolder + roadnetName + "/";
+  if (!fileExists(folderName.c_str()) && !createFolder(folderName)) {
+    FILE_LOG(TLogLevel::lerror) << "Failed to create storage folder: " << folderName;
     response = errorResponse("Failed to create storage folder.");
     return;
   }
-  auto fileName = folder + "/grid_index.bin";
+  auto fileName = folderName + "grid_index.bin";
   FileWriter gridIndexWriter(fileName.c_str(), true);
   gridIndex.store(gridIndexWriter);
   response = successResponse("Grid index is dumped to " + fileName + ".");
@@ -247,8 +259,12 @@ void handleDumpGridIndexToBinary(picojson::value& requestJson, std::string& resp
 // Handle load grid index from ${TMP_FOLDER}/[folder]/grid_index.bin
 void handleLoadGridIndexFromBinary(picojson::value& requestJson, std::string& response) {
   clearComponent(Component::GRID_INDEX);
-  auto folder = config.tmpFolder + requestJson.get("Folder").get<std::string>();
-  auto fileName = folder + "/grid_index.bin";
+  auto folder = requestJson.get("Folder").get<std::string>();
+  if (!roadnetReady || folder != roadnetName) {
+    response = errorResponse("Roadnet is not ready or roadnet mismatch with grid index.");
+    return;
+  }
+  auto fileName = config.tmpFolder + folder + "/grid_index.bin";
   if (!fileExists(fileName.c_str())) {
     FILE_LOG(TLogLevel::lerror) << "Grid index binary file does not exist: " << fileName;
     response = errorResponse("Failed to load grid index.");
@@ -273,19 +289,19 @@ void handleBuildSPTable(picojson::value& requestJson, std::string& response) {
   response = successResponse("Built SP table from roadnet " + roadnetName + ".");
 }
 
-// Handle dump SP table to ${TMP_FOLDER}/[folder]/sp_table.bin
+// Handle dump SP table to ${TMP_FOLDER}/[roadnetName]/sp_table.bin
 void handleDumpSPTableToBinary(picojson::value& requestJson, std::string& response) {
   if (!spTableReady) {
     response = errorResponse("SP table is not ready.");
     return;
   }
-  auto folder = config.tmpFolder + requestJson.get("Folder").get<std::string>();
-  if (!fileExists(folder.c_str()) && !createFolder(folder)) {
-    FILE_LOG(TLogLevel::lerror) << "Failed to create storage folder: " << folder;
+  auto folderName = config.tmpFolder + roadnetName + "/";
+  if (!fileExists(folderName.c_str()) && !createFolder(folderName)) {
+    FILE_LOG(TLogLevel::lerror) << "Failed to create storage folder: " << folderName;
     response = errorResponse("Failed to create storage folder.");
     return;
   }
-  auto fileName = folder + "/sp_table.bin";
+  auto fileName = folderName + "sp_table.bin";
   FileWriter spTableWriter(fileName.c_str(), true);
   spTable.store(spTableWriter);
   response = successResponse("SP table is dumped to " + fileName + ".");
@@ -294,8 +310,12 @@ void handleDumpSPTableToBinary(picojson::value& requestJson, std::string& respon
 // Handle load SP table from ${TMP_FOLDER}/[folder]/sp_table.bin
 void handleLoadSPTableFromBinary(picojson::value& requestJson, std::string& response) {
   clearComponent(Component::SP_TABLE);
-  auto folder = config.tmpFolder + requestJson.get("Folder").get<std::string>();
-  auto fileName = folder + "/sp_table.bin";
+  auto folder = requestJson.get("Folder").get<std::string>();
+  if (!roadnetReady || folder != roadnetName) {
+    response = errorResponse("Roadnet is not ready or roadnet mismatch with SP table.");
+    return;
+  }
+  auto fileName = config.tmpFolder + folder + "/sp_table.bin";
   if (!fileExists(fileName.c_str())) {
     FILE_LOG(TLogLevel::lerror) << "SP table binary file does not exist: " << fileName;
     response = errorResponse("Failed to load SP table.");
@@ -305,6 +325,155 @@ void handleLoadSPTableFromBinary(picojson::value& requestJson, std::string& resp
   spTable.load(spTableReader);
   spTableReady = true;
   response = successResponse("SP table is loaded from " + fileName + ".");
+}
+
+// Handle add and map match GPS trajectory.
+void handleAddGPSTrajectoryAndMapMatch(picojson::value& requestJson, std::string& response) {
+  if (!roadnetReady) {
+    response = errorResponse("Roadnet is not ready.");
+    return;
+  }
+  if (!spTableReady) {
+    response = errorResponse("SP table is not ready.");
+    return;
+  }
+  if (!gridIndexReady) {
+    response = errorResponse("Grid index is not ready.");
+    return;
+  }
+  auto sigmaZ = requestJson.get("SigmaZ").get<double>();
+  auto maxGPSBias = requestJson.get("MaxGPSBias").get<double>();
+  auto maxDistDifference = requestJson.get("MaxDistDifference").get<double>();
+  auto fileName = config.dataFolder + requestJson.get("FileName").get<std::string>();
+  if (!fileExists(fileName.c_str())) {
+    FILE_LOG(TLogLevel::lerror) << "GPS data source file doesn't exist: " << fileName;
+    response = errorResponse("GPS data source file doesn't exist.");
+    return;
+  }
+  auto gpsTrajectoryReaderType = getGPSTrajectoryReaderType(
+    requestJson.get("GPSTrajectoryReaderType").get<std::string>()
+  );
+  auto gpsTrajectoryReader = Factory::getGPSTrajectoryReader(gpsTrajectoryReaderType);
+  GPSTrajectory gpsTrajectory;
+  gpsTrajectoryReader->readGPSTrajectory(fileName, gpsTrajectory);
+  MapMatcher mapMatcher;
+  mapMatcher.mapMatch(
+    spTable,
+    roadnet,
+    gridIndex,
+    sigmaZ,
+    maxGPSBias,
+    maxDistDifference,
+    gpsTrajectory,
+    gpsTrajectories,
+    mapMatchedTrajectories
+  );
+  response = successResponse("Added original and map matched GPS trajectory.");
+}
+
+// Handle clear original and map matched GPS trajectories.
+void handleClearGPSAndMapMatchedTrajectories(picojson::value& requestJson, std::string& response) {
+  clearComponent(Component::MAP_MATCHER);
+  response = successResponse("Added original and map matched GPS trajectory.");
+}
+
+// Handle dump GPS trajectories to ${TMP_FOLDER}/[roadnetName]/gps_trajectories/[0 .. (n - 1)].bin
+void handleDumpGPSTrajectoriesToBinary(
+  picojson::value& requestJson,
+  std::string& response
+) {
+  auto gpsFolderName = config.tmpFolder + roadnetName + "/gps_trajectories/";
+  if (!fileExists(gpsFolderName.c_str()) && !createFolder(gpsFolderName)) {
+    FILE_LOG(TLogLevel::lerror) << "Failed to create storage folder: " << gpsFolderName;
+    response = errorResponse("Failed to create storage folder.");
+    return;
+  }
+  if (!clearDirectory(gpsFolderName)) {
+    FILE_LOG(TLogLevel::lerror) << "Failed to clear storage folder: " << gpsFolderName;
+    response = errorResponse("Failed to clear storage folder.");
+    return;
+  }
+  for (int i = 0; i < gpsTrajectories.size(); ++i) {
+    auto fileName = gpsFolderName + std::to_string(i) + ".bin";
+    FileWriter gpsWriter(fileName.c_str(), true);
+    gpsTrajectories.at(i).store(gpsWriter);
+  }
+  response = successResponse("GPS trajectories are dumped to " + gpsFolderName + ".");
+}
+
+// Handle dump map matched trajectories to
+// ${TMP_FOLDER}/[roadnetName]/map_matched_trajectories/[0 .. (n - 1)].bin
+void handleDumpMapMatchedTrajectoriesToBinary(
+  picojson::value& requestJson,
+  std::string& response
+) {
+  auto mmFolderName = config.tmpFolder + roadnetName + "/map_matched_trajectories/";
+  if (!fileExists(mmFolderName.c_str()) && !createFolder(mmFolderName)) {
+    FILE_LOG(TLogLevel::lerror) << "Failed to create storage folder: " << mmFolderName;
+    response = errorResponse("Failed to create storage folder.");
+    return;
+  }
+  if (!clearDirectory(mmFolderName)) {
+    FILE_LOG(TLogLevel::lerror) << "Failed to clear storage folder: " << mmFolderName;
+    response = errorResponse("Failed to clear storage folder.");
+    return;
+  }
+  for (int i = 0; i < mapMatchedTrajectories.size(); ++i) {
+    auto fileName = mmFolderName + std::to_string(i) + ".bin";
+    FileWriter mmWriter(fileName.c_str(), true);
+    mapMatchedTrajectories.at(i).store(mmWriter);
+  }
+  response = successResponse("Map matched trajectories are dumped to " + mmFolderName + ".");
+}
+
+// Handle load GPS trajectories from ${TMP_FOLDER}/[folder]/gps_trajectories/[0 .. (n - 1)].bin
+void handleLoadGPSTrajectoriesFromBinary(picojson::value& requestJson, std::string& response) {
+  auto folder = requestJson.get("Folder").get<std::string>();
+  if (!roadnetReady || folder != roadnetName) {
+    response = errorResponse("Roadnet is not ready or roadnet mismatch with GPS trajectories.");
+    return;
+  }
+  auto folderName = config.tmpFolder + folder + "/gps_trajectories/";
+  std::vector<std::string> files;
+  if (!listDirectory(folderName, files)) {
+    FILE_LOG(TLogLevel::lerror) << "Fail to list GPS trajectory folder: " << folderName;
+    response = errorResponse("Fail to list GPS trajectory folder.");
+    return;
+  }
+  gpsTrajectories.clear();
+  for (auto& file: files) {
+    FileReader gpsTrajectoryReader((folderName + file).c_str(), true);
+    gpsTrajectories.emplace_back(GPSTrajectory(gpsTrajectoryReader));
+  }
+  response = successResponse("GPS trajectories are loaded from " + folderName + ".");
+}
+
+// Handle load map matched trajectories from
+// ${TMP_FOLDER}/[folder]/map_matched_trajectories/[0 .. (n - 1)].bin
+void handleLoadMapMatchedTrajectoriesFromBinary(
+  picojson::value& requestJson,
+  std::string& response
+) {
+  auto folder = requestJson.get("Folder").get<std::string>();
+  if (!roadnetReady || folder != roadnetName) {
+    response = errorResponse(
+      "Roadnet is not ready or roadnet mismatch with map matched trajectories."
+    );
+    return;
+  }
+  auto folderName = config.tmpFolder + folder + "/map_matched_trajectories/";
+  std::vector<std::string> files;
+  if (!listDirectory(folderName, files)) {
+    FILE_LOG(TLogLevel::lerror) << "Fail to list map matched trajectory folder: " << folderName;
+    response = errorResponse("Fail to list map matched trajectory folder.");
+    return;
+  }
+  mapMatchedTrajectories.clear();
+  for (auto& file: files) {
+    FileReader mmTrajectoryReader((folderName + file).c_str(), true);
+    mapMatchedTrajectories.emplace_back(MapMatchedTrajectory(mmTrajectoryReader));
+  }
+  response = successResponse("Map matched trajectories are loaded from " + folderName + ".");
 }
 
 struct ReqRespHelper {
@@ -369,6 +538,18 @@ struct ReqRespHelper {
         handleDumpSPTableToBinary(requestJson, response);
       } else if (cmd == "LoadSPTableFromBinary") {
         handleLoadSPTableFromBinary(requestJson, response);
+      } else if (cmd == "AddGPSTrajectoryAndMapMatch") {
+        handleAddGPSTrajectoryAndMapMatch(requestJson, response);
+      } else if (cmd == "ClearGPSAndMapMatchedTrajectories") {
+        handleClearGPSAndMapMatchedTrajectories(requestJson, response);
+      } else if (cmd == "DumpGPSTrajectoriesToBinary") {
+        handleDumpGPSTrajectoriesToBinary(requestJson, response);
+      } else if (cmd == "DumpMapMatchedTrajectoriesToBinary") {
+        handleDumpMapMatchedTrajectoriesToBinary(requestJson, response);
+      } else if (cmd == "LoadGPSTrajectoriesFromBinary") {
+        handleLoadGPSTrajectoriesFromBinary(requestJson, response);
+      } else if (cmd == "LoadMapMatchedTrajectoriesFromBinary") {
+        handleLoadMapMatchedTrajectoriesFromBinary(requestJson, response);
       } else {
         FILE_LOG(TLogLevel::lerror) << "Unknown request: " << request;
         response = errorResponse("Unknown request.");
