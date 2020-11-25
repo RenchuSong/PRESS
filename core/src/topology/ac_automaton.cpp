@@ -11,22 +11,11 @@
 
 #include "ac_automaton.hpp"
 
+ACAutomaton::ACAutomaton() { }
+
 // Read AC automaton from file.
 ACAutomaton::ACAutomaton(FileReader& acReader) {
-  trieSize = acReader.nextInt();
-  for (int i = 0; i < trieSize; i++) {
-    edgeId.emplace_back(acReader.nextInt());
-    father.emplace_back(acReader.nextInt());
-    next.emplace_back(acReader.nextInt());
-    frequency.emplace_back(acReader.nextInt());
-    int childrenSize = acReader.nextInt();
-    std::unordered_map<int, int> children;
-    trie.emplace_back(children);
-    for (int j = 0; j < childrenSize; j++) {
-      auto key = acReader.nextInt();
-      trie.at(i)[key] = acReader.nextInt();
-    }
-  }
+  load(acReader);
 }
 
 // Construct AC automaton from shortest path compressed spatial components.
@@ -35,82 +24,7 @@ ACAutomaton::ACAutomaton(
  const std::vector<std::vector<int> >& spCompressedSpatialComps,
  int theta
 ) {
-  // Prepare trie root.
-  std::unordered_map<int, int> root;
-  trie.emplace_back(root);
-  edgeId.emplace_back(-1);
-  father.emplace_back(0);
-  frequency.emplace_back(0);
-
-  // Temp sequence container.
-  std::deque<int> sequence;
-  
-  // Insert each edge into the trie.
-  for (int i = 0; i < graph.getEdgeNumber(); i++) {
-    sequence.push_back(i);
-    // Since this is virtual the occurence frequency is 0.
-    insertSequence(sequence, 0);
-    sequence.pop_back();
-  }
-
-  // Insert all sub-sequence for each spatial component of length up to theta.
-  for (auto& spatialComp: spCompressedSpatialComps) {
-    auto spatialSize = spatialComp.size();
-    int ptr = 0;
-    for (; ptr < theta && ptr < spatialSize; ptr++) {
-      sequence.push_back(spatialComp.at(ptr));
-    }
-    for (int i = 0; i < spatialSize; i++) {
-      // The occurence frequency is 1.
-      insertSequence(sequence, 1);
-      sequence.pop_front();
-      if (ptr < spatialSize) {
-        sequence.push_back(spatialComp.at(ptr));
-        ptr++;
-      }
-    }
-  }
-
-  // Update trie size.
-  trieSize = trie.size();
-
-  // Maintain fail pointer, so each time when attempting further match fails,
-  // jump to the position where the longest suffix of current path is a prefix in the Trie.
-  for (int i = 0; i < trieSize; i++) {
-    next.emplace_back(0);
-  }
-  
-  // Need follow BFS order to create next pointers so that upper level nodes
-  // should have their correct failing jumping positions when processing a lower node in Trie.
-  std::queue<std::pair<int, std::unordered_map<int, int> > > nodes;
-  for (auto kv: trie[0]) {
-    auto o = make_pair(kv.second, trie[kv.second]);
-    nodes.push(o);
-  }
-  while (!nodes.empty()) {
-    auto p = nodes.front();
-    nodes.pop();
-    auto i = p.first;
-    auto node = p.second;
-    for (auto kv : node) {
-      auto pp = make_pair(kv.second, trie[kv.second]);
-      nodes.push(pp);
-    }
-    for (auto kv : node) {
-      char child = kv.first;
-      int pos = kv.second;
-      int f = next[i];
-      // Very similar with KMP algorithm to find the failing position, but here the jumping can
-      // be anywhere on the Trie.
-      while (f != 0 && trie[f].find(child) == trie[f].end()) {
-        f = next[f];
-      }
-      if (trie[f].find(child) != trie[f].end()) {
-        f = trie[f][child];
-      }
-      next[pos] = f;
-    }
-  }
+  build(graph, spCompressedSpatialComps, theta);
 }
 
 // Insert one sequence into the trie.
@@ -157,6 +71,119 @@ void ACAutomaton::store(FileWriter& acWriter) {
     }
     acWriter.writeEol();
   }
+}
+
+void ACAutomaton::build(
+  const Graph& graph,
+  const std::vector<std::vector<int> >& spCompressedSpatialComps,
+  int theta
+) {
+  clear();
+
+  // Prepare trie root.
+  std::unordered_map<int, int> root;
+  trie.emplace_back(root);
+  edgeId.emplace_back(-1);
+  father.emplace_back(0);
+  frequency.emplace_back(0);
+
+  // Temp sequence container.
+  std::deque<int> sequence;
+
+  // Insert each edge into the trie.
+  for (int i = 0; i < graph.getEdgeNumber(); i++) {
+    sequence.push_back(i);
+    // Since this is virtual the occurence frequency is 0.
+    insertSequence(sequence, 0);
+    sequence.pop_back();
+  }
+
+  // Insert all sub-sequence for each spatial component of length up to theta.
+  for (auto& spatialComp: spCompressedSpatialComps) {
+    auto spatialSize = spatialComp.size();
+    int ptr = 0;
+    for (; ptr < theta && ptr < spatialSize; ptr++) {
+      sequence.push_back(spatialComp.at(ptr));
+    }
+    for (int i = 0; i < spatialSize; i++) {
+      // The occurence frequency is 1.
+      insertSequence(sequence, 1);
+      sequence.pop_front();
+      if (ptr < spatialSize) {
+        sequence.push_back(spatialComp.at(ptr));
+        ptr++;
+      }
+    }
+  }
+
+  // Update trie size.
+  trieSize = trie.size();
+
+  // Maintain fail pointer, so each time when attempting further match fails,
+  // jump to the position where the longest suffix of current path is a prefix in the Trie.
+  for (int i = 0; i < trieSize; i++) {
+    next.emplace_back(0);
+  }
+
+  // Need follow BFS order to create next pointers so that upper level nodes
+  // should have their correct failing jumping positions when processing a lower node in Trie.
+  std::queue<std::pair<int, std::unordered_map<int, int> > > nodes;
+  for (auto kv: trie[0]) {
+    auto o = make_pair(kv.second, trie[kv.second]);
+    nodes.push(o);
+  }
+  while (!nodes.empty()) {
+    auto p = nodes.front();
+    nodes.pop();
+    auto i = p.first;
+    auto node = p.second;
+    for (auto kv : node) {
+      auto pp = make_pair(kv.second, trie[kv.second]);
+      nodes.push(pp);
+    }
+    for (auto kv : node) {
+      char child = kv.first;
+      int pos = kv.second;
+      int f = next[i];
+      // Very similar with KMP algorithm to find the failing position, but here the jumping can
+      // be anywhere on the Trie.
+      while (f != 0 && trie[f].find(child) == trie[f].end()) {
+        f = next[f];
+      }
+      if (trie[f].find(child) != trie[f].end()) {
+        f = trie[f][child];
+      }
+      next[pos] = f;
+    }
+  }
+}
+
+void ACAutomaton::load(FileReader& acReader) {
+  clear();
+
+  trieSize = acReader.nextInt();
+  for (int i = 0; i < trieSize; i++) {
+    edgeId.emplace_back(acReader.nextInt());
+    father.emplace_back(acReader.nextInt());
+    next.emplace_back(acReader.nextInt());
+    frequency.emplace_back(acReader.nextInt());
+    int childrenSize = acReader.nextInt();
+    std::unordered_map<int, int> children;
+    trie.emplace_back(children);
+    for (int j = 0; j < childrenSize; j++) {
+      auto key = acReader.nextInt();
+      trie.at(i)[key] = acReader.nextInt();
+    }
+  }
+}
+
+void ACAutomaton::clear() {
+  trie.clear();
+  edgeId.clear();
+  father.clear();
+  next.clear();
+  frequency.clear();
+  trieSize = 0;
 }
 
 // Print for debug.

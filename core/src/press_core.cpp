@@ -8,13 +8,11 @@
 
 //#include "io/binary.hpp"
 
-//#include "topology/auxiliary.hpp"
-//#include "topology/ac_automaton.hpp"
-//#include "topology/huffman.hpp"
+
+
 //#include "util/timer.hpp"
 //#include "util/helper.hpp"
-//#include "service/spatial_compressor.hpp"
-//#include "service/temporal_compressor.hpp"
+
 
 //#include "service/query_processor.hpp"
 
@@ -26,9 +24,14 @@
 #include <vector>
 
 #include "service/map_matcher.hpp"
+#include "service/spatial_compressor.hpp"
+#include "service/temporal_compressor.hpp"
 #include "service/trajectory_reformattor.hpp"
 #include "third_party/log.h"
 #include "third_party/picojson.h"
+#include "topology/ac_automaton.hpp"
+#include "topology/auxiliary.hpp"
+#include "topology/huffman.hpp"
 #include "topology/graph.hpp"
 #include "topology/grid_index.hpp"
 #include "topology/sp_table.hpp"
@@ -40,10 +43,16 @@
 bool roadnetReady = false;
 bool gridIndexReady = false;
 bool spTableReady = false;
+bool acAutomatonReady = false;
+bool huffmanReady = false;
+bool auxiliaryReady = false;
 std::string roadnetName;
 Graph roadnet;
 GridIndex gridIndex;
 SPTable spTable;
+ACAutomaton acAutomaton;
+Huffman huffman;
+Auxiliary auxiliary;
 std::vector<GPSTrajectory> gpsTrajectories;
 std::vector<MapMatchedTrajectory> mapMatchedTrajectories;
 std::vector<PRESSTrajectory> pressTrajectories;
@@ -136,6 +145,7 @@ enum Component {
   SP_TABLE,
   MAP_MATCHER,
   RE_FORMATTER,
+  TRAINER,
 };
 // Clear a component.
 void clearComponent(Component comp) {
@@ -144,6 +154,9 @@ void clearComponent(Component comp) {
       roadnetReady = false;
       gridIndexReady = false;
       spTableReady = false;
+      acAutomatonReady = false;
+      huffmanReady = false;
+      auxiliaryReady = false;
       gpsTrajectories.clear();
       mapMatchedTrajectories.clear();
       pressTrajectories.clear();
@@ -155,6 +168,9 @@ void clearComponent(Component comp) {
     }
     case Component::SP_TABLE: {
       spTableReady = false;
+      acAutomatonReady = false;
+      huffmanReady = false;
+      auxiliaryReady = false;
       gpsTrajectories.clear();
       mapMatchedTrajectories.clear();
       pressTrajectories.clear();
@@ -167,6 +183,12 @@ void clearComponent(Component comp) {
     }
     case Component::RE_FORMATTER: {
       pressTrajectories.clear();
+      break;
+    }
+    case Component::TRAINER: {
+      acAutomatonReady = false;
+      huffmanReady = false;
+      auxiliaryReady = false;
       break;
     }
   }
@@ -602,6 +624,129 @@ void handleLoadPRESSTrajectoriesFromBinary(picojson::value& requestJson, std::st
   response = successResponse("PRESS trajectories are loaded from " + folderName + ".");
 }
 
+// Handle train AC automaton, huffman tree and build auxiliary.
+void handleTrainACAutomatonHuffmanTreeAndBuildAuxiliary(
+  picojson::value& requestJson,
+  std::string& response
+) {
+  if (!roadnetReady) {
+    response = errorResponse("Roadnet is not ready.");
+    return;
+  }
+  if (!spTableReady) {
+    response = errorResponse("SP table is not ready.");
+    return;
+  }
+  if (pressTrajectories.size() == 0) {
+    response = errorResponse("There is no press trajectory that can be used for training FST.");
+    return;
+  }
+  clearComponent(Component::TRAINER);
+  SpatialCompressor spatialCompressor;
+  int theta = (int)requestJson.get("Theta").get<double>();
+  std::vector<int> spCompressResult;
+  std::vector<std::vector<int> > spCompressResults;
+  for (auto& pressTrajectory: pressTrajectories) {
+    spatialCompressor.shortestPathCompression(
+      roadnet,
+      spTable,
+      pressTrajectory.getSpatialComponent(),
+      spCompressResult
+    );
+    spCompressResults.emplace_back(spCompressResult);
+  }
+  acAutomaton.build(roadnet, spCompressResults, theta);
+  huffman.build(acAutomaton);
+  auxiliary.build(roadnet, spTable, acAutomaton);
+  acAutomatonReady = true;
+  huffmanReady = true;
+  auxiliaryReady = true;
+  response = successResponse("AC automaton, huffman tree and auxiliary are ready.");
+}
+
+// Handle dump AC automaton, huffman tree and auxiliary.
+void handleDumpACAutomatonHuffmanTreeAndAuxiliaryToBinary(
+  picojson::value& requestJson,
+  std::string& response
+) {
+  if (!acAutomatonReady) {
+    response = errorResponse("AC automaton is not ready.");
+    return;
+  }
+  if (!huffmanReady) {
+    response = errorResponse("Huffman is not ready.");
+    return;
+  }
+  if (!auxiliaryReady) {
+    response = errorResponse("Auxiliary is not ready.");
+    return;
+  }
+  auto folderName = config.tmpFolder + roadnetName + "/";
+  if (!fileExists(folderName.c_str()) && !createFolder(folderName)) {
+    FILE_LOG(TLogLevel::lerror) << "Failed to create storage folder: " << folderName;
+    response = errorResponse("Failed to create storage folder.");
+    return;
+  }
+  auto acName = folderName + "ac_automaton.bin";
+  FileWriter acWriter(acName.c_str(), true);
+  acAutomaton.store(acWriter);
+  auto huffmanName = folderName + "huffman.bin";
+  FileWriter huffmanWriter(huffmanName.c_str(), true);
+  huffman.store(huffmanWriter);
+  auto auxiliaryName = folderName + "auxiliary.bin";
+  FileWriter auxiliaryWriter(auxiliaryName.c_str(), true);
+  auxiliary.store(auxiliaryWriter);
+
+  response = successResponse(
+    "AC automaton, huffman tree and auxiliary are dumped to " + folderName + "."
+  );
+}
+
+// Handle load AC automaton, huffman tree and auxiliary from ${TMP_FOLDER}/[folder]/
+void handleLoadACAutomatonHuffmanTreeAndAuxiliaryFromBinary(
+  picojson::value& requestJson,
+  std::string& response
+) {
+  clearComponent(Component::TRAINER);
+  auto folder = requestJson.get("Folder").get<std::string>();
+  if (!roadnetReady || folder != roadnetName) {
+    response = errorResponse(
+      "Roadnet is not ready or roadnet mismatch with AC automaton, huffman tree and auxiliary ."
+    );
+    return;
+  }
+  auto acName = config.tmpFolder + folder + "/ac_automaton.bin";
+  if (!fileExists(acName.c_str())) {
+    FILE_LOG(TLogLevel::lerror) << "AC automaton binary file does not exist: " << acName;
+    response = errorResponse("AC automaton binary file does not exist.");
+    return;
+  }
+  auto huffmanName = config.tmpFolder + folder + "/huffman.bin";
+  if (!fileExists(huffmanName.c_str())) {
+    FILE_LOG(TLogLevel::lerror) << "Huffman tree binary file does not exist: " << huffmanName;
+    response = errorResponse("Huffman tree binary file does not exist.");
+    return;
+  }
+  auto auxiliaryName = config.tmpFolder + folder + "/auxiliary.bin";
+  if (!fileExists(auxiliaryName.c_str())) {
+    FILE_LOG(TLogLevel::lerror) << "Auxiliary binary file does not exist: " << auxiliaryName;
+    response = errorResponse("Auxiliary binary file does not exist.");
+    return;
+  }
+  FileReader acReader(acName.c_str(), true);
+  FileReader huffmanReader(huffmanName.c_str(), true);
+  FileReader auxiliaryReader(auxiliaryName.c_str(), true);
+  acAutomaton.load(acReader);
+  huffman.load(huffmanReader);
+  auxiliary.load(auxiliaryReader);
+  acAutomatonReady = true;
+  huffmanReady = true;
+  auxiliaryReady = true;
+  response = successResponse(
+    "AC automaton, huffman tree and auxiliary are loaded from " + config.tmpFolder + folder + "."
+  );
+}
+
 
 struct ReqRespHelper {
   std::string inPath;
@@ -685,6 +830,12 @@ struct ReqRespHelper {
         handleDumpPRESSTrajectoriesToBinary(requestJson, response);
       } else if (cmd == "LoadPRESSTrajectoriesFromBinary") {
         handleLoadPRESSTrajectoriesFromBinary(requestJson, response);
+      } else if (cmd == "TrainACAutomatonHuffmanTreeAndBuildAuxiliary") {
+        handleTrainACAutomatonHuffmanTreeAndBuildAuxiliary(requestJson, response);
+      } else if (cmd == "DumpACAutomatonHuffmanTreeAndAuxiliaryToBinary") {
+        handleDumpACAutomatonHuffmanTreeAndAuxiliaryToBinary(requestJson, response);
+      } else if (cmd == "LoadACAutomatonHuffmanTreeAndAuxiliaryFromBinary") {
+        handleLoadACAutomatonHuffmanTreeAndAuxiliaryFromBinary(requestJson, response);
       } else {
         FILE_LOG(TLogLevel::lerror) << "Unknown request: " << request;
         response = errorResponse("Unknown request.");

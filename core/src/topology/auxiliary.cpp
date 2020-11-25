@@ -92,7 +92,14 @@ void findMBR(
   return;
 }
 
+Auxiliary::Auxiliary() { }
+
 Auxiliary::Auxiliary(const Graph& graph, const SPTable& spTable, const ACAutomaton& acAutomaton) {
+  build(graph, spTable, acAutomaton);
+}
+
+void Auxiliary::build(const Graph& graph, const SPTable& spTable, const ACAutomaton& acAutomaton) {
+  clear();
   // Shortest path distance.
   nodeNumber = spTable.nodeNumber;
   for (int i = 0; i < nodeNumber; ++i) {
@@ -162,11 +169,146 @@ Auxiliary::Auxiliary(const Graph& graph, const SPTable& spTable, const ACAutomat
 }
 
 Auxiliary::Auxiliary(FileReader& auxReader) {
-  // TODO
+  load(auxReader);
+}
+
+void Auxiliary::load(FileReader& auxReader) {
+  clear();
+  nodeNumber = auxReader.nextInt();
+  edgeNumber = auxReader.nextInt();
+  trieSize = auxReader.nextInt();
+  for (auto i = 0; i < nodeNumber; ++i) {
+    std::unordered_map<int, double> singleSPDist;
+    auto len = auxReader.nextInt();
+    for (auto j = 0; j < len; ++j) {
+      singleSPDist.emplace(auxReader.nextInt(), auxReader.nextDouble());
+    }
+    nodePairSPDist.emplace_back(singleSPDist);
+  }
+  for (auto i = 0; i < trieSize; ++i) {
+    trieNodeDist.emplace_back(auxReader.nextDouble());
+  }
+  for (auto i = 0; i < trieSize; ++i) {
+    trieNodeStartNode.emplace_back(auxReader.nextInt());
+  }
+  for (auto i = 0; i < trieSize; ++i) {
+    trieNodeEndNode.emplace_back(auxReader.nextInt());
+  }
+  for (auto i = 0; i < edgeNumber; ++i) {
+    edgeMBR.emplace_back(
+      std::make_pair(
+        Point2D(auxReader.nextDouble(), auxReader.nextDouble()),
+        Point2D(auxReader.nextDouble(), auxReader.nextDouble())
+      )
+    );
+  }
+  for (auto i = 0; i < nodeNumber; ++i) {
+    std::unordered_map<int, std::pair<Point2D, Point2D> > singleMBR;
+    auto len = auxReader.nextInt();
+    for (auto j = 0; j < len; ++j) {
+      singleMBR.emplace(
+        auxReader.nextInt(),
+        std::make_pair(
+          Point2D(auxReader.nextDouble(), auxReader.nextDouble()),
+          Point2D(auxReader.nextDouble(), auxReader.nextDouble())
+        )
+      );
+    }
+    nodePairMBR.emplace_back(singleMBR);
+  }
+  for (auto i = 0; i < trieSize; ++i) {
+    edgeMBR.emplace_back(
+      std::make_pair(
+        Point2D(auxReader.nextDouble(), auxReader.nextDouble()),
+        Point2D(auxReader.nextDouble(), auxReader.nextDouble())
+      )
+    );
+  }
 }
 
 void Auxiliary::store(FileWriter& auxWriter) {
-  // TODO
+  auxWriter.writeInt((int)nodeNumber);
+  auxWriter.writeEol();
+  auxWriter.writeInt((int)edgeNumber);
+  auxWriter.writeEol();
+  auxWriter.writeInt((int)trieSize);
+  auxWriter.writeEol();
+  for (auto& singleSPDist: nodePairSPDist) {
+    auxWriter.writeInt((int)singleSPDist.size());
+    for (auto& nodeDist: singleSPDist) {
+      auxWriter.writeSeparator();
+      auxWriter.writeInt(nodeDist.first);
+      auxWriter.writeSeparator();
+      auxWriter.writeDouble(nodeDist.second);
+    }
+    auxWriter.writeEol();
+  }
+  for (auto dist: trieNodeDist) {
+    auxWriter.writeSeparator();
+    auxWriter.writeDouble(dist);
+  }
+  auxWriter.writeEol();
+  for (auto start: trieNodeStartNode) {
+    auxWriter.writeSeparator();
+    auxWriter.writeInt(start);
+  }
+  auxWriter.writeEol();
+  for (auto end: trieNodeEndNode) {
+    auxWriter.writeSeparator();
+    auxWriter.writeInt(end);
+  }
+  auxWriter.writeEol();
+  for (auto& mbr: edgeMBR) {
+    auxWriter.writeSeparator();
+    auxWriter.writeDouble(mbr.first.x);
+    auxWriter.writeSeparator();
+    auxWriter.writeDouble(mbr.first.y);
+    auxWriter.writeSeparator();
+    auxWriter.writeDouble(mbr.second.x);
+    auxWriter.writeSeparator();
+    auxWriter.writeDouble(mbr.second.y);
+  }
+  auxWriter.writeEol();
+  for (auto& singleMBR: nodePairMBR) {
+    auxWriter.writeInt((int)singleMBR.size());
+    for (auto& mbr: singleMBR) {
+      auxWriter.writeSeparator();
+      auxWriter.writeInt(mbr.first);
+      auxWriter.writeSeparator();
+      auxWriter.writeDouble(mbr.second.first.x);
+      auxWriter.writeSeparator();
+      auxWriter.writeDouble(mbr.second.first.y);
+      auxWriter.writeSeparator();
+      auxWriter.writeDouble(mbr.second.second.x);
+      auxWriter.writeSeparator();
+      auxWriter.writeDouble(mbr.second.second.y);
+    }
+    auxWriter.writeEol();
+  }
+  for (auto& mbr: trieNodeMBR) {
+    auxWriter.writeSeparator();
+    auxWriter.writeDouble(mbr.first.x);
+    auxWriter.writeSeparator();
+    auxWriter.writeDouble(mbr.first.y);
+    auxWriter.writeSeparator();
+    auxWriter.writeDouble(mbr.second.x);
+    auxWriter.writeSeparator();
+    auxWriter.writeDouble(mbr.second.y);
+  }
+  auxWriter.writeEol();
+}
+
+void Auxiliary::clear() {
+  nodeNumber = 0;
+  edgeNumber = 0;
+  trieSize = 0;
+  nodePairSPDist.clear();
+  trieNodeDist.clear();
+  trieNodeStartNode.clear();
+  trieNodeEndNode.clear();
+  edgeMBR.clear();
+  nodePairMBR.clear();
+  trieNodeMBR.clear();
 }
 
 // Get the node number.

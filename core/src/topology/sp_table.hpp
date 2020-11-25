@@ -2,6 +2,10 @@
 //  optimized_sp_table.hpp
 //  press-v3
 //
+//  The original paper stored all-edge-pair SP table. In this implementation, we optimized to only
+//  store the intersection-pair SP (instead of edge-edge pair), and we only store the distance from
+//  each intersection within maxDist (to make it tunable to avoid OOM for huge roadnet).
+//
 //  Created by Renchu Song on 9/27/20.
 //  Copyright © 2020 Renc. All rights reserved.
 //

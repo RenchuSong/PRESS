@@ -32,12 +32,16 @@ private:
   // Comparator for sorting AC automaton nodes frequency.
   std::function<bool(const int left, const int right)> acNodeCmp(const ACAutomaton& acAutomaton);
 public:
+  Huffman();
   // Read huffman encoding from file.
   Huffman(FileReader& hmReader);
   // Construct huffman encoding of each node of AC automaton.
   Huffman(const ACAutomaton& acAutomaton);
   // Store the huffman encoding to file.
   void store(FileWriter& hmWriter);
+  void load(FileReader& hmReader);
+  void build(const ACAutomaton& acAutomaton);
+  void clear();
   // Print for debug.
   void print() const;
   // Encode an AC automaton node sequence to binary.

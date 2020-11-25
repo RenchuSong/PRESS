@@ -10,6 +10,12 @@
 
 #include "huffman.hpp"
 
+Huffman::Huffman() { }
+
+Huffman::Huffman(FileReader& hmReader) {
+  load(hmReader);
+}
+
 /**
  * hmReader format:
  * n(huffman tree size) m(ac automaton size)
@@ -18,7 +24,9 @@
  * ...
  * node_(n-1)_left_index(or ac automaton node index) node_(n-1)_right_index(or ac automaton node index)
  */
-Huffman::Huffman(FileReader& hmReader) {
+void Huffman::load(FileReader& hmReader) {
+  clear();
+
   hmSize = hmReader.nextInt();
   acSize = hmReader.nextInt();
   for (auto i = 0; i < hmSize; i++) {
@@ -31,8 +39,14 @@ Huffman::Huffman(FileReader& hmReader) {
   collectHmCode(0, code);
 }
 
-// Construct huffman encoding of each node of AC automaton.
 Huffman::Huffman(const ACAutomaton& acAutomaton) {
+  build(acAutomaton);
+}
+
+// Construct huffman encoding of each node of AC automaton.
+void Huffman::build(const ACAutomaton& acAutomaton) {
+  clear();
+
   acSize = acAutomaton.getTrieSize();
 
   // Sort AC automaton nodes indices based on frequency ascendingly. Root node will be skipped.
@@ -141,6 +155,13 @@ void Huffman::store(FileWriter& hmWriter) {
     hmWriter.writeInt(huffman.at(i).second);
     hmWriter.writeEol();
   }
+}
+
+void Huffman::clear() {
+  hmSize = 0;
+  acSize = 0;
+  huffman.clear();
+  hmCode.clear();
 }
 
 // Print the huffman tree for debug.

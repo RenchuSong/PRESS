@@ -110,6 +110,11 @@ int main(int argc, char** argv) {
   // Dump PRESS trajectories to binary.
   reqRespHelper.writeNext("{\"Cmd\":\"DumpPRESSTrajectoriesToBinary\"}");
   reqRespHelper.explainResponse(reqRespHelper.readNext());
+  // Train
+  reqRespHelper.writeNext("{\"Cmd\":\"TrainACAutomatonHuffmanTreeAndBuildAuxiliary\", \"Theta\":3}");
+  reqRespHelper.explainResponse(reqRespHelper.readNext());
+  // Dump AC automaton, huffman tree and auxiliary to binary.
+  reqRespHelper.writeNext("{\"Cmd\":\"DumpACAutomatonHuffmanTreeAndAuxiliaryToBinary\"}");
 
   // Load roadnet from binary.
   reqRespHelper.writeNext("{\"Cmd\":\"LoadRoadnetFromBinary\", \"Folder\":\"WA_roadnetwork_and_single_trajectory\"}");
@@ -128,6 +133,9 @@ int main(int argc, char** argv) {
   reqRespHelper.explainResponse(reqRespHelper.readNext());
   // Load PRESS trajectories from binary.
   reqRespHelper.writeNext("{\"Cmd\":\"LoadPRESSTrajectoriesFromBinary\", \"Folder\":\"WA_roadnetwork_and_single_trajectory\"}");
+  reqRespHelper.explainResponse(reqRespHelper.readNext());
+  // Load AC automaton, huffman tree and auxiliary from binary.
+  reqRespHelper.writeNext("{\"Cmd\":\"LoadACAutomatonHuffmanTreeAndAuxiliaryFromBinary\", \"Folder\":\"WA_roadnetwork_and_single_trajectory\"}");
   reqRespHelper.explainResponse(reqRespHelper.readNext());
 
   return EXIT_SUCCESS;

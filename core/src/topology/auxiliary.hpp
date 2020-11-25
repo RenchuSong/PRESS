@@ -36,6 +36,7 @@ private:
   std::vector<std::pair<Point2D, Point2D> > trieNodeMBR;
 
 public:
+  Auxiliary();
   // Construct auxiliary structure for queries on PRESSCompressedTrajectory.
   // TODO: add more structures.
   Auxiliary(const Graph& graph, const SPTable& spTable, const ACAutomaton& acAutomaton);
@@ -60,6 +61,9 @@ public:
   const std::pair<Point2D, Point2D>& getTrieNodeMBR(size_t index) const;
   // Get the edge MBR.
   const std::pair<Point2D, Point2D>& getEdgeMBR(size_t index) const;
+  void build(const Graph& graph, const SPTable& spTable, const ACAutomaton& acAutomaton);
+  void load(FileReader& auxReader);
+  void clear();
   void print() const;
   ~Auxiliary();
 };

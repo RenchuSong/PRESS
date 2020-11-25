@@ -36,6 +36,7 @@ private:
   void insertSequence(std::deque<int>& sequence, int occur);
 
 public:
+  ACAutomaton();
   // Read AC automaton from file.
   ACAutomaton(FileReader& acReader);
   // Construct AC automaton from shortest path compressed spatial components.
@@ -46,6 +47,13 @@ public:
   );
   // Store the AC automaton to file.
   void store(FileWriter& acWriter);
+  void build(
+    const Graph& graph,
+    const std::vector<std::vector<int> >& spCompressedSpatialComps,
+    int theta
+  );
+  void load(FileReader& acReader);
+  void clear();
   // Print for debug.
   void print() const;
   size_t getTrieSize() const;
