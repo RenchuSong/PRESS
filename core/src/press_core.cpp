@@ -1451,13 +1451,50 @@ void handleWhenAtOnPRESSTrajectory(picojson::value& requestJson, std::string& re
  *   Success ...
  *   Message ...
  *   Data: [
- *     bool             // whether trajectory passes MBR within the time range
+ *     int              // whether trajectory passes MBR within the time range, 0: false, 1: true
  *     ...
  *   ]
  * }
  */
 void handleRangeOnPRESSTrajectory(picojson::value& requestJson, std::string& response) {
-  
+  if (!roadnetReady) {
+    response = errorResponse("Roadnet is not ready.");
+    return;
+  }
+  auto& queries = requestJson.get("Query").get<picojson::value::array>();
+  auto len = queries.size();
+  std::vector<bool> result;
+  QueryProcessor queryProcessor;
+  for (auto i = 0; i < len; ++i) {
+    bool singleResult = false;
+    try {
+      auto idx = (int)queries[i].get("Idx").get<double>();
+      if (idx < 0 || idx >= pressTrajectories.size()) {
+        throw "Index out of boundary";
+      }
+      double x1 = queries[i].get("X1").get<double>();
+      double y1 = queries[i].get("Y1").get<double>();
+      double x2 = queries[i].get("X2").get<double>();
+      double y2 = queries[i].get("Y2").get<double>();
+      double t1 = queries[i].get("T1").get<double>();
+      double t2 = queries[i].get("T2").get<double>();
+      singleResult = queryProcessor.range(
+        roadnet,
+        pressTrajectories.at(idx),
+        t1,
+        t2,
+        Point2D(x1, y1),
+        Point2D(x2, y2)
+      );
+    } catch (const char* ex) {
+      FILE_LOG(TLogLevel::lwarning)
+      << "Failed to query Range on original PRESS trajectory: "
+      << ex;
+    }
+    result.push_back(singleResult);
+  }
+  std::string queryResult = vecPrimitiveToJSONString(result);
+  response = successResponseWithData(queryResult);
 }
 
 struct ReqRespHelper {

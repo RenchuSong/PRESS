@@ -18,7 +18,9 @@
 #include "third_party/picojson.h"
 #include "topology/trajectory.hpp"
 #include "util/utility.hpp"
+#include "util/helper.hpp"
 #include "util/timer.hpp"
+
 
 struct WhereAtQuery {
   int idx;
@@ -36,6 +38,20 @@ struct WhenAtQuery {
   WhenAtQuery(int idx, double x, double y): idx(idx), x(x), y(y) { }
   std::string toJSONString() const {
     return std::string("{\"Idx\":") + std::to_string(idx) + ",\"X\":" + std::to_string(x) + ",\"Y\":" + std::to_string(y) + "}";
+  }
+};
+
+struct RangeQuery {
+  int idx;
+  double x1;
+  double y1;
+  double x2;
+  double y2;
+  double t1;
+  double t2;
+  RangeQuery(int idx, double x1, double y1, double x2, double y2, double t1, double t2): idx(idx), x1(x1), y1(y1), x2(x2), y2(y2), t1(t1), t2(t2) { }
+  std::string toJSONString() const {
+    return std::string("{\"Idx\":") + std::to_string(idx) + ",\"X1\":" + std::to_string(x1) + ",\"Y1\":" + std::to_string(y1) + ",\"X2\":" + std::to_string(x2) + ",\"Y2\":" + std::to_string(y2) + ",\"T1\":" + std::to_string(t1) + ",\"T2\":" + std::to_string(t2) + "}";
   }
 };
 
@@ -226,9 +242,10 @@ int main(int argc, char** argv) {
   }
   srand((unsigned)time(NULL));
 
-  // 5000 random WhereAt queries.
+  int testSize = 5000;
+  // testSize random WhereAt queries.
   std::vector<WhereAtQuery> whereAtQueries;
-  for (int i = 0; i < 5000; ++i) {
+  for (int i = 0; i < testSize; ++i) {
     int idx = rand() % pressTrajectories.size();
     double minT = pressTrajectories.at(idx).getTemporalComponent().at(0).t;
     double maxT = pressTrajectories.at(idx).getTemporalComponent().at(pressTrajectories.at(idx).getTemporalLength() - 1).t;
@@ -241,7 +258,7 @@ int main(int argc, char** argv) {
   auto whereAtResult = reqRespHelper.explainResponse(reqRespHelper.readNext()).get("Data").get<picojson::value::array>();
   std::cout << "Original whereAt takes (millisesonds): " << timer.getMilliSeconds() << std::endl;
   timer.pause();
-  // 5000 random WhenAt queries.
+  // testSize random WhenAt queries.
   std::vector<WhenAtQuery> whenAtQueries;
   auto len = whereAtResult.size();
   for (int i = 0; i < len; ++i) {
@@ -256,6 +273,43 @@ int main(int argc, char** argv) {
   reqRespHelper.explainResponse(reqRespHelper.readNext());
   std::cout << "Original whenAt takes (millisesonds): " << timer.getMilliSeconds() << std::endl;
   timer.pause();
-
+  // testSize random Range queries.
+  std::vector<RangeQuery> rangeQueries;
+  std::pair<Point2D, Point2D> mbr = std::make_pair(Point2D(whenAtQueries.at(0).x, whenAtQueries.at(0).y), Point2D(whenAtQueries.at(0).x, whenAtQueries.at(0).y));
+  for (auto& whenAt: whenAtQueries) {
+    extendMBR(mbr, Point2D(whenAt.x - 5000, whenAt.y - 5000));
+    extendMBR(mbr, Point2D(whenAt.x + 5000, whenAt.y + 5000));
+  }
+  for (int i = 0; i < testSize; ++i) {
+    int idx = rand() % pressTrajectories.size();
+    double minT = pressTrajectories.at(idx).getTemporalComponent().at(0).t;
+    double maxT = pressTrajectories.at(idx).getTemporalComponent().at(pressTrajectories.at(idx).getTemporalLength() - 1).t;
+    double t1 = (rand() % 10000) / 10000.0 * (maxT - minT) + minT;
+    double t2 = (rand() % 10000) / 10000.0 * (maxT - minT) + minT;
+    if (t1 > t2) {
+      double tmp = t1; t1 = t2; t2 = tmp;
+    }
+    int x1 = rand() % 10000;
+    int x2 = rand() % (10000 - x1);
+    int y1 = rand() % 10000;
+    int y2 = rand() % (10000 - y1);
+    rangeQueries.emplace_back(
+      RangeQuery(
+        idx,
+        linearInterpolate(0, mbr.first.x, 10000, mbr.second.x, x1),
+        linearInterpolate(0, mbr.first.y, 10000, mbr.second.y, y1),
+        linearInterpolate(0, mbr.first.x, 10000, mbr.second.x, x1 + x2),
+        linearInterpolate(0, mbr.first.y, 10000, mbr.second.y, y1 + y2),
+        t1,
+        t2
+      )
+    );
+  }
+  timer.reset();
+  timer.start();
+  reqRespHelper.writeNext(queryPayload("RangeOnPRESSTrajectory", vecToJSONString(rangeQueries)));
+  reqRespHelper.explainResponse(reqRespHelper.readNext());
+  std::cout << "Original range takes (millisesonds): " << timer.getMilliSeconds() << std::endl;
+  timer.pause();
   return EXIT_SUCCESS;
 }
