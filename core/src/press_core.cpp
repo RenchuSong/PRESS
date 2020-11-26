@@ -310,12 +310,11 @@ void handleDumpGridIndexToBinary(picojson::value& requestJson, std::string& resp
 // Handle load grid index from ${TMP_FOLDER}/[folder]/grid_index.bin
 void handleLoadGridIndexFromBinary(picojson::value& requestJson, std::string& response) {
   clearComponent(Component::GRID_INDEX);
-  auto folder = requestJson.get("Folder").get<std::string>();
-  if (!roadnetReady || folder != roadnetName) {
-    response = errorResponse("Roadnet is not ready or roadnet mismatch with grid index.");
+  if (!roadnetReady) {
+    response = errorResponse("Roadnet is not ready.");
     return;
   }
-  auto fileName = config.tmpFolder + folder + "/grid_index.bin";
+  auto fileName = config.tmpFolder + roadnetName + "/grid_index.bin";
   if (!fileExists(fileName.c_str())) {
     FILE_LOG(TLogLevel::lerror) << "Grid index binary file does not exist: " << fileName;
     response = errorResponse("Failed to load grid index.");
@@ -361,12 +360,11 @@ void handleDumpSPTableToBinary(picojson::value& requestJson, std::string& respon
 // Handle load SP table from ${TMP_FOLDER}/[folder]/sp_table.bin
 void handleLoadSPTableFromBinary(picojson::value& requestJson, std::string& response) {
   clearComponent(Component::SP_TABLE);
-  auto folder = requestJson.get("Folder").get<std::string>();
-  if (!roadnetReady || folder != roadnetName) {
-    response = errorResponse("Roadnet is not ready or roadnet mismatch with SP table.");
+  if (!roadnetReady) {
+    response = errorResponse("Roadnet is not ready.");
     return;
   }
-  auto fileName = config.tmpFolder + folder + "/sp_table.bin";
+  auto fileName = config.tmpFolder + roadnetName + "/sp_table.bin";
   if (!fileExists(fileName.c_str())) {
     FILE_LOG(TLogLevel::lerror) << "SP table binary file does not exist: " << fileName;
     response = errorResponse("Failed to load SP table.");
@@ -487,16 +485,15 @@ void handleDumpMapMatchedTrajectoriesToBinary(
 
 // Handle load GPS trajectories from ${TMP_FOLDER}/[folder]/gps_trajectories/[0 .. (n - 1)].bin
 void handleLoadGPSTrajectoriesFromBinary(picojson::value& requestJson, std::string& response) {
-  auto folder = requestJson.get("Folder").get<std::string>();
-  if (!roadnetReady || folder != roadnetName) {
-    response = errorResponse("Roadnet is not ready or roadnet mismatch with GPS trajectories.");
+  if (!roadnetReady) {
+    response = errorResponse("Roadnet is not ready.");
     return;
   }
   if (!spTableReady) {
     response = errorResponse("SP table is not ready.");
     return;
   }
-  auto folderName = config.tmpFolder + folder + "/gps_trajectories/";
+  auto folderName = config.tmpFolder + roadnetName + "/gps_trajectories/";
   std::vector<std::string> files;
   if (!listDirectory(folderName, files)) {
     FILE_LOG(TLogLevel::lerror) << "Fail to list GPS trajectory folder: " << folderName;
@@ -517,8 +514,7 @@ void handleLoadMapMatchedTrajectoriesFromBinary(
   picojson::value& requestJson,
   std::string& response
 ) {
-  auto folder = requestJson.get("Folder").get<std::string>();
-  if (!roadnetReady || folder != roadnetName) {
+  if (!roadnetReady) {
     response = errorResponse(
       "Roadnet is not ready or roadnet mismatch with map matched trajectories."
     );
@@ -528,7 +524,7 @@ void handleLoadMapMatchedTrajectoriesFromBinary(
     response = errorResponse("SP table is not ready.");
     return;
   }
-  auto folderName = config.tmpFolder + folder + "/map_matched_trajectories/";
+  auto folderName = config.tmpFolder + roadnetName + "/map_matched_trajectories/";
   std::vector<std::string> files;
   if (!listDirectory(folderName, files)) {
     FILE_LOG(TLogLevel::lerror) << "Fail to list map matched trajectory folder: " << folderName;
@@ -617,16 +613,15 @@ void handleDumpPRESSTrajectoriesToBinary(picojson::value& requestJson, std::stri
 
 // Handle load PRESS trajectories from ${TMP_FOLDER}/[folder]/press_trajectories/[0 .. (n - 1)].bin
 void handleLoadPRESSTrajectoriesFromBinary(picojson::value& requestJson, std::string& response) {
-  auto folder = requestJson.get("Folder").get<std::string>();
-  if (!roadnetReady || folder != roadnetName) {
-    response = errorResponse("Roadnet is not ready or roadnet mismatch with PRESS trajectories.");
+  if (!roadnetReady) {
+    response = errorResponse("Roadnet is not ready.");
     return;
   }
   if (!spTableReady) {
     response = errorResponse("SP table is not ready.");
     return;
   }
-  auto folderName = config.tmpFolder + folder + "/press_trajectories/";
+  auto folderName = config.tmpFolder + roadnetName + "/press_trajectories/";
   std::vector<std::string> files;
   if (!listDirectory(folderName, files)) {
     FILE_LOG(TLogLevel::lerror) << "Fail to list PRESS trajectory folder: " << folderName;
@@ -726,26 +721,25 @@ void handleLoadACAutomatonHuffmanTreeAndAuxiliaryFromBinary(
   std::string& response
 ) {
   clearComponent(Component::TRAINER);
-  auto folder = requestJson.get("Folder").get<std::string>();
-  if (!roadnetReady || folder != roadnetName) {
+  if (!roadnetReady) {
     response = errorResponse(
-      "Roadnet is not ready or roadnet mismatch with AC automaton, huffman tree and auxiliary ."
+      "Roadnet is not ready."
     );
     return;
   }
-  auto acName = config.tmpFolder + folder + "/ac_automaton.bin";
+  auto acName = config.tmpFolder + roadnetName + "/ac_automaton.bin";
   if (!fileExists(acName.c_str())) {
     FILE_LOG(TLogLevel::lerror) << "AC automaton binary file does not exist: " << acName;
     response = errorResponse("AC automaton binary file does not exist.");
     return;
   }
-  auto huffmanName = config.tmpFolder + folder + "/huffman.bin";
+  auto huffmanName = config.tmpFolder + roadnetName + "/huffman.bin";
   if (!fileExists(huffmanName.c_str())) {
     FILE_LOG(TLogLevel::lerror) << "Huffman tree binary file does not exist: " << huffmanName;
     response = errorResponse("Huffman tree binary file does not exist.");
     return;
   }
-  auto auxiliaryName = config.tmpFolder + folder + "/auxiliary.bin";
+  auto auxiliaryName = config.tmpFolder + roadnetName + "/auxiliary.bin";
   if (!fileExists(auxiliaryName.c_str())) {
     FILE_LOG(TLogLevel::lerror) << "Auxiliary binary file does not exist: " << auxiliaryName;
     response = errorResponse("Auxiliary binary file does not exist.");
@@ -761,7 +755,8 @@ void handleLoadACAutomatonHuffmanTreeAndAuxiliaryFromBinary(
   huffmanReady = true;
   auxiliaryReady = true;
   response = successResponse(
-    "AC automaton, huffman tree and auxiliary are loaded from " + config.tmpFolder + folder + "."
+    "AC automaton, huffman tree and auxiliary are loaded from "
+    + config.tmpFolder + roadnetName + "."
   );
 }
 
@@ -833,8 +828,7 @@ void handleDumpSPCompressionResultsToBinary(picojson::value& requestJson, std::s
 
 // Handle load SP compression results from ${TMP_FOLDER}/[folder]/sp_compression/[0..(n-1)].bin
 void handleLoadSPCompressionResultsFromBinary(picojson::value& requestJson, std::string& response) {
-  auto folder = requestJson.get("Folder").get<std::string>();
-  if (!roadnetReady || folder != roadnetName) {
+  if (!roadnetReady) {
     response = errorResponse(
       "Roadnet is not ready or roadnet mismatch with SP compression results."
     );
@@ -844,7 +838,7 @@ void handleLoadSPCompressionResultsFromBinary(picojson::value& requestJson, std:
     response = errorResponse("SP table is not ready.");
     return;
   }
-  auto folderName = config.tmpFolder + folder + "/sp_compression/";
+  auto folderName = config.tmpFolder + roadnetName + "/sp_compression/";
   std::vector<std::string> files;
   if (!listDirectory(folderName, files)) {
     FILE_LOG(TLogLevel::lerror) << "Fail to list SP compression folder: " << folderName;
@@ -926,10 +920,9 @@ void handleDumpFSTCompressionResultsToBinary(picojson::value& requestJson, std::
 
 // Handle load FST compression results from ${TMP_FOLDER}/[folder]/fst_compression/[0..(n-1)].bin
 void handleLoadFSTCompressionResultsFromBinary(picojson::value& requestJson, std::string& response) {
-  auto folder = requestJson.get("Folder").get<std::string>();
-  if (!roadnetReady || folder != roadnetName) {
+  if (!roadnetReady) {
     response = errorResponse(
-      "Roadnet is not ready or roadnet mismatch with FST compression results."
+      "Roadnet is not ready."
     );
     return;
   }
@@ -941,7 +934,7 @@ void handleLoadFSTCompressionResultsFromBinary(picojson::value& requestJson, std
     response = errorResponse("Huffman tree is not ready.");
     return;
   }
-  auto folderName = config.tmpFolder + folder + "/fst_compression/";
+  auto folderName = config.tmpFolder + roadnetName + "/fst_compression/";
   std::vector<std::string> files;
   if (!listDirectory(folderName, files)) {
     FILE_LOG(TLogLevel::lerror) << "Fail to list FST compression folder: " << folderName;
@@ -1022,14 +1015,13 @@ void handleDumpBTCCompressionResultsToBinary(picojson::value& requestJson, std::
 
 // Handle load BTC compression results from ${TMP_FOLDER}/[folder]/btc_compression/[0..(n-1)].bin
 void handleLoadBTCCompressionResultsFromBinary(picojson::value& requestJson, std::string& response) {
-  auto folder = requestJson.get("Folder").get<std::string>();
-  if (!roadnetReady || folder != roadnetName) {
+  if (!roadnetReady) {
     response = errorResponse(
-      "Roadnet is not ready or roadnet mismatch with BTC compression results."
+      "Roadnet is not ready."
     );
     return;
   }
-  auto folderName = config.tmpFolder + folder + "/btc_compression/";
+  auto folderName = config.tmpFolder + roadnetName + "/btc_compression/";
   std::vector<std::string> files;
   if (!listDirectory(folderName, files)) {
     FILE_LOG(TLogLevel::lerror) << "Fail to list BTC compression folder: " << folderName;
@@ -1294,8 +1286,7 @@ void handleLoadPRESSCompressionResultsFromBinary(
   picojson::value& requestJson,
   std::string& response
 ) {
-  auto folder = requestJson.get("Folder").get<std::string>();
-  if (!roadnetReady || folder != roadnetName) {
+  if (!roadnetReady) {
     response = errorResponse(
       "Roadnet is not ready or roadnet mismatch with PRESS compression results."
     );
@@ -1313,7 +1304,7 @@ void handleLoadPRESSCompressionResultsFromBinary(
     response = errorResponse("Huffman tree is not ready.");
     return;
   }
-  auto folderName = config.tmpFolder + folder + "/press_compression/";
+  auto folderName = config.tmpFolder + roadnetName + "/press_compression/";
   std::vector<std::string> files;
   if (!listDirectory(folderName, files)) {
     FILE_LOG(TLogLevel::lerror) << "Fail to list PRESS compression folder: " << folderName;
