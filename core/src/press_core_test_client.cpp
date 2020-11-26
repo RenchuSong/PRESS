@@ -29,6 +29,16 @@ struct WhereAtQuery {
   }
 };
 
+struct WhenAtQuery {
+  int idx;
+  double x;
+  double y;
+  WhenAtQuery(int idx, double x, double y): idx(idx), x(x), y(y) { }
+  std::string toJSONString() const {
+    return std::string("{\"Idx\":") + std::to_string(idx) + ",\"X\":" + std::to_string(x) + ",\"Y\":" + std::to_string(y) + "}";
+  }
+};
+
 struct ReqRespHelper {
   std::string inPath;
   std::string outPath;
@@ -216,7 +226,7 @@ int main(int argc, char** argv) {
   }
   srand((unsigned)time(NULL));
 
-  // Conduct 5000 random WhereAt queries and report timing.
+  // 5000 random WhereAt queries.
   std::vector<WhereAtQuery> whereAtQueries;
   for (int i = 0; i < 5000; ++i) {
     int idx = rand() % pressTrajectories.size();
@@ -228,9 +238,24 @@ int main(int argc, char** argv) {
   timer.reset();
   timer.start();
   reqRespHelper.writeNext(queryPayload("WhereAtOnPRESSTrajectory", vecToJSONString(whereAtQueries)));
-  reqRespHelper.explainResponse(reqRespHelper.readNext());
+  auto whereAtResult = reqRespHelper.explainResponse(reqRespHelper.readNext()).get("Data").get<picojson::value::array>();
   std::cout << "Original whereAt takes (millisesonds): " << timer.getMilliSeconds() << std::endl;
   timer.pause();
-  
+  // 5000 random WhenAt queries.
+  std::vector<WhenAtQuery> whenAtQueries;
+  auto len = whereAtResult.size();
+  for (int i = 0; i < len; ++i) {
+    int idx = whereAtQueries.at(i).idx;
+    double x = whereAtResult.at(i).get("X").get<double>();
+    double y = whereAtResult.at(i).get("Y").get<double>();
+    whenAtQueries.emplace_back(WhenAtQuery(idx, x, y));
+  }
+  timer.reset();
+  timer.start();
+  reqRespHelper.writeNext(queryPayload("WhenAtOnPRESSTrajectory", vecToJSONString(whenAtQueries)));
+  reqRespHelper.explainResponse(reqRespHelper.readNext());
+  std::cout << "Original whenAt takes (millisesonds): " << timer.getMilliSeconds() << std::endl;
+  timer.pause();
+
   return EXIT_SUCCESS;
 }

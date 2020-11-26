@@ -31,4 +31,17 @@ template<typename T> std::string vecToJSONString(const std::vector<T>& data) {
   return result;
 }
 
+template<typename T> std::string vecPrimitiveToJSONString(const std::vector<T>& data) {
+  std::string result("[");
+  auto len = data.size();
+  if (len > 0) {
+    result += std::to_string(data.at(0));
+  }
+  for (auto i = 1; i < len; ++i) {
+    result += "," + std::to_string(data.at(i));
+  }
+  result += "]";
+  return result;
+}
+
 #endif /* utility_hpp */

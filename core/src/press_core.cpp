@@ -1364,7 +1364,7 @@ void handleWhereAtOnPRESSTrajectory(picojson::value& requestJson, std::string& r
       }
       auto timeStamp = queries[i].get("Time").get<double>();
       queryProcessor.whereAt(roadnet, pressTrajectories.at(idx), timeStamp, singleResult);
-    } catch (std::string& ex) {
+    } catch (const char* ex) {
       FILE_LOG(TLogLevel::lwarning)
         << "Failed to query WhereAt on original PRESS trajectory: "
         << ex;
@@ -1399,7 +1399,34 @@ void handleWhereAtOnPRESSTrajectory(picojson::value& requestJson, std::string& r
  * }
  */
 void handleWhenAtOnPRESSTrajectory(picojson::value& requestJson, std::string& response) {
-  
+  if (!roadnetReady) {
+    response = errorResponse("Roadnet is not ready.");
+    return;
+  }
+  auto& queries = requestJson.get("Query").get<picojson::value::array>();
+  auto len = queries.size();
+  std::vector<double> result;
+  QueryProcessor queryProcessor;
+  for (auto i = 0; i < len; ++i) {
+    double singleResult = -1;
+    try {
+      auto idx = (int)queries[i].get("Idx").get<double>();
+      if (idx < 0 || idx >= pressTrajectories.size()) {
+        throw "Index out of boundary";
+      }
+      double x = queries[i].get("X").get<double>();
+      double y = queries[i].get("Y").get<double>();
+      Point2D position(x, y);
+      singleResult = queryProcessor.whenAt(roadnet, pressTrajectories.at(idx), position);
+    } catch (const char* ex) {
+      FILE_LOG(TLogLevel::lwarning)
+        << "Failed to query WhenAt on original PRESS trajectory: "
+        << ex;
+    }
+    result.push_back(singleResult);
+  }
+  std::string queryResult = vecPrimitiveToJSONString(result);
+  response = successResponseWithData(queryResult);
 }
 /**
  * Range query on original PRESS trajectories.
@@ -1476,6 +1503,7 @@ struct ReqRespHelper {
     }
     try {
       auto& cmd = requestJson.get("Cmd").get<std::string>();
+      FILE_LOG(TLogLevel::linfo) << "Received request << " << cmd;
       // Handles each type of requests.
       if (cmd == "ReadRoadnetFromDataSource") {
         handleReadRoadnetFromDataSource(requestJson, response);
@@ -1579,6 +1607,10 @@ struct ReqRespHelper {
       FILE_LOG(TLogLevel::lerror) << "Failed to handle request (" << request << "): " << ex;
       auto errResp = errorResponse("Failed to handle request.");
       writeNext(errResp);
+    } catch (const char* ex) {
+      FILE_LOG(TLogLevel::lerror) << "Failed to handle request (" << request << "): " << ex;
+      auto errResp = errorResponse("Failed to handle request.");
+      writeNext(errResp);
     } catch (...) {
       FILE_LOG(TLogLevel::lerror) << "Failed to handle request (" << request << ")";
       auto errResp = errorResponse("Failed to handle request.");
@@ -1602,7 +1634,6 @@ int main(int argc, char** argv) {
   // Handle requests.
   while (true) {
     auto& request = reqRespHelper.readNext();
-    FILE_LOG(TLogLevel::linfo) << "Request received >> " << request;
     reqRespHelper.handleRequest(request);
     FILE_LOG(TLogLevel::linfo) << "Response sent";
   }
