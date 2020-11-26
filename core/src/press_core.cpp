@@ -1051,7 +1051,7 @@ void threadHSCCompression(
   const SPTable& spTable,
   const ACAutomaton& acAutomaton,
   const Huffman& huffman,
-  std::vector<Binary> hscCompressResults
+  std::vector<Binary>& hscCompressResults
 ) {
   SpatialCompressor spatialCompressor;
   for (auto& pressTrajectory: pressTrajectories) {
@@ -1070,7 +1070,7 @@ void threadHSCCompression(
 void threadBTCCompression(
   double tsnd,
   double nstd,
-  std::vector<std::vector<TemporalPair> > btcCompressResults
+  std::vector<std::vector<TemporalPair> >& btcCompressResults
 ) {
   TemporalCompressor temporalCompressor;
   for (auto& pressTrajectory: pressTrajectories) {
@@ -1106,28 +1106,41 @@ void handlePRESSCompression(picojson::value& requestJson, std::string& response)
     return;
   }
   pressCompressedTrajectories.clear();
-  SpatialCompressor spatialCompressor;
-  TemporalCompressor temporalCompressor;
   auto tsnd = requestJson.get("TSND").get<double>();
   auto nstd = requestJson.get("NSTD").get<double>();
   std::vector<Binary> hscCompressResults;
   std::vector<std::vector<TemporalPair> > btcCompressResults;
-  std::thread hscThread(
-    threadHSCCompression,
+  // In ideal world, HSC and BTC can be parallelized with fully mature services.
+  // Here the simple ac-hoc thread spawning will move too much memory around, making it pretty slow.
+//  std::thread hscThread(
+//    threadHSCCompression,
+//    roadnet,
+//    spTable,
+//    acAutomaton,
+//    huffman,
+//    std::ref(hscCompressResults)
+//  );
+//  std::thread btcThread(
+//    threadBTCCompression,
+//    tsnd,
+//    nstd,
+//    std::ref(btcCompressResults)
+//  );
+//  hscThread.join();
+//  btcThread.join();
+  // We use sequencial implementation instead.
+  threadHSCCompression(
     roadnet,
     spTable,
     acAutomaton,
     huffman,
     hscCompressResults
   );
-  std::thread btcThread(
-    threadBTCCompression,
+  threadBTCCompression(
     tsnd,
     nstd,
     btcCompressResults
   );
-  hscThread.join();
-  btcThread.join();
   for (auto i = 0; i < pressTrajectories.size(); ++i) {
     pressCompressedTrajectories.emplace_back(
       PRESSCompressedTrajectory(hscCompressResults.at(i), btcCompressResults.at(i))

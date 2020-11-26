@@ -236,7 +236,7 @@ PRESSCompressedTrajectory::PRESSCompressedTrajectory(
   temporalLength = temporalReader.nextInt();
   for (auto i = 0; i < temporalLength; i++) {
     temporal.emplace_back(
-      TemporalPair(temporalReader.nextInt(), temporalReader.nextDouble())
+      TemporalPair(temporalReader.nextDouble(), temporalReader.nextDouble())
     );
   }
 }
@@ -255,7 +255,7 @@ void PRESSCompressedTrajectory::store(FileWriter& spatialWriter, FileWriter& tem
   temporalWriter.writeInt((int)temporalLength);
   for (auto tpPair: temporal) {
     temporalWriter.writeSeparator();
-    temporalWriter.writeInt(tpPair.t);
+    temporalWriter.writeDouble(tpPair.t);
     temporalWriter.writeSeparator();
     temporalWriter.writeDouble(tpPair.dist);
   }
