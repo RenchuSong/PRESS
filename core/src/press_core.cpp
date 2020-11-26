@@ -6,9 +6,6 @@
 //  Copyright © 2018 Renc. All rights reserved.
 //
 
-//#include "io/binary.hpp"
-
-
 
 //#include "util/timer.hpp"
 //#include "util/helper.hpp"
@@ -795,7 +792,7 @@ void handleSPCompression(picojson::value& requestJson, std::string& response) {
 // Handle clear SP compression result.
 void handleClearSPCompressionResults(picojson::value& requestJson, std::string& response) {
   spCompressionResults.clear();
-  response = successResponse("SP compression result cleared.");
+  response = successResponse("SP compression results cleared.");
 }
 
 // Handle dump SP compression results to ${TMP_FOLDER}/[roadnetName]/sp_compression/[0..(n-1)].bin
@@ -860,6 +857,98 @@ void handleLoadSPCompressionResultsFromBinary(picojson::value& requestJson, std:
     spCompressionResults.emplace_back(spatial);
   }
   response = successResponse("SP compression results are loaded from " + folderName + ".");
+}
+
+// Handle FST compression.
+void handleFSTCompression(picojson::value& requestJson, std::string& response) {
+  if (!acAutomatonReady) {
+    response = errorResponse("AC automaton is not ready.");
+    return;
+  }
+  if (!huffmanReady) {
+    response = errorResponse("Huffman tree is not ready.");
+    return;
+  }
+  if (spCompressionResults.size() == 0) {
+    response = errorResponse("There is no SP compression result to be FST compressed.");
+    return;
+  }
+  fstCompressionResults.clear();
+  SpatialCompressor spatialCompressor;
+  Binary binary;
+  for (auto& spatial: spCompressionResults) {
+    spatialCompressor.frequentSubTrajectoryCompresson(
+      acAutomaton,
+      huffman,
+      spatial,
+      binary
+    );
+    fstCompressionResults.emplace_back(binary);
+  }
+  response = successResponse("FST compression finished.");
+}
+
+// Handle clear FST compression result.
+void handleClearFSTCompressionResults(picojson::value& requestJson, std::string& response) {
+  fstCompressionResults.clear();
+  response = successResponse("FST compression results cleared.");
+}
+
+// Handle dump FST compression results to ${TMP_FOLDER}/[roadnetName]/fst_compression/[0..(n-1)].bin
+void handleDumpFSTCompressionResultsToBinary(picojson::value& requestJson, std::string& response) {
+  if (!roadnetReady) {
+    response = errorResponse("Roadnet is not ready.");
+    return;
+  }
+  auto fstCompressFolderName = config.tmpFolder + roadnetName + "/fst_compression/";
+  if (!fileExists(fstCompressFolderName.c_str()) && !createFolder(fstCompressFolderName)) {
+    FILE_LOG(TLogLevel::lerror) << "Failed to create storage folder: " << fstCompressFolderName;
+    response = errorResponse("Failed to create storage folder.");
+    return;
+  }
+  if (!clearDirectory(fstCompressFolderName)) {
+    FILE_LOG(TLogLevel::lerror) << "Failed to clear storage folder: " << fstCompressFolderName;
+    response = errorResponse("Failed to clear storage folder.");
+    return;
+  }
+  for (int i = 0; i < fstCompressionResults.size(); ++i) {
+    auto fstCompressionName = fstCompressFolderName + std::to_string(i) + ".bin";
+    FileWriter fstWriter(fstCompressionName.c_str(), true);
+    fstCompressionResults.at(i).store(fstWriter);
+  }
+  response = successResponse("FST compression results are dumped to " + fstCompressFolderName + ".");
+}
+
+// Handle load FST compression results from ${TMP_FOLDER}/[folder]/fst_compression/[0..(n-1)].bin
+void handleLoadFSTCompressionResultsFromBinary(picojson::value& requestJson, std::string& response) {
+  auto folder = requestJson.get("Folder").get<std::string>();
+  if (!roadnetReady || folder != roadnetName) {
+    response = errorResponse(
+      "Roadnet is not ready or roadnet mismatch with FST compression results."
+    );
+    return;
+  }
+  if (!acAutomatonReady) {
+    response = errorResponse("AC automaton is not ready.");
+    return;
+  }
+  if (!huffmanReady) {
+    response = errorResponse("Huffman tree is not ready.");
+    return;
+  }
+  auto folderName = config.tmpFolder + folder + "/fst_compression/";
+  std::vector<std::string> files;
+  if (!listDirectory(folderName, files)) {
+    FILE_LOG(TLogLevel::lerror) << "Fail to list FST compression folder: " << folderName;
+    response = errorResponse("Fail to list FST compression folder.");
+    return;
+  }
+  fstCompressionResults.clear();
+  for (auto& file: files) {
+    FileReader fstReader((folderName + file).c_str(), true);
+    fstCompressionResults.emplace_back(Binary(fstReader));
+  }
+  response = successResponse("FST compression results are loaded from " + folderName + ".");
 }
 
 
@@ -959,6 +1048,14 @@ struct ReqRespHelper {
         handleDumpSPCompressionResultsToBinary(requestJson, response);
       } else if (cmd == "LoadSPCompressionResultsFromBinary") {
         handleLoadSPCompressionResultsFromBinary(requestJson, response);
+      } else if (cmd == "FSTCompression") {
+        handleFSTCompression(requestJson, response);
+      } else if (cmd == "ClearFSTCompressionResults") {
+        handleClearFSTCompressionResults(requestJson, response);
+      } else if (cmd == "DumpFSTCompressionResultsToBinary") {
+        handleDumpFSTCompressionResultsToBinary(requestJson, response);
+      } else if (cmd == "LoadFSTCompressionResultsFromBinary") {
+        handleLoadFSTCompressionResultsFromBinary(requestJson, response);
       } else {
         FILE_LOG(TLogLevel::lerror) << "Unknown request: " << request;
         response = errorResponse("Unknown request.");

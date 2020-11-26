@@ -147,6 +147,15 @@ int main(int argc, char** argv) {
   // Load SP compression results from binary.
   reqRespHelper.writeNext("{\"Cmd\":\"LoadSPCompressionResultsFromBinary\", \"Folder\":\"WA_roadnetwork_and_single_trajectory\"}");
   reqRespHelper.explainResponse(reqRespHelper.readNext());
+  // FST compression
+  reqRespHelper.writeNext("{\"Cmd\":\"FSTCompression\"}");
+  reqRespHelper.explainResponse(reqRespHelper.readNext());
+  // Dump FST compression results to binary.
+  reqRespHelper.writeNext("{\"Cmd\":\"DumpFSTCompressionResultsToBinary\"}");
+  reqRespHelper.explainResponse(reqRespHelper.readNext());
+  // Load FST compression results from binary.
+  reqRespHelper.writeNext("{\"Cmd\":\"LoadFSTCompressionResultsFromBinary\", \"Folder\":\"WA_roadnetwork_and_single_trajectory\"}");
+  reqRespHelper.explainResponse(reqRespHelper.readNext());
 
   return EXIT_SUCCESS;
 }
