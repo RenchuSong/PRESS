@@ -174,6 +174,12 @@ int main(int argc, char** argv) {
   // Load PRESS compression results from binary.
   reqRespHelper.writeNext("{\"Cmd\":\"LoadPRESSCompressionResultsFromBinary\", \"Folder\":\"WA_roadnetwork_and_single_trajectory\"}");
   reqRespHelper.explainResponse(reqRespHelper.readNext());
+  // PRESS de-compression
+  reqRespHelper.writeNext("{\"Cmd\":\"PRESSDeCompression\"}");
+  reqRespHelper.explainResponse(reqRespHelper.readNext());
+  // Dump PRESS de-compression results to binary.
+  reqRespHelper.writeNext("{\"Cmd\":\"DumpPRESSDeCompressionResultsToBinary\"}");
+  reqRespHelper.explainResponse(reqRespHelper.readNext());
 
   return EXIT_SUCCESS;
 }

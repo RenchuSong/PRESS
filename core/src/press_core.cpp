@@ -58,6 +58,7 @@ std::vector<std::vector<int> > spCompressionResults;
 std::vector<Binary> fstCompressionResults;
 std::vector<std::vector<TemporalPair> > btcCompressionResults;
 std::vector<PRESSCompressedTrajectory> pressCompressedTrajectories;
+std::vector<PRESSTrajectory> pressDeCompressedTrajectories;
 
 // Config for PRESS core.
 struct CoreConfig {
@@ -166,6 +167,7 @@ void clearComponent(Component comp) {
       fstCompressionResults.clear();
       btcCompressionResults.clear();
       pressCompressedTrajectories.clear();
+      pressDeCompressedTrajectories.clear();
       break;
     }
     case Component::GRID_INDEX: {
@@ -184,6 +186,7 @@ void clearComponent(Component comp) {
       fstCompressionResults.clear();
       btcCompressionResults.clear();
       pressCompressedTrajectories.clear();
+      pressDeCompressedTrajectories.clear();
       break;
     }
     case Component::MAP_MATCHER: {
@@ -203,6 +206,7 @@ void clearComponent(Component comp) {
       fstCompressionResults.clear();
       btcCompressionResults.clear();
       pressCompressedTrajectories.clear();
+      pressDeCompressedTrajectories.clear();
       break;
     }
   }
@@ -1149,10 +1153,57 @@ void handlePRESSCompression(picojson::value& requestJson, std::string& response)
   response = successResponse("PRESS compression finished.");
 }
 
+// Handle PRESS decompression.
+void handlePRESSDeCompression(picojson::value& requestJson, std::string& response) {
+  if (!roadnetReady) {
+    response = errorResponse("Roadnet is not ready.");
+    return;
+  }
+  if (!spTableReady) {
+    response = errorResponse("SP table is not ready.");
+    return;
+  }
+  if (!acAutomatonReady) {
+    response = errorResponse("AC automaton is not ready.");
+    return;
+  }
+  if (!huffmanReady) {
+    response = errorResponse("Huffman tree is not ready.");
+    return;
+  }
+  if (pressCompressedTrajectories.size() == 0) {
+    response = errorResponse("There is no compressed press trajectory to be decompressed.");
+    return;
+  }
+  pressDeCompressedTrajectories.clear();
+  std::vector<int> hscDeCompressResults;
+  SpatialCompressor spatialCompressor;
+  for (auto& pressCompressedTrajectory: pressCompressedTrajectories) {
+    spatialCompressor.hybridSpatialDecompression(
+      roadnet,
+      spTable,
+      acAutomaton,
+      huffman,
+      pressCompressedTrajectory.getSpatialComponent(),
+      hscDeCompressResults
+    );
+    pressDeCompressedTrajectories.emplace_back(
+      PRESSTrajectory(hscDeCompressResults, pressCompressedTrajectory.getTemporalComponent())
+    );
+  }
+  response = successResponse("PRESS de-compression finished.");
+}
+
 // Handle clear PRESS compression result.
 void handleClearPRESSCompressionResults(picojson::value& requestJson, std::string& response) {
   pressCompressedTrajectories.clear();
   response = successResponse("PRESS compression results cleared.");
+}
+
+// Handle clear PRESS de-compression result.
+void handleClearPRESSDeCompressionResults(picojson::value& requestJson, std::string& response) {
+  pressDeCompressedTrajectories.clear();
+  response = successResponse("PRESS de-compression results cleared.");
 }
 
 // Handle dump PRESS compression results to
@@ -1180,7 +1231,7 @@ void handleDumpPRESSCompressionResultsToBinary(
     auto pressCompressedTrajectoryFolder = pressCompressFolderName + std::to_string(i) + "/";
     if (!createFolder(pressCompressedTrajectoryFolder)) {
       FILE_LOG(TLogLevel::lerror)
-        << "Failed to create press folder: "
+        << "Failed to create press compressed folder: "
         << pressCompressedTrajectoryFolder;
       response = errorResponse("Failed to create press compressed folder.");
       return;
@@ -1196,8 +1247,49 @@ void handleDumpPRESSCompressionResultsToBinary(
   );
 }
 
+// Handle dump PRESS de-compression results to
+// ${TMP_FOLDER}/[roadnetName]/press_decompression/[0..(n-1)].bin
+void handleDumpPRESSDeCompressionResultsToBinary(
+  picojson::value& requestJson,
+  std::string& response
+) {
+  if (!roadnetReady) {
+    response = errorResponse("Roadnet is not ready.");
+    return;
+  }
+  auto pressDeCompressFolderName = config.tmpFolder + roadnetName + "/press_decompression/";
+  if (!fileExists(pressDeCompressFolderName.c_str()) && !createFolder(pressDeCompressFolderName)) {
+    FILE_LOG(TLogLevel::lerror) << "Failed to create storage folder: " << pressDeCompressFolderName;
+    response = errorResponse("Failed to create storage folder.");
+    return;
+  }
+  if (!clearDirectory(pressDeCompressFolderName)) {
+    FILE_LOG(TLogLevel::lerror) << "Failed to clear storage folder: " << pressDeCompressFolderName;
+    response = errorResponse("Failed to clear storage folder.");
+    return;
+  }
+  for (int i = 0; i < pressDeCompressedTrajectories.size(); ++i) {
+    auto pressDeCompressedTrajectoryFolder = pressDeCompressFolderName + std::to_string(i) + "/";
+    if (!createFolder(pressDeCompressedTrajectoryFolder)) {
+      FILE_LOG(TLogLevel::lerror)
+        << "Failed to create press de-compressed folder: "
+        << pressDeCompressedTrajectoryFolder;
+      response = errorResponse("Failed to create press de-compressed folder.");
+      return;
+    }
+    auto spatialName = pressDeCompressedTrajectoryFolder + "spatial.bin";
+    FileWriter spatialWriter(spatialName.c_str(), true);
+    auto temporalName = pressDeCompressedTrajectoryFolder + "temporal.bin";
+    FileWriter temporalWriter(temporalName.c_str(), true);
+    pressDeCompressedTrajectories.at(i).store(spatialWriter, temporalWriter);
+  }
+  response = successResponse(
+    "De-compressed PRESS trajectories are dumped to " + pressDeCompressFolderName + "."
+  );
+}
+
 // Handle load PRESS compression results from
-// ${TMP_FOLDER}/[folder]/PRESS_compression/[0..(n-1)].bin
+// ${TMP_FOLDER}/[folder]/press_compression/[0..(n-1)].bin
 void handleLoadPRESSCompressionResultsFromBinary(
   picojson::value& requestJson,
   std::string& response
@@ -1354,12 +1446,16 @@ struct ReqRespHelper {
         handleLoadBTCCompressionResultsFromBinary(requestJson, response);
       } else if (cmd == "PRESSCompression") {
         handlePRESSCompression(requestJson, response);
-//      } else if (cmd == "PRESSDeCompression") {
-//        handlePRESSDeCompression(requestJson, response);
+      } else if (cmd == "PRESSDeCompression") {
+        handlePRESSDeCompression(requestJson, response);
       } else if (cmd == "ClearPRESSCompressionResults") {
         handleClearPRESSCompressionResults(requestJson, response);
       } else if (cmd == "DumpPRESSCompressionResultsToBinary") {
         handleDumpPRESSCompressionResultsToBinary(requestJson, response);
+      } else if (cmd == "ClearPRESSDeCompressionResults") {
+        handleClearPRESSDeCompressionResults(requestJson, response);
+      } else if (cmd == "DumpPRESSDeCompressionResultsToBinary") {
+        handleDumpPRESSDeCompressionResultsToBinary(requestJson, response);
       } else if (cmd == "LoadPRESSCompressionResultsFromBinary") {
         handleLoadPRESSCompressionResultsFromBinary(requestJson, response);
       } else {
