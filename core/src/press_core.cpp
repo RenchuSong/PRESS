@@ -56,6 +56,10 @@ Auxiliary auxiliary;
 std::vector<GPSTrajectory> gpsTrajectories;
 std::vector<MapMatchedTrajectory> mapMatchedTrajectories;
 std::vector<PRESSTrajectory> pressTrajectories;
+std::vector<std::vector<int> > spCompressionResults;
+std::vector<Binary> fstCompressionResults;
+std::vector<std::vector<TemporalPair> > btcCompressionResults;
+std::vector<PRESSCompressedTrajectory> pressCompressedTrajectories;
 
 // Config for PRESS core.
 struct CoreConfig {
@@ -160,6 +164,10 @@ void clearComponent(Component comp) {
       gpsTrajectories.clear();
       mapMatchedTrajectories.clear();
       pressTrajectories.clear();
+      spCompressionResults.clear();
+      fstCompressionResults.clear();
+      btcCompressionResults.clear();
+      pressCompressedTrajectories.clear();
       break;
     }
     case Component::GRID_INDEX: {
@@ -174,6 +182,10 @@ void clearComponent(Component comp) {
       gpsTrajectories.clear();
       mapMatchedTrajectories.clear();
       pressTrajectories.clear();
+      spCompressionResults.clear();
+      fstCompressionResults.clear();
+      btcCompressionResults.clear();
+      pressCompressedTrajectories.clear();
       break;
     }
     case Component::MAP_MATCHER: {
@@ -189,6 +201,10 @@ void clearComponent(Component comp) {
       acAutomatonReady = false;
       huffmanReady = false;
       auxiliaryReady = false;
+      spCompressionResults.clear();
+      fstCompressionResults.clear();
+      btcCompressionResults.clear();
+      pressCompressedTrajectories.clear();
       break;
     }
   }
@@ -747,6 +763,105 @@ void handleLoadACAutomatonHuffmanTreeAndAuxiliaryFromBinary(
   );
 }
 
+// Handle SP compression.
+void handleSPCompression(picojson::value& requestJson, std::string& response) {
+  if (!roadnetReady) {
+    response = errorResponse("Roadnet is not ready.");
+    return;
+  }
+  if (!spTableReady) {
+    response = errorResponse("SP table is not ready.");
+    return;
+  }
+  if (pressTrajectories.size() == 0) {
+    response = errorResponse("There is no press trajectory to be SP compressed.");
+    return;
+  }
+  spCompressionResults.clear();
+  SpatialCompressor spatialCompressor;
+  std::vector<int> spCompressResult;
+  for (auto& pressTrajectory: pressTrajectories) {
+    spatialCompressor.shortestPathCompression(
+      roadnet,
+      spTable,
+      pressTrajectory.getSpatialComponent(),
+      spCompressResult
+    );
+    spCompressionResults.emplace_back(spCompressResult);
+  }
+  response = successResponse("SP compression finished.");
+}
+
+// Handle clear SP compression result.
+void handleClearSPCompressionResults(picojson::value& requestJson, std::string& response) {
+  spCompressionResults.clear();
+  response = successResponse("SP compression result cleared.");
+}
+
+// Handle dump SP compression results to ${TMP_FOLDER}/[roadnetName]/sp_compression/[0..(n-1)].bin
+void handleDumpSPCompressionResultsToBinary(picojson::value& requestJson, std::string& response) {
+  if (!roadnetReady) {
+    response = errorResponse("Roadnet is not ready.");
+    return;
+  }
+  auto spCompressFolderName = config.tmpFolder + roadnetName + "/sp_compression/";
+  if (!fileExists(spCompressFolderName.c_str()) && !createFolder(spCompressFolderName)) {
+    FILE_LOG(TLogLevel::lerror) << "Failed to create storage folder: " << spCompressFolderName;
+    response = errorResponse("Failed to create storage folder.");
+    return;
+  }
+  if (!clearDirectory(spCompressFolderName)) {
+    FILE_LOG(TLogLevel::lerror) << "Failed to clear storage folder: " << spCompressFolderName;
+    response = errorResponse("Failed to clear storage folder.");
+    return;
+  }
+  for (int i = 0; i < spCompressionResults.size(); ++i) {
+    auto spCompressionName = spCompressFolderName + std::to_string(i) + ".bin";
+    FileWriter spWriter(spCompressionName.c_str(), true);
+    auto& spatial = spCompressionResults.at(i);
+    spWriter.writeInt((int)spatial.size());
+    for (auto id: spatial) {
+      spWriter.writeSeparator();
+      spWriter.writeInt(id);
+    }
+    spWriter.writeEol();
+  }
+  response = successResponse("SP compression results are dumped to " + spCompressFolderName + ".");
+}
+
+// Handle load SP compression results from ${TMP_FOLDER}/[folder]/sp_compression/[0..(n-1)].bin
+void handleLoadSPCompressionResultsFromBinary(picojson::value& requestJson, std::string& response) {
+  auto folder = requestJson.get("Folder").get<std::string>();
+  if (!roadnetReady || folder != roadnetName) {
+    response = errorResponse(
+      "Roadnet is not ready or roadnet mismatch with SP compression results."
+    );
+    return;
+  }
+  if (!spTableReady) {
+    response = errorResponse("SP table is not ready.");
+    return;
+  }
+  auto folderName = config.tmpFolder + folder + "/sp_compression/";
+  std::vector<std::string> files;
+  if (!listDirectory(folderName, files)) {
+    FILE_LOG(TLogLevel::lerror) << "Fail to list SP compression folder: " << folderName;
+    response = errorResponse("Fail to list SP compression folder.");
+    return;
+  }
+  spCompressionResults.clear();
+  for (auto& file: files) {
+    FileReader spReader((folderName + file).c_str(), true);
+    std::vector<int> spatial;
+    auto len = spReader.nextInt();
+    for (auto i = 0; i < len; ++i) {
+      spatial.emplace_back(spReader.nextInt());
+    }
+    spCompressionResults.emplace_back(spatial);
+  }
+  response = successResponse("SP compression results are loaded from " + folderName + ".");
+}
+
 
 struct ReqRespHelper {
   std::string inPath;
@@ -836,6 +951,14 @@ struct ReqRespHelper {
         handleDumpACAutomatonHuffmanTreeAndAuxiliaryToBinary(requestJson, response);
       } else if (cmd == "LoadACAutomatonHuffmanTreeAndAuxiliaryFromBinary") {
         handleLoadACAutomatonHuffmanTreeAndAuxiliaryFromBinary(requestJson, response);
+      } else if (cmd == "SPCompression") {
+        handleSPCompression(requestJson, response);
+      } else if (cmd == "ClearSPCompressionResults") {
+        handleClearSPCompressionResults(requestJson, response);
+      } else if (cmd == "DumpSPCompressionResultsToBinary") {
+        handleDumpSPCompressionResultsToBinary(requestJson, response);
+      } else if (cmd == "LoadSPCompressionResultsFromBinary") {
+        handleLoadSPCompressionResultsFromBinary(requestJson, response);
       } else {
         FILE_LOG(TLogLevel::lerror) << "Unknown request: " << request;
         response = errorResponse("Unknown request.");
