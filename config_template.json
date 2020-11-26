@@ -3,6 +3,6 @@
     "tmp":"[ROOT]/core/tmp/",
     "data":"[ROOT]/data/",
     "logs":"[ROOT]/core/logs/",
-    "log_level":"DEBUG"
+    "log_level":"INFO"
   }
 }

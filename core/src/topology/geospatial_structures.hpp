@@ -30,6 +30,9 @@ struct Point2D {
   void print() const {
     std::cout << "(" << x << ", " << y << ")";
   }
+  std::string toJSONString() const {
+    return std::string("{\"X\":") + std::to_string(x) + ",\"Y\":" + std::to_string(y) + "}";
+  }
 };
 
 // A GPS point.

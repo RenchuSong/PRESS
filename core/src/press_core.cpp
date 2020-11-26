@@ -10,10 +10,6 @@
 //#include "util/timer.hpp"
 //#include "util/helper.hpp"
 
-
-//#include "service/query_processor.hpp"
-
-
 #include <csignal>
 #include <fstream>
 #include <sys/stat.h>
@@ -22,6 +18,7 @@
 #include <vector>
 
 #include "service/map_matcher.hpp"
+#include "service/query_processor.hpp"
 #include "service/spatial_compressor.hpp"
 #include "service/temporal_compressor.hpp"
 #include "service/trajectory_reformattor.hpp"
@@ -220,6 +217,10 @@ std::string errorResponse(std::string errMsg) {
 // Success response with message.
 std::string successResponse(std::string msg) {
   return std::string("{\"Success\": true, \"Message\": \"") + msg + "\"}";
+}
+// Success response with data.
+std::string successResponseWithData(std::string& data) {
+  return std::string("{\"Success\": true, \"Message\": \"\", \"Data\": ") + data + "}";
 }
 
 // Handle read roadnet from ${DATA_FOLDER}/[folder]/road_network.txt
@@ -750,7 +751,7 @@ void handleLoadACAutomatonHuffmanTreeAndAuxiliaryFromBinary(
   FileReader auxiliaryReader(auxiliaryName.c_str(), true);
   acAutomaton.load(acReader);
   huffman.load(huffmanReader);
-  auxiliary.load(auxiliaryReader);
+//  auxiliary.load(auxiliaryReader);
   acAutomatonReady = true;
   huffmanReady = true;
   auxiliaryReady = true;
@@ -1106,37 +1107,36 @@ void handlePRESSCompression(picojson::value& requestJson, std::string& response)
   auto nstd = requestJson.get("NSTD").get<double>();
   std::vector<Binary> hscCompressResults;
   std::vector<std::vector<TemporalPair> > btcCompressResults;
-  // In ideal world, HSC and BTC can be parallelized with fully mature services.
-  // Here the simple ac-hoc thread spawning will move too much memory around, making it pretty slow.
-//  std::thread hscThread(
-//    threadHSCCompression,
+  // HSC and BTC can be parallelized.
+  std::thread hscThread(
+    threadHSCCompression,
+    std::ref(roadnet),
+    std::ref(spTable),
+    std::ref(acAutomaton),
+    std::ref(huffman),
+    std::ref(hscCompressResults)
+  );
+  std::thread btcThread(
+    threadBTCCompression,
+    tsnd,
+    nstd,
+    std::ref(btcCompressResults)
+  );
+  hscThread.join();
+  btcThread.join();
+//  // Sequential implementation.
+//  threadHSCCompression(
 //    roadnet,
 //    spTable,
 //    acAutomaton,
 //    huffman,
-//    std::ref(hscCompressResults)
+//    hscCompressResults
 //  );
-//  std::thread btcThread(
-//    threadBTCCompression,
+//  threadBTCCompression(
 //    tsnd,
 //    nstd,
-//    std::ref(btcCompressResults)
+//    btcCompressResults
 //  );
-//  hscThread.join();
-//  btcThread.join();
-  // We use sequencial implementation instead.
-  threadHSCCompression(
-    roadnet,
-    spTable,
-    acAutomaton,
-    huffman,
-    hscCompressResults
-  );
-  threadBTCCompression(
-    tsnd,
-    nstd,
-    btcCompressResults
-  );
   for (auto i = 0; i < pressTrajectories.size(); ++i) {
     pressCompressedTrajectories.emplace_back(
       PRESSCompressedTrajectory(hscCompressResults.at(i), btcCompressResults.at(i))
@@ -1350,8 +1350,29 @@ void handleWhereAtOnPRESSTrajectory(picojson::value& requestJson, std::string& r
     response = errorResponse("Roadnet is not ready.");
     return;
   }
-  auto& queries = requestJson.get("Query");
-  
+  auto& queries = requestJson.get("Query").get<picojson::value::array>();
+  auto len = queries.size();
+  std::vector<Point2D> result;
+  Point2D singleResult;
+  QueryProcessor queryProcessor;
+  for (auto i = 0; i < len; ++i) {
+    singleResult.setPosition(0, 0);
+    try {
+      auto idx = (int)queries[i].get("Idx").get<double>();
+      if (idx < 0 || idx >= pressTrajectories.size()) {
+        throw "Index out of boundary";
+      }
+      auto timeStamp = queries[i].get("Time").get<double>();
+      queryProcessor.whereAt(roadnet, pressTrajectories.at(idx), timeStamp, singleResult);
+    } catch (std::string& ex) {
+      FILE_LOG(TLogLevel::lwarning)
+        << "Failed to query WhereAt on original PRESS trajectory: "
+        << ex;
+    }
+    result.emplace_back(singleResult);
+  }
+  std::string queryResult = vecToJSONString(result);
+  response = successResponseWithData(queryResult);
 }
 /**
  * WhenAt query on original PRESS trajectories.

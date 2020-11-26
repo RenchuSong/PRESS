@@ -11,11 +11,24 @@
 
 #include <iostream>
 #include <vector>
+#include <string>
 
 std::string readFile(const char* path);
 bool fileExists(const char* name);
 bool createFolder(const std::string& dirName);
 bool listDirectory(const std::string& dirName, std::vector<std::string>& fileNames);
 bool clearDirectory(const std::string& dirName);
+template<typename T> std::string vecToJSONString(const std::vector<T>& data) {
+  std::string result("[");
+  auto len = data.size();
+  if (len > 0) {
+    result += data.at(0).toJSONString();
+  }
+  for (auto i = 1; i < len; ++i) {
+    result += "," + data.at(i).toJSONString();
+  }
+  result += "]";
+  return result;
+}
 
 #endif /* utility_hpp */
