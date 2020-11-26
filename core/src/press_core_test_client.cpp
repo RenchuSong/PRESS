@@ -54,15 +54,15 @@ struct ReqRespHelper {
       std::cout << "Failed to parse response (" << response << ")";
       return;
     }
-    if (responseJson.get("success").get<bool>()) {
-      if (responseJson.contains("message")) {
-        std::cout << responseJson.get("message").get<std::string>() << std::endl;
+    if (responseJson.get("Success").get<bool>()) {
+      if (responseJson.contains("Message")) {
+        std::cout << responseJson.get("Message").get<std::string>() << std::endl;
       }
-      if (responseJson.contains("data")) {
-        std::cout << responseJson.get("data") << std::endl;
+      if (responseJson.contains("Data")) {
+        std::cout << responseJson.get("Data") << std::endl;
       }
     } else {
-      std::cout << "Failed " << responseJson.get("message").get<std::string>() << std::endl;
+      std::cout << "Failed " << responseJson.get("Message").get<std::string>() << std::endl;
     }
   }
 };

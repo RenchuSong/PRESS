@@ -214,12 +214,12 @@ void clearComponent(Component comp) {
 
 // Error response.
 std::string errorResponse(std::string errMsg) {
-  return std::string("{\"success\": false, \"message\": \"") + errMsg + "\"}";
+  return std::string("{\"Success\": false, \"Message\": \"") + errMsg + "\"}";
 }
 
 // Success response with message.
 std::string successResponse(std::string msg) {
-  return std::string("{\"success\": true, \"message\": \"") + msg + "\"}";
+  return std::string("{\"Success\": true, \"Message\": \"") + msg + "\"}";
 }
 
 // Handle read roadnet from ${DATA_FOLDER}/[folder]/road_network.txt
@@ -1331,6 +1331,95 @@ void handleLoadPRESSCompressionResultsFromBinary(
   response = successResponse("Compressed PRESS trajectories are loaded from " + folderName + ".");
 }
 
+/**
+ * WhereAt query on original PRESS trajectories.
+ * Query payload:
+ * {
+ *   Cmd ...
+ *   Query: [
+ *     {
+ *       Idx: int       // trajectory index
+ *       Time: double   // Queries timestamp
+ *     },
+ *     ...
+ *   ]
+ * }
+ * Response:
+ * {
+ *   Success ...
+ *   Message ...
+ *   Data: [
+ *     { X: double, Y: double },  // The position, (0, 0) means not found
+ *     ...
+ *   ]
+ * }
+ */
+void handleWhereAtOnPRESSTrajectory(picojson::value& requestJson, std::string& response) {
+  if (!roadnetReady) {
+    response = errorResponse("Roadnet is not ready.");
+    return;
+  }
+  auto& queries = requestJson.get("Query");
+  
+}
+/**
+ * WhenAt query on original PRESS trajectories.
+ * Query payload:
+ * {
+ *   Cmd ...
+ *   Query: [
+ *     {
+ *       Idx: int       // trajectory index
+ *       X: double      // position
+ *       Y: double
+ *     },
+ *     ...
+ *   ]
+ * }
+ * Response:
+ * {
+ *   Success ...
+ *   Message ...
+ *   Data: [
+ *     double           // the timestamp when the vehicle at the position, -1 means not found
+ *     ...
+ *   ]
+ * }
+ */
+void handleWhenAtOnPRESSTrajectory(picojson::value& requestJson, std::string& response) {
+  
+}
+/**
+ * Range query on original PRESS trajectories.
+ * Query payload:
+ * {
+ *   Cmd ...
+ *   Query: [
+ *     {
+ *       Idx: int       // trajectory index
+ *       T1: double     // lower time
+ *       T2: double     // upper time
+ *       X1: double     // MBR lower bound
+ *       Y1: double
+ *       X2: double     // MBR upper bound
+ *       Y2: double
+ *     },
+ *     ...
+ *   ]
+ * }
+ * Response:
+ * {
+ *   Success ...
+ *   Message ...
+ *   Data: [
+ *     bool             // whether trajectory passes MBR within the time range
+ *     ...
+ *   ]
+ * }
+ */
+void handleRangeOnPRESSTrajectory(picojson::value& requestJson, std::string& response) {
+  
+}
 
 struct ReqRespHelper {
   std::string inPath;
@@ -1458,6 +1547,12 @@ struct ReqRespHelper {
         handleDumpPRESSDeCompressionResultsToBinary(requestJson, response);
       } else if (cmd == "LoadPRESSCompressionResultsFromBinary") {
         handleLoadPRESSCompressionResultsFromBinary(requestJson, response);
+      } else if (cmd == "WhereAtOnPRESSTrajectory") {
+        handleWhereAtOnPRESSTrajectory(requestJson, response);
+      } else if (cmd == "WhenAtOnPRESSTrajectory") {
+        handleWhenAtOnPRESSTrajectory(requestJson, response);
+      } else if (cmd == "RangeOnPRESSTrajectory") {
+        handleRangeOnPRESSTrajectory(requestJson, response);
       } else {
         FILE_LOG(TLogLevel::lerror) << "Unknown request: " << request;
         response = errorResponse("Unknown request.");
