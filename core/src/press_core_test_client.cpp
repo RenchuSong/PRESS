@@ -156,6 +156,15 @@ int main(int argc, char** argv) {
   // Load FST compression results from binary.
   reqRespHelper.writeNext("{\"Cmd\":\"LoadFSTCompressionResultsFromBinary\", \"Folder\":\"WA_roadnetwork_and_single_trajectory\"}");
   reqRespHelper.explainResponse(reqRespHelper.readNext());
+  // BTC compression
+  reqRespHelper.writeNext("{\"Cmd\":\"BTCCompression\", \"TSND\":10, \"NSTD\":10}");
+  reqRespHelper.explainResponse(reqRespHelper.readNext());
+  // Dump BTC compression results to binary.
+  reqRespHelper.writeNext("{\"Cmd\":\"DumpBTCCompressionResultsToBinary\"}");
+  reqRespHelper.explainResponse(reqRespHelper.readNext());
+  // Load BTC compression results from binary.
+  reqRespHelper.writeNext("{\"Cmd\":\"LoadBTCCompressionResultsFromBinary\", \"Folder\":\"WA_roadnetwork_and_single_trajectory\"}");
+  reqRespHelper.explainResponse(reqRespHelper.readNext());
 
   return EXIT_SUCCESS;
 }

@@ -951,6 +951,99 @@ void handleLoadFSTCompressionResultsFromBinary(picojson::value& requestJson, std
   response = successResponse("FST compression results are loaded from " + folderName + ".");
 }
 
+// Handle BTC compression.
+void handleBTCCompression(picojson::value& requestJson, std::string& response) {
+  if (pressTrajectories.size() == 0) {
+    response = errorResponse("There is no press trajectory to be BTC compressed.");
+    return;
+  }
+  auto tsnd = requestJson.get("TSND").get<double>();
+  auto nstd = requestJson.get("NSTD").get<double>();
+  btcCompressionResults.clear();
+  TemporalCompressor temporalCompressor;
+  std::vector<TemporalPair> btcCompressResult;
+  for (auto& pressTrajectory: pressTrajectories) {
+    temporalCompressor.boundedTemporalCompression(
+      pressTrajectory.getTemporalComponent(),
+      btcCompressResult,
+      tsnd,
+      nstd
+    );
+    btcCompressionResults.emplace_back(btcCompressResult);
+  }
+  response = successResponse("BTC compression finished.");
+}
+
+// Handle clear BTC compression result.
+void handleClearBTCCompressionResults(picojson::value& requestJson, std::string& response) {
+  btcCompressionResults.clear();
+  response = successResponse("BTC compression results cleared.");
+}
+
+// Handle dump BTC compression results to ${TMP_FOLDER}/[roadnetName]/btc_compression/[0..(n-1)].bin
+void handleDumpBTCCompressionResultsToBinary(picojson::value& requestJson, std::string& response) {
+  if (!roadnetReady) {
+    response = errorResponse("Roadnet is not ready.");
+    return;
+  }
+  auto btcCompressFolderName = config.tmpFolder + roadnetName + "/btc_compression/";
+  if (!fileExists(btcCompressFolderName.c_str()) && !createFolder(btcCompressFolderName)) {
+    FILE_LOG(TLogLevel::lerror) << "Failed to create storage folder: " << btcCompressFolderName;
+    response = errorResponse("Failed to create storage folder.");
+    return;
+  }
+  if (!clearDirectory(btcCompressFolderName)) {
+    FILE_LOG(TLogLevel::lerror) << "Failed to clear storage folder: " << btcCompressFolderName;
+    response = errorResponse("Failed to clear storage folder.");
+    return;
+  }
+  for (int i = 0; i < btcCompressionResults.size(); ++i) {
+    auto btcCompressionName = btcCompressFolderName + std::to_string(i) + ".bin";
+    FileWriter btcWriter(btcCompressionName.c_str(), true);
+    auto& temporal = btcCompressionResults.at(i);
+    btcWriter.writeInt((int)temporal.size());
+    for (auto& tpPair: temporal) {
+      btcWriter.writeSeparator();
+      btcWriter.writeDouble(tpPair.t);
+      btcWriter.writeSeparator();
+      btcWriter.writeDouble(tpPair.dist);
+    }
+    btcWriter.writeEol();
+  }
+  response = successResponse(
+    "BTC compression results are dumped to " + btcCompressFolderName + "."
+  );
+}
+
+// Handle load BTC compression results from ${TMP_FOLDER}/[folder]/btc_compression/[0..(n-1)].bin
+void handleLoadBTCCompressionResultsFromBinary(picojson::value& requestJson, std::string& response) {
+  auto folder = requestJson.get("Folder").get<std::string>();
+  if (!roadnetReady || folder != roadnetName) {
+    response = errorResponse(
+      "Roadnet is not ready or roadnet mismatch with BTC compression results."
+    );
+    return;
+  }
+  auto folderName = config.tmpFolder + folder + "/btc_compression/";
+  std::vector<std::string> files;
+  if (!listDirectory(folderName, files)) {
+    FILE_LOG(TLogLevel::lerror) << "Fail to list BTC compression folder: " << folderName;
+    response = errorResponse("Fail to list BTC compression folder.");
+    return;
+  }
+  btcCompressionResults.clear();
+  for (auto& file: files) {
+    FileReader btcReader((folderName + file).c_str(), true);
+    std::vector<TemporalPair> temporal;
+    auto len = btcReader.nextInt();
+    for (auto i = 0; i < len; ++i) {
+      temporal.emplace_back(TemporalPair(btcReader.nextDouble(), btcReader.nextDouble()));
+    }
+    btcCompressionResults.emplace_back(temporal);
+  }
+  response = successResponse("BTC compression results are loaded from " + folderName + ".");
+}
+
 
 struct ReqRespHelper {
   std::string inPath;
@@ -1056,6 +1149,14 @@ struct ReqRespHelper {
         handleDumpFSTCompressionResultsToBinary(requestJson, response);
       } else if (cmd == "LoadFSTCompressionResultsFromBinary") {
         handleLoadFSTCompressionResultsFromBinary(requestJson, response);
+      } else if (cmd == "BTCCompression") {
+        handleBTCCompression(requestJson, response);
+      } else if (cmd == "ClearBTCCompressionResults") {
+        handleClearBTCCompressionResults(requestJson, response);
+      } else if (cmd == "DumpBTCCompressionResultsToBinary") {
+        handleDumpBTCCompressionResultsToBinary(requestJson, response);
+      } else if (cmd == "LoadBTCCompressionResultsFromBinary") {
+        handleLoadBTCCompressionResultsFromBinary(requestJson, response);
       } else {
         FILE_LOG(TLogLevel::lerror) << "Unknown request: " << request;
         response = errorResponse("Unknown request.");
