@@ -165,6 +165,15 @@ int main(int argc, char** argv) {
   // Load BTC compression results from binary.
   reqRespHelper.writeNext("{\"Cmd\":\"LoadBTCCompressionResultsFromBinary\", \"Folder\":\"WA_roadnetwork_and_single_trajectory\"}");
   reqRespHelper.explainResponse(reqRespHelper.readNext());
+  // PRESS compression
+  reqRespHelper.writeNext("{\"Cmd\":\"PRESSCompression\", \"TSND\":10, \"NSTD\":10}");
+  reqRespHelper.explainResponse(reqRespHelper.readNext());
+  // Dump PRESS compression results to binary.
+  reqRespHelper.writeNext("{\"Cmd\":\"DumpPRESSCompressionResultsToBinary\"}");
+  reqRespHelper.explainResponse(reqRespHelper.readNext());
+  // Load PRESS compression results from binary.
+  reqRespHelper.writeNext("{\"Cmd\":\"LoadPRESSCompressionResultsFromBinary\", \"Folder\":\"WA_roadnetwork_and_single_trajectory\"}");
+  reqRespHelper.explainResponse(reqRespHelper.readNext());
 
   return EXIT_SUCCESS;
 }

@@ -18,6 +18,7 @@
 #include <fstream>
 #include <sys/stat.h>
 #include <sys/types.h>
+#include <thread>
 #include <vector>
 
 #include "service/map_matcher.hpp"
@@ -1044,6 +1045,187 @@ void handleLoadBTCCompressionResultsFromBinary(picojson::value& requestJson, std
   response = successResponse("BTC compression results are loaded from " + folderName + ".");
 }
 
+// Handle PRESS compression.
+void threadHSCCompression(
+  const Graph& graph,
+  const SPTable& spTable,
+  const ACAutomaton& acAutomaton,
+  const Huffman& huffman,
+  std::vector<Binary> hscCompressResults
+) {
+  SpatialCompressor spatialCompressor;
+  for (auto& pressTrajectory: pressTrajectories) {
+    Binary binary;
+    spatialCompressor.hybridSpatialCompression(
+      graph,
+      spTable,
+      acAutomaton,
+      huffman,
+      pressTrajectory.getSpatialComponent(),
+      binary
+    );
+    hscCompressResults.emplace_back(binary);
+  }
+}
+void threadBTCCompression(
+  double tsnd,
+  double nstd,
+  std::vector<std::vector<TemporalPair> > btcCompressResults
+) {
+  TemporalCompressor temporalCompressor;
+  for (auto& pressTrajectory: pressTrajectories) {
+    std::vector<TemporalPair> result;
+    temporalCompressor.boundedTemporalCompression(
+      pressTrajectory.getTemporalComponent(),
+      result,
+      tsnd,
+      nstd
+    );
+    btcCompressResults.emplace_back(result);
+  }
+}
+void handlePRESSCompression(picojson::value& requestJson, std::string& response) {
+  if (!roadnetReady) {
+    response = errorResponse("Roadnet is not ready.");
+    return;
+  }
+  if (!spTableReady) {
+    response = errorResponse("SP table is not ready.");
+    return;
+  }
+  if (!acAutomatonReady) {
+    response = errorResponse("AC automaton is not ready.");
+    return;
+  }
+  if (!huffmanReady) {
+    response = errorResponse("Huffman tree is not ready.");
+    return;
+  }
+  if (pressTrajectories.size() == 0) {
+    response = errorResponse("There is no press trajectory to be compressed.");
+    return;
+  }
+  pressCompressedTrajectories.clear();
+  SpatialCompressor spatialCompressor;
+  TemporalCompressor temporalCompressor;
+  auto tsnd = requestJson.get("TSND").get<double>();
+  auto nstd = requestJson.get("NSTD").get<double>();
+  std::vector<Binary> hscCompressResults;
+  std::vector<std::vector<TemporalPair> > btcCompressResults;
+  std::thread hscThread(
+    threadHSCCompression,
+    roadnet,
+    spTable,
+    acAutomaton,
+    huffman,
+    hscCompressResults
+  );
+  std::thread btcThread(
+    threadBTCCompression,
+    tsnd,
+    nstd,
+    btcCompressResults
+  );
+  hscThread.join();
+  btcThread.join();
+  for (auto i = 0; i < pressTrajectories.size(); ++i) {
+    pressCompressedTrajectories.emplace_back(
+      PRESSCompressedTrajectory(hscCompressResults.at(i), btcCompressResults.at(i))
+    );
+  }
+  response = successResponse("PRESS compression finished.");
+}
+
+// Handle clear PRESS compression result.
+void handleClearPRESSCompressionResults(picojson::value& requestJson, std::string& response) {
+  pressCompressedTrajectories.clear();
+  response = successResponse("PRESS compression results cleared.");
+}
+
+// Handle dump PRESS compression results to
+// ${TMP_FOLDER}/[roadnetName]/press_compression/[0..(n-1)].bin
+void handleDumpPRESSCompressionResultsToBinary(
+  picojson::value& requestJson,
+  std::string& response
+) {
+  if (!roadnetReady) {
+    response = errorResponse("Roadnet is not ready.");
+    return;
+  }
+  auto pressCompressFolderName = config.tmpFolder + roadnetName + "/press_compression/";
+  if (!fileExists(pressCompressFolderName.c_str()) && !createFolder(pressCompressFolderName)) {
+    FILE_LOG(TLogLevel::lerror) << "Failed to create storage folder: " << pressCompressFolderName;
+    response = errorResponse("Failed to create storage folder.");
+    return;
+  }
+  if (!clearDirectory(pressCompressFolderName)) {
+    FILE_LOG(TLogLevel::lerror) << "Failed to clear storage folder: " << pressCompressFolderName;
+    response = errorResponse("Failed to clear storage folder.");
+    return;
+  }
+  for (int i = 0; i < pressCompressedTrajectories.size(); ++i) {
+    auto pressCompressedTrajectoryFolder = pressCompressFolderName + std::to_string(i) + "/";
+    if (!createFolder(pressCompressedTrajectoryFolder)) {
+      FILE_LOG(TLogLevel::lerror)
+        << "Failed to create press folder: "
+        << pressCompressedTrajectoryFolder;
+      response = errorResponse("Failed to create press compressed folder.");
+      return;
+    }
+    auto spatialName = pressCompressedTrajectoryFolder + "spatial.bin";
+    FileWriter spatialWriter(spatialName.c_str(), true);
+    auto temporalName = pressCompressedTrajectoryFolder + "temporal.bin";
+    FileWriter temporalWriter(temporalName.c_str(), true);
+    pressCompressedTrajectories.at(i).store(spatialWriter, temporalWriter);
+  }
+  response = successResponse(
+    "Compressed PRESS trajectories are dumped to " + pressCompressFolderName + "."
+  );
+}
+
+// Handle load PRESS compression results from
+// ${TMP_FOLDER}/[folder]/PRESS_compression/[0..(n-1)].bin
+void handleLoadPRESSCompressionResultsFromBinary(
+  picojson::value& requestJson,
+  std::string& response
+) {
+  auto folder = requestJson.get("Folder").get<std::string>();
+  if (!roadnetReady || folder != roadnetName) {
+    response = errorResponse(
+      "Roadnet is not ready or roadnet mismatch with PRESS compression results."
+    );
+    return;
+  }
+  if (!spTableReady) {
+    response = errorResponse("SP table is not ready.");
+    return;
+  }
+  if (!acAutomatonReady) {
+    response = errorResponse("AC automaton is not ready.");
+    return;
+  }
+  if (!huffmanReady) {
+    response = errorResponse("Huffman tree is not ready.");
+    return;
+  }
+  auto folderName = config.tmpFolder + folder + "/press_compression/";
+  std::vector<std::string> files;
+  if (!listDirectory(folderName, files)) {
+    FILE_LOG(TLogLevel::lerror) << "Fail to list PRESS compression folder: " << folderName;
+    response = errorResponse("Fail to list PRESS compression folder.");
+    return;
+  }
+  pressCompressedTrajectories.clear();
+  for (auto& file: files) {
+    FileReader spatialReader((folderName + file + "/spatial.bin").c_str(), true);
+    FileReader temporalReader((folderName + file + "/temporal.bin").c_str(), true);
+    pressCompressedTrajectories.emplace_back(
+      PRESSCompressedTrajectory(spatialReader, temporalReader)
+    );
+  }
+  response = successResponse("Compressed PRESS trajectories are loaded from " + folderName + ".");
+}
+
 
 struct ReqRespHelper {
   std::string inPath;
@@ -1157,6 +1339,16 @@ struct ReqRespHelper {
         handleDumpBTCCompressionResultsToBinary(requestJson, response);
       } else if (cmd == "LoadBTCCompressionResultsFromBinary") {
         handleLoadBTCCompressionResultsFromBinary(requestJson, response);
+      } else if (cmd == "PRESSCompression") {
+        handlePRESSCompression(requestJson, response);
+//      } else if (cmd == "PRESSDeCompression") {
+//        handlePRESSDeCompression(requestJson, response);
+      } else if (cmd == "ClearPRESSCompressionResults") {
+        handleClearPRESSCompressionResults(requestJson, response);
+      } else if (cmd == "DumpPRESSCompressionResultsToBinary") {
+        handleDumpPRESSCompressionResultsToBinary(requestJson, response);
+      } else if (cmd == "LoadPRESSCompressionResultsFromBinary") {
+        handleLoadPRESSCompressionResultsFromBinary(requestJson, response);
       } else {
         FILE_LOG(TLogLevel::lerror) << "Unknown request: " << request;
         response = errorResponse("Unknown request.");
