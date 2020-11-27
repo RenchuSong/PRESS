@@ -17,7 +17,7 @@ This is an ongoing effort. Currently only PRESS core service is finished.
 
 Read core/src/press_core_test_client.cpp to learn sample code of calling the APIs of PRESS service in C++.
 
-Read core/src/ad_hoc.cpp to learn sample code of directly calling the C++ functions in PRESS without going through the service APIs.
+Read core/src/ad_hoc.cpp to learn sample code of directly calling the C++ functions in PRESS without going through the service APIs. This might be good for quick ad-hoc experiments.
 
 Run:
 ```
