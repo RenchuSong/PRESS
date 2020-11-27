@@ -6,6 +6,8 @@
 //  Copyright © 2020 Renc. All rights reserved.
 //
 
+#include <algorithm>
+
 #include "query_processor.hpp"
 #include "../util/helper.hpp"
 

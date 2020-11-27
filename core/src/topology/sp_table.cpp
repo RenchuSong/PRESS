@@ -6,6 +6,7 @@
 //  Copyright © 2020 Renc. All rights reserved.
 //
 #include <cassert>
+#include <algorithm>
 #include <queue>
 
 #include "sp_table.hpp"

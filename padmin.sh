@@ -7,17 +7,17 @@ NC='\033[0m'
 DIR=${PWD}
 DIR_CORE=${DIR}/core
 
-function fail_on_err {
+fail_on_err() {
     if [ $? -ne 0 ]; then
         printf "${RED}$1${NC}\n"
         exit
     fi
 }
 
-function kill_existing_press {
+kill_existing_press() {
     while true; do 
         pid="$(ps aux | grep press_core_d | grep -v 'grep' | cut -d' ' -f2- | xargs | cut -d' ' -f1)"
-        if [[ ${pid} -eq '' ]]
+        if [ "${pid}" = '' ];
         then
             break
         else

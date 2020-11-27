@@ -7,6 +7,7 @@
 //
 
 #include <cassert>
+#include <algorithm>
 
 #include "auxiliary.hpp"
 #include "../util/helper.hpp"

@@ -16,6 +16,7 @@
 #include <sys/types.h>
 #include <thread>
 #include <vector>
+#include <unistd.h>
 
 #include "service/map_matcher.hpp"
 #include "service/query_processor.hpp"

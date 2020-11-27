@@ -9,6 +9,7 @@
 #ifndef huffman_hpp
 #define huffman_hpp
 
+#include <functional>
 #include <iostream>
 #include <vector>
 

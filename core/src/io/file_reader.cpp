@@ -6,6 +6,8 @@
 //  Copyright © 2019 Renc. All rights reserved.
 //
 
+#include <cstring>
+
 #include "binary_converter.hpp"
 #include "file_reader.hpp"
 

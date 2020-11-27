@@ -6,6 +6,8 @@
 //  Copyright © 2020 Renc. All rights reserved.
 //
 
+#include <algorithm>
+
 #include "map_matcher.hpp"
 #include "../util/helper.hpp"
 

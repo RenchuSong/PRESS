@@ -7,7 +7,7 @@ NC='\033[0m'
 DIR=${PWD}
 DIR_CORE=${DIR}/core
 
-function fail_on_err {
+fail_on_err() {
   if [ $? -ne 0 ]; then
     printf "${RED}$1${NC}\n"
     exit

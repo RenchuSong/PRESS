@@ -6,6 +6,8 @@
 //  Copyright © 2020 Renc. All rights reserved.
 //
 
+#include <algorithm>
+
 #include "graph_reader_seattle_sample.hpp"
 
 #include "../../io/file_reader.hpp"

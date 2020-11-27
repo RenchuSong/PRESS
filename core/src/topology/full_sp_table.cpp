@@ -7,6 +7,7 @@
 //
 
 #include <cassert>
+#include <algorithm>
 #include <queue>
 
 #include "full_sp_table.hpp"
