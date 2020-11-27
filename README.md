@@ -15,13 +15,13 @@ To get the initial experiment code, switch to master branch and take a look at v
 
 This is an ongoing effort. Currently only PRESS core service is finished.
 
-#### Dependencies
+### Dependencies
 
 | Dependency | Version |
 |------------|---------|
 | g++        | 4.8.2   |
 
-#### Verified OS
+### Verified OS
 
 PRESS is verified to run on the following OS:
 
@@ -30,7 +30,7 @@ PRESS is verified to run on the following OS:
 | MacOS      | 10.13.3 |
 | Ubuntu     | 14.04   |
 
-#### Install PRESS
+### Install PRESS
 
 To install PRESS, run:
 ```
@@ -38,7 +38,7 @@ To install PRESS, run:
 ```
 It compiles service binaries, materializes config file based on the local path you cloned the code, and downloads sample dataset(s).
 
-#### Start/Stop PRESS
+### Start/Stop PRESS
 
 To start PRESS, run:
 ```
@@ -49,7 +49,7 @@ To stop PRESS, run:
 ./padmin.sh stop
 ```
 
-#### Run sample code
+### Run sample code
 
 To run sample code of calling the APIs of PRESS Core service, run:
 ```
@@ -61,7 +61,7 @@ Read core/src/press_core_test_client.cpp to learn sample code of calling the API
 
 Read core/src/ad_hoc.cpp to learn sample code of directly calling the C++ functions in PRESS without going through the service APIs. This might be good for quick ad-hoc experiments.
 
-#### Bring your own data
+### Bring your own data
 
 Step 1. Create a new folder under data;
 
@@ -78,6 +78,6 @@ Step 5. Re-compile the PRESS core service and test your code. PRESS core will lo
 ```
 in core/src/press_core.cpp main function and use cout to print debug information, if that makes things easier.
 
-#### TODO
+### TODO
 
 Write a UI portal to facilitate doing experiments.
