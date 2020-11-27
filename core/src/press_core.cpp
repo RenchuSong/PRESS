@@ -751,7 +751,7 @@ void handleLoadACAutomatonHuffmanTreeAndAuxiliaryFromBinary(
   FileReader auxiliaryReader(auxiliaryName.c_str(), true);
   acAutomaton.load(acReader);
   huffman.load(huffmanReader);
-//  auxiliary.load(auxiliaryReader);
+  auxiliary.load(auxiliaryReader);
   acAutomatonReady = true;
   huffmanReady = true;
   auxiliaryReady = true;
@@ -1497,6 +1497,250 @@ void handleRangeOnPRESSTrajectory(picojson::value& requestJson, std::string& res
   response = successResponseWithData(queryResult);
 }
 
+/**
+ * WhereAt query on compressed PRESS trajectories.
+ * Query payload:
+ * {
+ *   Cmd ...
+ *   Query: [
+ *     {
+ *       Idx: int       // trajectory index
+ *       Time: double   // Queries timestamp
+ *     },
+ *     ...
+ *   ]
+ * }
+ * Response:
+ * {
+ *   Success ...
+ *   Message ...
+ *   Data: [
+ *     { X: double, Y: double },  // The position, (0, 0) means not found
+ *     ...
+ *   ]
+ * }
+ */
+void handleWhereAtOnPRESSCompressedTrajectory(picojson::value& requestJson, std::string& response) {
+  if (!roadnetReady) {
+    response = errorResponse("Roadnet is not ready.");
+    return;
+  }
+  if (!spTableReady) {
+    response = errorResponse("SP table is not ready.");
+    return;
+  }
+  if (!acAutomatonReady) {
+    response = errorResponse("AC automaton is not ready.");
+    return;
+  }
+  if (!huffmanReady) {
+    response = errorResponse("Huffman tree is not ready.");
+    return;
+  }
+  if (!auxiliaryReady) {
+    response = errorResponse("Auxiliary is not ready.");
+    return;
+  }
+  auto& queries = requestJson.get("Query").get<picojson::value::array>();
+  auto len = queries.size();
+  std::vector<Point2D> result;
+  Point2D singleResult;
+  QueryProcessor queryProcessor;
+  for (auto i = 0; i < len; ++i) {
+    singleResult.setPosition(0, 0);
+    try {
+      auto idx = (int)queries[i].get("Idx").get<double>();
+      if (idx < 0 || idx >= pressCompressedTrajectories.size()) {
+        throw "Index out of boundary";
+      }
+      auto timeStamp = queries[i].get("Time").get<double>();
+      queryProcessor.whereAt(
+        roadnet,
+        spTable,
+        huffman,
+        acAutomaton,
+        auxiliary,
+        pressCompressedTrajectories.at(idx),
+        timeStamp,
+        singleResult
+      );
+    } catch (const char* ex) {
+      FILE_LOG(TLogLevel::lwarning)
+      << "Failed to query WhereAt on compressed PRESS trajectory: "
+      << ex;
+    }
+    result.emplace_back(singleResult);
+  }
+  std::string queryResult = vecToJSONString(result);
+  response = successResponseWithData(queryResult);
+}
+/**
+ * WhenAt query on compressed PRESS trajectories.
+ * Query payload:
+ * {
+ *   Cmd ...
+ *   Query: [
+ *     {
+ *       Idx: int       // trajectory index
+ *       X: double      // position
+ *       Y: double
+ *     },
+ *     ...
+ *   ]
+ * }
+ * Response:
+ * {
+ *   Success ...
+ *   Message ...
+ *   Data: [
+ *     double           // the timestamp when the vehicle at the position, -1 means not found
+ *     ...
+ *   ]
+ * }
+ */
+void handleWhenAtOnPRESSCompressedTrajectory(picojson::value& requestJson, std::string& response) {
+  if (!roadnetReady) {
+    response = errorResponse("Roadnet is not ready.");
+    return;
+  }
+  if (!spTableReady) {
+    response = errorResponse("SP table is not ready.");
+    return;
+  }
+  if (!acAutomatonReady) {
+    response = errorResponse("AC automaton is not ready.");
+    return;
+  }
+  if (!huffmanReady) {
+    response = errorResponse("Huffman tree is not ready.");
+    return;
+  }
+  if (!auxiliaryReady) {
+    response = errorResponse("Auxiliary is not ready.");
+    return;
+  }
+  auto& queries = requestJson.get("Query").get<picojson::value::array>();
+  auto len = queries.size();
+  std::vector<double> result;
+  QueryProcessor queryProcessor;
+  for (auto i = 0; i < len; ++i) {
+    double singleResult = -1;
+    try {
+      auto idx = (int)queries[i].get("Idx").get<double>();
+      if (idx < 0 || idx >= pressCompressedTrajectories.size()) {
+        throw "Index out of boundary";
+      }
+      double x = queries[i].get("X").get<double>();
+      double y = queries[i].get("Y").get<double>();
+      Point2D position(x, y);
+      singleResult = queryProcessor.whenAt(
+        roadnet,
+        spTable,
+        huffman,
+        acAutomaton,
+        auxiliary,
+        pressCompressedTrajectories.at(idx),
+        position
+      );
+    } catch (const char* ex) {
+      FILE_LOG(TLogLevel::lwarning)
+      << "Failed to query WhenAt on compressed PRESS trajectory: "
+      << ex;
+    }
+    result.push_back(singleResult);
+  }
+  std::string queryResult = vecPrimitiveToJSONString(result);
+  response = successResponseWithData(queryResult);
+}
+/**
+ * Range query on compressed PRESS trajectories.
+ * Query payload:
+ * {
+ *   Cmd ...
+ *   Query: [
+ *     {
+ *       Idx: int       // trajectory index
+ *       T1: double     // lower time
+ *       T2: double     // upper time
+ *       X1: double     // MBR lower bound
+ *       Y1: double
+ *       X2: double     // MBR upper bound
+ *       Y2: double
+ *     },
+ *     ...
+ *   ]
+ * }
+ * Response:
+ * {
+ *   Success ...
+ *   Message ...
+ *   Data: [
+ *     int              // whether trajectory passes MBR within the time range, 0: false, 1: true
+ *     ...
+ *   ]
+ * }
+ */
+void handleRangeOnPRESSCompressedTrajectory(picojson::value& requestJson, std::string& response) {
+  if (!roadnetReady) {
+    response = errorResponse("Roadnet is not ready.");
+    return;
+  }
+  if (!spTableReady) {
+    response = errorResponse("SP table is not ready.");
+    return;
+  }
+  if (!acAutomatonReady) {
+    response = errorResponse("AC automaton is not ready.");
+    return;
+  }
+  if (!huffmanReady) {
+    response = errorResponse("Huffman tree is not ready.");
+    return;
+  }
+  if (!auxiliaryReady) {
+    response = errorResponse("Auxiliary is not ready.");
+    return;
+  }
+  auto& queries = requestJson.get("Query").get<picojson::value::array>();
+  auto len = queries.size();
+  std::vector<bool> result;
+  QueryProcessor queryProcessor;
+  for (auto i = 0; i < len; ++i) {
+    bool singleResult = false;
+    try {
+      auto idx = (int)queries[i].get("Idx").get<double>();
+      if (idx < 0 || idx >= pressCompressedTrajectories.size()) {
+        throw "Index out of boundary";
+      }
+      double x1 = queries[i].get("X1").get<double>();
+      double y1 = queries[i].get("Y1").get<double>();
+      double x2 = queries[i].get("X2").get<double>();
+      double y2 = queries[i].get("Y2").get<double>();
+      double t1 = queries[i].get("T1").get<double>();
+      double t2 = queries[i].get("T2").get<double>();
+      singleResult = queryProcessor.range(
+        roadnet,
+        spTable,
+        huffman,
+        acAutomaton,
+        auxiliary,
+        pressCompressedTrajectories.at(idx),
+        t1,
+        t2,
+        Point2D(x1, y1),
+        Point2D(x2, y2)
+      );
+    } catch (const char* ex) {
+      FILE_LOG(TLogLevel::lwarning)
+      << "Failed to query Range on compressed PRESS trajectory: "
+      << ex;
+    }
+    result.push_back(singleResult);
+  }
+  std::string queryResult = vecPrimitiveToJSONString(result);
+  response = successResponseWithData(queryResult);
+}
+
 struct ReqRespHelper {
   std::string inPath;
   std::string outPath;
@@ -1630,6 +1874,12 @@ struct ReqRespHelper {
         handleWhenAtOnPRESSTrajectory(requestJson, response);
       } else if (cmd == "RangeOnPRESSTrajectory") {
         handleRangeOnPRESSTrajectory(requestJson, response);
+      } else if (cmd == "WhereAtOnPRESSCompressedTrajectory") {
+        handleWhereAtOnPRESSCompressedTrajectory(requestJson, response);
+      } else if (cmd == "WhenAtOnPRESSCompressedTrajectory") {
+        handleWhenAtOnPRESSCompressedTrajectory(requestJson, response);
+      } else if (cmd == "RangeOnPRESSCompressedTrajectory") {
+        handleRangeOnPRESSCompressedTrajectory(requestJson, response);
       } else {
         FILE_LOG(TLogLevel::lerror) << "Unknown request: " << request;
         response = errorResponse("Unknown request.");

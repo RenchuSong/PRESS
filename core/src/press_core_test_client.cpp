@@ -98,9 +98,9 @@ struct ReqRespHelper {
       if (responseJson.contains("Message")) {
         std::cout << responseJson.get("Message").get<std::string>() << std::endl;
       }
-      if (responseJson.contains("Data")) {
-        std::cout << responseJson.get("Data") << std::endl;
-      }
+//      if (responseJson.contains("Data")) {
+//        std::cout << responseJson.get("Data") << std::endl;
+//      }
     } else {
       std::cout << "Failed " << responseJson.get("Message").get<std::string>() << std::endl;
     }
@@ -242,7 +242,7 @@ int main(int argc, char** argv) {
   }
   srand((unsigned)time(NULL));
 
-  int testSize = 5000;
+  int testSize = 15000;
   // testSize random WhereAt queries.
   std::vector<WhereAtQuery> whereAtQueries;
   for (int i = 0; i < testSize; ++i) {
@@ -252,6 +252,7 @@ int main(int argc, char** argv) {
     double timeStamp = (rand() % 10000) / 10000.0 * (maxT - minT) + minT;
     whereAtQueries.emplace_back(WhereAtQuery(idx, timeStamp));
   }
+  // WhereAt on original PRESS trajectories.
   timer.reset();
   timer.start();
   reqRespHelper.writeNext(queryPayload("WhereAtOnPRESSTrajectory", vecToJSONString(whereAtQueries)));
@@ -267,6 +268,7 @@ int main(int argc, char** argv) {
     double y = whereAtResult.at(i).get("Y").get<double>();
     whenAtQueries.emplace_back(WhenAtQuery(idx, x, y));
   }
+  // WhenAt on original PRESS trajectories.
   timer.reset();
   timer.start();
   reqRespHelper.writeNext(queryPayload("WhenAtOnPRESSTrajectory", vecToJSONString(whenAtQueries)));
@@ -277,8 +279,7 @@ int main(int argc, char** argv) {
   std::vector<RangeQuery> rangeQueries;
   std::pair<Point2D, Point2D> mbr = std::make_pair(Point2D(whenAtQueries.at(0).x, whenAtQueries.at(0).y), Point2D(whenAtQueries.at(0).x, whenAtQueries.at(0).y));
   for (auto& whenAt: whenAtQueries) {
-    extendMBR(mbr, Point2D(whenAt.x - 5000, whenAt.y - 5000));
-    extendMBR(mbr, Point2D(whenAt.x + 5000, whenAt.y + 5000));
+    extendMBR(mbr, Point2D(whenAt.x, whenAt.y));
   }
   for (int i = 0; i < testSize; ++i) {
     int idx = rand() % pressTrajectories.size();
@@ -290,26 +291,54 @@ int main(int argc, char** argv) {
       double tmp = t1; t1 = t2; t2 = tmp;
     }
     int x1 = rand() % 10000;
-    int x2 = rand() % (10000 - x1);
+    int x2 = rand() % 10000;
     int y1 = rand() % 10000;
-    int y2 = rand() % (10000 - y1);
+    int y2 = rand() % 10000;
+    if (x1 > x2) {
+      int tmp = x1; x1 = x2; x2 = tmp;
+    }
+    if (y1 > y2) {
+      int tmp = y1; y1 = y2; y2 = tmp;
+    }
     rangeQueries.emplace_back(
       RangeQuery(
         idx,
         linearInterpolate(0, mbr.first.x, 10000, mbr.second.x, x1),
         linearInterpolate(0, mbr.first.y, 10000, mbr.second.y, y1),
-        linearInterpolate(0, mbr.first.x, 10000, mbr.second.x, x1 + x2),
-        linearInterpolate(0, mbr.first.y, 10000, mbr.second.y, y1 + y2),
+        linearInterpolate(0, mbr.first.x, 10000, mbr.second.x, x2),
+        linearInterpolate(0, mbr.first.y, 10000, mbr.second.y, y2),
         t1,
         t2
       )
     );
   }
+  // Range on original PRESS trajectories.
   timer.reset();
   timer.start();
   reqRespHelper.writeNext(queryPayload("RangeOnPRESSTrajectory", vecToJSONString(rangeQueries)));
   reqRespHelper.explainResponse(reqRespHelper.readNext());
   std::cout << "Original range takes (millisesonds): " << timer.getMilliSeconds() << std::endl;
+  timer.pause();
+  // WhereAt on compressed PRESS trajectories.
+  timer.reset();
+  timer.start();
+  reqRespHelper.writeNext(queryPayload("WhereAtOnPRESSCompressedTrajectory", vecToJSONString(whereAtQueries)));
+  reqRespHelper.explainResponse(reqRespHelper.readNext());
+  std::cout << "Compressed whereAt takes (millisesonds): " << timer.getMilliSeconds() << std::endl;
+  timer.pause();
+  // WhenAt on compressed PRESS trajectories.
+  timer.reset();
+  timer.start();
+  reqRespHelper.writeNext(queryPayload("WhenAtOnPRESSCompressedTrajectory", vecToJSONString(whenAtQueries)));
+  reqRespHelper.explainResponse(reqRespHelper.readNext());
+  std::cout << "Compressed whenAt takes (millisesonds): " << timer.getMilliSeconds() << std::endl;
+  timer.pause();
+  // Range on compressed PRESS trajectories.
+  timer.reset();
+  timer.start();
+  reqRespHelper.writeNext(queryPayload("RangeOnPRESSCompressedTrajectory", vecToJSONString(rangeQueries)));
+  reqRespHelper.explainResponse(reqRespHelper.readNext());
+  std::cout << "Compressed range takes (millisesonds): " << timer.getMilliSeconds() << std::endl;
   timer.pause();
   return EXIT_SUCCESS;
 }

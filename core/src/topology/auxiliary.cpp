@@ -217,7 +217,7 @@ void Auxiliary::load(FileReader& auxReader) {
     nodePairMBR.emplace_back(singleMBR);
   }
   for (auto i = 0; i < trieSize; ++i) {
-    edgeMBR.emplace_back(
+    trieNodeMBR.emplace_back(
       std::make_pair(
         Point2D(auxReader.nextDouble(), auxReader.nextDouble()),
         Point2D(auxReader.nextDouble(), auxReader.nextDouble())

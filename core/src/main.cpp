@@ -176,6 +176,7 @@ int main(int argc, char** argv) {
   Point2D whereAtResult;
   Point2D whereAtResult2;
   std::vector<Point2D> positions;
+  
   for (int idx = 0; idx < pressTrajs.size(); ++idx) {
     auto& pressTraj = pressTrajs.at(idx);
     auto& pressCompTraj = pressCompTrajs.at(idx);
@@ -294,6 +295,8 @@ int main(int argc, char** argv) {
   }
   std::cout << "Compressed whenAt: " << timer.getMilliSeconds() << std::endl;
 
+  queryProcessor.whenAt(g, spTable, huffman, acAutomaton, auxiliary, pressCompTrajs.at(0), Point2D(-9158460.8112630006, 5298938.7302930001));
+  
   auto mbr = auxiliary.getEdgeMBR(pressTrajs.at(0).getSpatialComponent().at(0));
   for (auto& edgeId: pressTrajs.at(0).getSpatialComponent()) {
     const auto& mbr2 = auxiliary.getEdgeMBR(edgeId);
