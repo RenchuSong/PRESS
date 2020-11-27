@@ -15,9 +15,16 @@ function fail_on_err {
 }
 
 function kill_existing_press {
-    pid="$(ps aux | grep press_core_d | grep -v 'grep' | cut -d' ' -f2- | xargs | cut -d' ' -f1)"
-    fail_on_err "Failed to stop PRESS Core."
-    kill ${pid}
+    while true; do 
+        pid="$(ps aux | grep press_core_d | grep -v 'grep' | cut -d' ' -f2- | xargs | cut -d' ' -f1)"
+        if [[ ${pid} -eq '' ]]
+        then
+            break
+        else
+            kill ${pid}
+            fail_on_err "Failed to stop PRESS Core."
+        fi
+    done
 }
 
 option="${1}"
