@@ -14,7 +14,10 @@ V3 version is the re-written version of the experiments for better code quality 
 To get the initial experiment code, switch to master branch and take a look at v1 folder.
 
 This is an ongoing effort. Currently only PRESS core service is finished.
+
 Read core/src/press_core_test_client.cpp to learn sample code of calling the APIs of PRESS service in C++.
+
+Read core/src/ad_hoc.cpp to learn sample code of directly calling the C++ functions in PRESS without going through the service APIs.
 
 Run:
 ```
