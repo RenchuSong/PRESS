@@ -7,6 +7,17 @@
 //
 
 #include "timer.hpp"
+#include <time.h>
+#include <sys/time.h>
+
+long long get_wall_time_usec(){
+  struct timeval time;
+  if (gettimeofday(&time, NULL)) {
+    //  Handle error
+    return 0;
+  }
+  return (long long)((double)time.tv_sec * 1000000 + (double)time.tv_usec);
+}
 
 // Start timer.
 void Timer::start() {
@@ -16,14 +27,14 @@ void Timer::start() {
 
 // Reset timer to be 0.
 void Timer::reset() {
-  startTime = clock();
+  startTime = get_wall_time_usec();
   accumulation = 0;
 }
 
 // Pause the timer.
 void Timer::pause() {
   if (!paused) {
-    accumulation += clock() - startTime;
+    accumulation += get_wall_time_usec() - startTime;
     paused = true;
   }
 }
@@ -32,21 +43,21 @@ void Timer::pause() {
 void Timer::resume() {
   if (paused) {
     paused = false;
-    startTime = clock();
+    startTime = get_wall_time_usec();
   }
 }
 
 // Original time unit (different according to system and compiler, use carefully!)
 long long Timer::getSystemClockDuration() const {
-  return (paused ? 0 : clock() - startTime) + accumulation;
+  return (paused ? 0 : get_wall_time_usec() - startTime) + accumulation;
 }
 
 // Time unit: milisecond
 long long Timer::getMilliSeconds() const {
-  return getSystemClockDuration() * 1000 / CLOCKS_PER_SEC;
+  return getSystemClockDuration() / 1000;
 }
 
 // Time unit: second
 long long Timer::getSeconds() const {
-  return getSystemClockDuration() / CLOCKS_PER_SEC;
+  return getSystemClockDuration() / 1000000;
 }

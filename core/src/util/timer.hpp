@@ -9,8 +9,6 @@
 #ifndef timer_hpp
 #define timer_hpp
 
-#include <ctime>
-
 class Timer {
 private:
   long long startTime;

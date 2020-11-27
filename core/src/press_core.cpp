@@ -7,7 +7,7 @@
 //
 
 
-//#include "util/timer.hpp"
+#include "util/timer.hpp"
 //#include "util/helper.hpp"
 
 #include <csignal>
