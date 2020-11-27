@@ -71,7 +71,9 @@ Step 3. Put your GPS trajectories in the folder;
 
 Step 4. Read the code in core/src/user_defined/. Take a look at factory.hpp, factory.cpp and search for [USER DEFINE] tags. Then take a look at each subfolder. You can follow the examples to write your own logic to load your own data (road network, gps trajectory, etc) with any format to the data structures PRESS uses;
 
-Step 5. Re-compile the PRESS core service and test your code. PRESS core will log to core/logs/ folder. Can can also comment out
+Step 5. Follow core/src/press_core_test_client.cpp to test your loading logic with ReadRoadnetFromDataSource and AddGPSTrajectoryAndMapMatch APIs.
+
+Step 6. Re-compile the PRESS core service and test your code. PRESS core will log to core/logs/ folder. Can can also comment out
 ```
   // Daemonize.
   daemonize();
