@@ -11,14 +11,32 @@ PRESS
 
 ## V3
 V3 version is the re-written version of the experiments for better code quality and ease of use.
-This is an ongoing effort. Currently only core algorithms of PRESS are finished. core/src/main.cpp includes sample code how to call the components of PRESS.
-
-To compile the binary, run:
-```
-bash install.sh
-```
-It will download a sample trajectory and WA state roadnet from my google drive.
-You can change the file paths in main.cpp to run it.
-TODO: parameterize the file path
-
 To get the initial experiment code, switch to master branch and take a look at v1 folder.
+
+This is an ongoing effort. Currently only PRESS core service is finished.
+Read core/src/press_core_test_client.cpp to learn sample code of calling the APIs of PRESS service in C++.
+
+Run:
+```
+./install.sh
+```
+to install PRESS. It compiles service binaries, materializes config file based on the local path you cloned the code, and downloads sample dataset(s).
+
+Run:
+```
+./padmin.sh start
+```
+to start PRESS, and
+```
+./padmin.sh stop
+```
+to stop PRESS.
+
+Run:
+```
+./run_press_test_client.sh
+```
+to run sample code of calling the APIs of PRESS Core service. Please make sure your computer has at least 8G memory to run the sample dataset(s).
+
+TODO:
+Write a UI portal to facilitate doing experiments.
