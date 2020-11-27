@@ -1912,7 +1912,7 @@ int main(int argc, char** argv) {
   // Config logger.
   configLogger();
   // Daemonize.
-//  daemonize();
+  daemonize();
   // Register signal handlers.
   registerSignalHandler();
   // Open communication channel.
