@@ -4,14 +4,17 @@ const routes: Array<RouteRecordRaw> = [
   {
     path: "/",
     name: "Experiments",
-    component: () =>
-      import(/* webpackChunkName: "about" */ "../views/Experiments.vue")
+    component: () => import("../views/Experiments.vue")
   },
   {
     path: "/experiment/:id",
     name: "Experiment",
-    component: () =>
-      import(/* webpackChunkName: "about" */ "../views/Experiment.vue")
+    component: () => import("../views/Experiment.vue")
+  },
+  {
+    path: "/:pathMatch(.*)*",
+    name: "NotFound",
+    component: () => import("../views/NotFound.vue")
   },
 ];
 
