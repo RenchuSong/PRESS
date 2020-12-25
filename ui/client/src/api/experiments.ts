@@ -1,22 +1,31 @@
 import { ExperimentMeta } from '@/model/experiment_meta';
-import { restClient } from './base';
+import { baseURL, restClient } from './base';
 
-const baseURL = '/api/experiments/';
+const apiBaseURL = `${baseURL}/experiments`;
 
 export class Experiments {
   public static async genAllExperimentsMeta(): Promise<ExperimentMeta[]> {
-    return (await restClient.get<ExperimentMeta[]>(baseURL)).data;
+    return (await restClient.get<ExperimentMeta[]>(`${apiBaseURL}/`)).data;
   }
 
   public static async genCreateExperiment(
     name: string,
   ): Promise<ExperimentMeta[]> {
-    return (await restClient.post<ExperimentMeta[]>(`baseURL${name}`, {})).data;
+    return (
+      await restClient.post<ExperimentMeta[]>(
+        `${apiBaseURL}/${name}`,
+        {},
+      )
+    ).data;
   }
 
   public static async genRemoveExperiment(
     name: string,
   ): Promise<ExperimentMeta[]> {
-    return (await restClient.delete<ExperimentMeta[]>(`baseURL${name}`)).data;
+    return (
+      await restClient.delete<ExperimentMeta[]>(
+        `${apiBaseURL}/${name}`,
+      )
+    ).data;
   }
 }

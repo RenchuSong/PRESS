@@ -1,5 +1,7 @@
 import axios, { AxiosRequestConfig, AxiosResponse } from 'axios';
 
+export const baseURL = '/api';
+
 export interface RequestConfig {
   headers?: any;
   params?: any;
