@@ -8,15 +8,20 @@ export interface RequestConfig {
 }
 
 export interface Response<T = any> {
-  error: boolean;
-  data?: T;
+  data: T;
+  status: number;
+  message: string;
+}
+
+export interface RESTError {
   status: number;
   message: string;
 }
 
 // TODO: use sse to decouple request and response form API to avoid
 // browser 1 minute retry "feature".
-export class RESTClient {
+class RESTClient {
+
   public async get<T>(
     url: string,
     config?: RequestConfig,
@@ -89,17 +94,15 @@ export class RESTClient {
         }
       }
       return {
-        error: false,
         data: response.data,
         status: response.status,
         message: response.statusText,
       };
     } catch (err) {
-      return {
-        error: true,
+      throw <RESTError>{
         status: err.response?.status || 500,
         message: err.code || 'Server Error',
-      }
+      };
     }
   }
 
@@ -116,3 +119,5 @@ export class RESTClient {
     }
   }
 }
+
+export const restClient = new RESTClient();
