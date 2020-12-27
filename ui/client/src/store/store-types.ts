@@ -18,8 +18,8 @@ import {
 // state
 export type RootStoreState = ExperimentsState & ExperimentState;
 export type RootState = {
-  experiments: ExperimentsState,
-  experiment: ExperimentState
+  experiments: ExperimentsState;
+  experiment: ExperimentState;
 };
 
 // mutations
@@ -37,7 +37,7 @@ export const ActionTypes = {
   ...ExperimentActionTypes
 };
 export type ActionTypes = typeof ActionTypes;
-export interface Actions extends ExperimentActions, ExperimentsActions { }
+export interface Actions extends ExperimentActions, ExperimentsActions { };
 
 // getters
 export type Getters = ExperimentsGetters & ExperimentGetters;

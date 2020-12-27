@@ -1,5 +1,5 @@
 import { Store } from "@/store";
-import { ActionTypes } from '@/store/store-types';
+import { ActionTypes } from "@/store/store-types";
 import { Ref, ref } from "vue";
 
 export default function useExperimentsCreate(store: Store) {
@@ -13,7 +13,7 @@ export default function useExperimentsCreate(store: Store) {
     });
     newExperimentName.value = "";
     newExperimentImage.value = undefined;
-  }
+  };
 
   return {
     newExperimentName,

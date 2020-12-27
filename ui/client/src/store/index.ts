@@ -1,4 +1,4 @@
-import { ExperimentMeta } from '@/model/experiment-meta';
+import { ExperimentMeta } from "@/model/experiment-meta";
 import { InjectionKey } from "vue";
 import {
   createStore,
@@ -10,7 +10,13 @@ import {
 } from "vuex";
 import experiment from "./modules/experiment";
 import experiments from "./modules/experiments";
-import { RootState, Mutations, Actions, Getters, RootStoreState } from "./store-types";
+import {
+  RootState,
+  Mutations,
+  Actions,
+  Getters,
+  RootStoreState
+} from "./store-types";
 
 const debug = process.env.NODE_ENV !== "production";
 

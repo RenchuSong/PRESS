@@ -14,9 +14,8 @@ const state: ExperimentsState = {
   experiments: []
 };
 
-const getters: GetterTree<
-  ExperimentsState, ExperimentsState
-> & ExperimentsGetters = {
+const getters: GetterTree<ExperimentsState, ExperimentsState> &
+  ExperimentsGetters = {
   experiments: state => state.experiments,
   experimentsCount: state => state.experiments.length
 };

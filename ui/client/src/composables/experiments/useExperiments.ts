@@ -12,7 +12,7 @@ export default function useExperiments(store: Store) {
 
   const removeExperiment = async (name: string) => {
     await store.dispatch(ActionTypes.REMOVE_EXPERIMENTS, { name });
-  }
+  };
 
   onMounted(getExperiments);
 
