@@ -4,19 +4,19 @@ const routes: Array<RouteRecordRaw> = [
   {
     path: "/",
     name: "Experiments",
-    component: () => import("../views/Experiments.vue")
+    component: () => import("../views/ExperimentsView.vue")
   },
   {
     path: "/experiment/:id",
     name: "Experiment",
     props: true,
-    component: () => import("../views/Experiment.vue")
+    component: () => import("../views/ExperimentView.vue")
   },
   {
     path: "/:pathMatch(.*)*",
     name: "NotFound",
     component: () => import("../views/NotFound.vue")
-  },
+  }
 ];
 
 const router = createRouter({

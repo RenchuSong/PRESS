@@ -7,9 +7,9 @@ import { Options, Vue } from "vue-class-component";
 
 @Options({
   props: {
-    id: String,
+    id: String
   },
-  components: {},
+  components: {}
 })
-export default class Experiment extends Vue {}
+export default class ExperimentView extends Vue {}
 </script>

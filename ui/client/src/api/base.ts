@@ -1,6 +1,6 @@
-import axios, { AxiosRequestConfig, AxiosResponse } from 'axios';
+import axios, { AxiosRequestConfig, AxiosResponse } from "axios";
 
-export const baseURL = '/api';
+export const baseURL = process.env.VUE_APP_POSTMAN_URL + "/api";
 
 export interface RequestConfig {
   headers?: any;
@@ -23,71 +23,72 @@ export interface RESTError {
 // TODO: use sse to decouple request and response form API to avoid
 // browser 1 minute retry "feature".
 class RESTClient {
-
   public async get<T>(
     url: string,
-    config?: RequestConfig,
+    config?: RequestConfig
   ): Promise<Response<T>> {
-    return this.request<T>(url, 'get', undefined, config);
+    return this.request<T>(url, "get", undefined, config);
   }
 
   public async post<T>(
     url: string,
     data: any,
-    config?: RequestConfig,
+    config?: RequestConfig
   ): Promise<Response<T>> {
-    return this.request<T>(url, 'post', data, config);
+    return this.request<T>(url, "post", data, config);
   }
 
   public async put<T>(
     url: string,
     data: any,
-    config?: RequestConfig,
+    config?: RequestConfig
   ): Promise<Response<T>> {
-    return this.request<T>(url, 'put', data, config);
+    return this.request<T>(url, "put", data, config);
   }
 
   public async delete<T>(
     url: string,
-    config?: RequestConfig,
+    config?: RequestConfig
   ): Promise<Response<T>> {
-    return this.request<T>(url, 'delete', undefined, config);
+    return this.request<T>(url, "delete", undefined, config);
   }
 
   public async request<T>(
     url: string,
     method: string,
     data: any,
-    config?: RequestConfig,
+    config?: RequestConfig
   ): Promise<Response<T>> {
     try {
       let response: AxiosResponse;
       switch (method) {
-        case 'get': {
+        case "get": {
           response = await axios.get<T>(
             url,
-            this.getAxiosRequestConfig(config),
+            this.getAxiosRequestConfig(config)
           );
           break;
         }
-        case 'post': {
+        case "post": {
           response = await axios.post<T>(
             url,
             data,
-            this.getAxiosRequestConfig(config),
+            this.getAxiosRequestConfig(config)
           );
+          break;
         }
-        case 'put': {
+        case "put": {
           response = await axios.put<T>(
             url,
             data,
-            this.getAxiosRequestConfig(config),
+            this.getAxiosRequestConfig(config)
           );
+          break;
         }
-        case 'delete': {
+        case "delete": {
           response = await axios.delete<T>(
             url,
-            this.getAxiosRequestConfig(config),
+            this.getAxiosRequestConfig(config)
           );
           break;
         }
@@ -98,25 +99,25 @@ class RESTClient {
       return {
         data: response.data,
         status: response.status,
-        message: response.statusText,
+        message: response.statusText
       };
     } catch (err) {
-      throw <RESTError>{
+      throw {
         status: err.response?.status || 500,
-        message: err.code || 'Server Error',
-      };
+        message: err.code || "Server Error"
+      } as RESTError;
     }
   }
 
   private getAxiosRequestConfig(
-    config?: RequestConfig,
+    config?: RequestConfig
   ): AxiosRequestConfig | undefined {
     if (config !== undefined) {
       return {
         headers: config.headers,
         params: config.params,
         timeout: config.timeout,
-        timeoutErrorMessage: config.timeoutErrorMessage,
+        timeoutErrorMessage: config.timeoutErrorMessage
       };
     }
   }

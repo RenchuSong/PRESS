@@ -1,6 +1,5 @@
-import { baseURL } from './base';
+import { baseURL } from "./base";
 
 const apiBaseURL = `${baseURL}/experiment`;
 
-export class Experiment {
-}
+export class Experiment {}
