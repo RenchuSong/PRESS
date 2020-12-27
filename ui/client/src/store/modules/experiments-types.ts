@@ -37,6 +37,14 @@ export interface ExperimentsActions {
     { commit }: AugmentedExperimentsActionContext,
     payload: {},
   ): Promise<void>;
+  [ExperimentsActionTypes.CREATE_EXPERIMENTS](
+    { commit }: AugmentedExperimentsActionContext,
+    payload: { name: string, image?: string },
+  ): Promise<void>;
+  [ExperimentsActionTypes.REMOVE_EXPERIMENTS](
+    { commit }: AugmentedExperimentsActionContext,
+    payload: { name: string },
+  ): Promise<void>;
 }
 
 // getters

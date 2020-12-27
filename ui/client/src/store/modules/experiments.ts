@@ -37,6 +37,18 @@ const actions: ActionTree<ExperimentsState, ExperimentsState> &
       ExperimentsMutationTypes.SET_EXPERIMENTS,
       await Experiments.genAllExperimentsMeta()
     );
+  },
+  async [ExperimentsActionTypes.CREATE_EXPERIMENTS]({ commit }, payload) {
+    return commit(
+      ExperimentsMutationTypes.SET_EXPERIMENTS,
+      await Experiments.genCreateExperiment(payload.name, payload.image)
+    );
+  },
+  async [ExperimentsActionTypes.REMOVE_EXPERIMENTS]({ commit }, payload) {
+    return commit(
+      ExperimentsMutationTypes.SET_EXPERIMENTS,
+      await Experiments.genRemoveExperiment(payload.name)
+    );
   }
 };
 

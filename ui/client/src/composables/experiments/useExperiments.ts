@@ -1,6 +1,4 @@
-import { Experiments } from "@/api/experiments";
-import { ExperimentMeta } from "@/model/experiment-meta";
-import { Store, useStore } from "@/store";
+import { Store } from "@/store";
 import { ActionTypes } from "@/store/store-types";
 import { computed, onMounted } from "vue";
 
@@ -12,11 +10,16 @@ export default function useExperiments(store: Store) {
     await store.dispatch(ActionTypes.GET_EXPERIMENTS);
   };
 
+  const removeExperiment = async (name: string) => {
+    await store.dispatch(ActionTypes.REMOVE_EXPERIMENTS, { name });
+  }
+
   onMounted(getExperiments);
 
   return {
     experiments,
     experimentsCount,
-    getExperiments
+    getExperiments,
+    removeExperiment
   };
 }
