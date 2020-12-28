@@ -1,134 +1,98 @@
 <template>
-  <input v-model="searchQuery" />
-  <div>{{ experimentsCount }} experiments</div>
-  <a-row
-    type="flex"
-    justify="start"
-    :gutter="[
-      { xs: 8, sm: 16, md: 24, lg: 32 },
-      { xs: 8, sm: 16, md: 24, lg: 32 },
-    ]"
-  >
-    <a-col
-      :xs="24"
-      :sm="12"
-      :md="8"
-      :xl="6"
-      :xxl="4"
-      v-for="experiment in experiments"
-      :key="experiment.Name"
-    >
-      <a-card hoverable>
-        <template #cover>
-          <img
-            alt="example"
-            src="https://play-lh.googleusercontent.com/IeNJWoKYx1waOhfWF6TiuSiWBLfqLb18lmZYXSgsH1fvb8v1IYiZr5aYWe0Gxu-pVZX3"
-          />
+  <a-layout class="top-level-content-layout">
+    <a-layout-content :style="{ padding: '0 24px', minHeight: '280px' }">
+      <a-row type="flex" justify="center" :gutter="[16, 16]">
+        <a-col :xs="24" :sm="16" :md="10" :lg="8" :xl="6" :xxl="5">
+          <a-input
+            class="experiment-search-wrapper"
+            v-model:value="searchQuery"
+            placeholder="Search experiments"
+          >
+            <template #suffix>
+              <search-outlined class="experiment-search-icon" />
+            </template>
+          </a-input>
+        </a-col>
+        <a-col :xs="24" :sm="6" :md="5" :lg="4" :xl="3" :xxl="2">
+          <a-button type="primary" block> Create </a-button>
+        </a-col>
+      </a-row>
+      <a-divider type="horizontal" />
+      <a-row
+        type="flex"
+        justify="start"
+        :gutter="[
+          { xs: 8, sm: 16, md: 24, lg: 32 },
+          { xs: 8, sm: 16, md: 24, lg: 32 },
+        ]"
+      >
+        <a-col
+          :xs="24"
+          :sm="12"
+          :md="8"
+          :xl="6"
+          :xxl="4"
+          v-for="experiment in experiments"
+          :key="experiment.Id"
+        >
+          <a-card>
+            <template #cover>
+              <img
+                alt="example"
+                src="https://media.sproutsocial.com/uploads/2017/08/Social-Media-Video-Specs-Feature-Image.png"
+              />
+            </template>
+            <a-card-meta :title="experiment.Name">
+              <template #description>{{ experiment.CreationTime }}</template>
+            </a-card-meta>
+            <template class="ant-card-actions" #actions>
+              <a-tooltip>
+                <template #title> Open experiment </template>
+                <folder-open-outlined key="open" />
+              </a-tooltip>
+              <a-tooltip>
+                <template #title> Delete experiment </template>
+                <a-popconfirm
+                  ok-text="Yes"
+                  cancel-text="No"
+                  @confirm="removeExperiment(experiment.Id)"
+                >
+                  <template #title>
+                    Are you sure to delete this experiment?<br />
+                    All progress will be lost and the operation is irreversible.
+                  </template>
+                  <delete-outlined key="delete" />
+                </a-popconfirm>
+              </a-tooltip>
+            </template>
+          </a-card>
+        </a-col>
+      </a-row>
+      <a-empty v-if="experiments.length === 0" :image="simpleImage">
+        <template #description>
+          <span> No experiments </span>
         </template>
-        <a-card-meta :title="experiment.Name">
-          <template #description>{{ experiment.CreationTime }}</template>
-        </a-card-meta>
-      </a-card>
-    </a-col>
-  </a-row>
-  <div v-for="experiment in experiments" :key="experiment.Name">
-    {{ experiment.Name }} {{ experiment.CreationTime }} {{ experiment.Image }}
-    <button @click.prevent="removeExperiment(experiment.Name)">delete</button>
-  </div>
-  <input v-model="newExperimentName" />
-  <input v-model="newExperimentImage" />
-  <button @click.prevent="createExperiment">add</button>
-  <a-row>
-    <a-col :span="12"><p class="height-200">col-4</p></a-col>
-    <a-col :span="12">
-      <a-button block>Cancel</a-button>
-      <a-button type="primary" block>
-        <template #icon>
-          <StepBackwardOutlined />
-          Test
-        </template>
-      </a-button>
-    </a-col>
-  </a-row>
-  <a-divider orientation="center"> Fill rest </a-divider>
-  <a-row type="flex">
-    <a-col :span="6" :order="4"> 1 col-order-4 </a-col>
-    <a-col :span="6" :order="3"> 2 col-order-3 </a-col>
-    <a-col :span="6" :order="2"> 3 col-order-2 </a-col>
-    <a-col :span="6" :order="1"> 4 col-order-1 </a-col>
-  </a-row>
-  <a-row :gutter="[16, { xs: 8, sm: 16, md: 24, lg: 32 }]">
-    <a-col class="gutter-row" :span="6">
-      <div class="gutter-box">col-6</div>
-    </a-col>
-    <a-col class="gutter-row" :span="6">
-      <div class="gutter-box">col-6</div>
-    </a-col>
-    <a-col class="gutter-row" :span="6">
-      <div class="gutter-box">col-6</div>
-    </a-col>
-    <a-col class="gutter-row" :span="6">
-      <div class="gutter-box">col-6</div>
-    </a-col>
-    <a-col class="gutter-row" :span="6">
-      <div class="gutter-box">col-6</div>
-    </a-col>
-  </a-row>
-  <a-row>
-    <a-col
-      class="gutter-box"
-      :xs="{ span: 5, offset: 1 }"
-      :lg="{ span: 6, offset: 2 }"
-    >
-      Col
-    </a-col>
-    <a-col
-      class="gutter-box"
-      :xs="{ span: 11, offset: 1 }"
-      :lg="{ span: 6, offset: 2 }"
-    >
-      Col
-    </a-col>
-    <a-col
-      class="gutter-box"
-      :xs="{ span: 5, offset: 1 }"
-      :lg="{ span: 6, offset: 2 }"
-    >
-      Col
-    </a-col>
-  </a-row>
-  <a-row>
-    <a-col class="gutter-box" :span="18" :pull="12"> col-18 col-push-6 </a-col>
-    <a-col class="gutter-box-2" :span="6" :pull="2"> col-6 col-pull-18 </a-col>
-  </a-row>
-  <a-space>
-    Space
-    <a-button type="primary">Button</a-button>
-    <a-upload>
-      <a-button> Click to Upload </a-button>
-    </a-upload>
-    <a-popconfirm
-      title="Are you sure delete this task?"
-      ok-text="Yes"
-      cancel-text="No"
-    >
-      <a-button>Confirm</a-button>
-    </a-popconfirm>
-  </a-space>
-  <!-- <a-button-group> -->
-
-  <!-- </a-button-group> -->
-  <a-date-picker />
+      </a-empty>
+      <input v-model="newExperimentName" />
+      <input v-model="newExperimentImage" />
+      <button @click.prevent="createExperiment">add</button>
+    </a-layout-content>
+  </a-layout>
 </template>
 
 <script lang="ts">
-import { StepBackwardOutlined } from "@ant-design/icons-vue";
+import {
+  DeleteOutlined,
+  FolderOpenOutlined,
+  SearchOutlined,
+} from "@ant-design/icons-vue";
 
 import useExperiments from "@/composables/experiments/useExperiments";
 import useExperimentsCreate from "@/composables/experiments/useExperimentsCreate";
 import useExperimentsSearch from "@/composables/experiments/useExperimentsSearch";
 import { useStore } from "@/store";
 import { defineComponent } from "vue";
+import Empty from "ant-design-vue/lib/empty";
 
 export default defineComponent({
   name: "ExperimentsComponent",
@@ -161,10 +125,13 @@ export default defineComponent({
       newExperimentName,
       newExperimentImage,
       createExperiment,
+      simpleImage: Empty.PRESENTED_IMAGE_SIMPLE,
     };
   },
   components: {
-    StepBackwardOutlined,
+    DeleteOutlined,
+    FolderOpenOutlined,
+    SearchOutlined,
   },
 });
 </script>
@@ -181,5 +148,11 @@ export default defineComponent({
 .gutter-box-2 {
   background: #99a0e9;
   padding: 5px 0;
+}
+
+.experiment-search-icon {
+  color: #6e6e6e;
+  transition: all 0.3s cubic-bezier(0.645, 0.045, 0.355, 1);
+  font-size: 16px;
 }
 </style>

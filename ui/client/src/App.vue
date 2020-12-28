@@ -1,30 +1,43 @@
 <template>
-  <div id="nav">
-    <router-link to="/">Home</router-link> |
-    <router-link to="/about">About</router-link>
-  </div>
-  <router-view />
+  <a-layout id="top-level-layout">
+    <a-layout-header class="top-level-header">
+      <div class="logo"><h1>PRESS</h1></div>
+      <h3>A Novel Framework of Trajectory Compression in Road Networks</h3>
+    </a-layout-header>
+    <a-layout-content style="padding: 0 50px">
+      <router-view name="routeHint" />
+      <router-view name="content" />
+    </a-layout-content>
+  </a-layout>
 </template>
 
 <style lang="scss">
-#app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-}
+#top-level-layout {
+  .logo {
+    width: 160px;
+    background: rgba(255, 255, 255, 0.2);
+    margin: 0 28px 0 0;
+    padding: 0;
+    text-align: center;
+    float: left;
+  }
 
-#nav {
-  padding: 30px;
-
-  a {
-    font-weight: bold;
-    color: #2c3e50;
-
-    &.router-link-exact-active {
-      color: #42b983;
+  .top-level-header {
+    h1,
+    h3 {
+      color: #fff;
     }
+  }
+
+  .route-hint {
+    margin: 16px 0;
+  }
+
+  .top-level-content-layout {
+    padding: 24px 0;
+    margin-bottom: 24px;
+    background: #fff;
+    min-height: calc(100vh - 144px);
   }
 }
 </style>

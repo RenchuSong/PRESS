@@ -4,13 +4,20 @@ const routes: Array<RouteRecordRaw> = [
   {
     path: "/",
     name: "Experiments",
-    component: () => import("../views/ExperimentsView.vue")
+    props: true,
+    components: {
+      routeHint: () => import("../views/RouteHint.vue"),
+      content: () => import("../views/ExperimentsView.vue")
+    }
   },
   {
     path: "/experiment/:id",
     name: "Experiment",
     props: true,
-    component: () => import("../views/ExperimentView.vue")
+    components: {
+      routeHint: () => import("../views/RouteHint.vue"),
+      content: () => import("../views/ExperimentView.vue")
+    }
   },
   {
     path: "/:pathMatch(.*)*",

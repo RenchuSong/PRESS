@@ -1,15 +1,16 @@
 <template>
-  <div>Experiment ID {{ id }}</div>
+  <Experiment :id="id" />
 </template>
 
 <script lang="ts">
 import { Options, Vue } from "vue-class-component";
+import Experiment from "@/components/Experiment.vue";
 
 @Options({
   props: {
-    id: String
+    id: String,
   },
-  components: {}
+  components: { Experiment },
 })
 export default class ExperimentView extends Vue {}
 </script>
