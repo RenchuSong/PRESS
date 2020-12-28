@@ -1,14 +1,20 @@
 <template>
   <input v-model="searchQuery" />
   <div>{{ experimentsCount }} experiments</div>
-  <a-row type="flex" justify="start" :gutter="[16, 16]">
+  <a-row
+    type="flex"
+    justify="start"
+    :gutter="[
+      { xs: 8, sm: 16, md: 24, lg: 32 },
+      { xs: 8, sm: 16, md: 24, lg: 32 },
+    ]"
+  >
     <a-col
       :xs="24"
       :sm="12"
       :md="8"
-      :lg="6"
-      :xl="4"
-      :xxl="3"
+      :xl="6"
+      :xxl="4"
       v-for="experiment in experiments"
       :key="experiment.Name"
     >
