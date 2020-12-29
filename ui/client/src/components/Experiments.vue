@@ -45,7 +45,14 @@
               />
             </template>
             <a-card-meta :title="experiment.Name">
-              <template #description>{{ experiment.CreationTime }}</template>
+              <template #description>
+                <div style="float: left">Created at&nbsp;</div>
+                <div style="float: left">
+                  {{
+                    formatDatetime(experiment.CreationTime, "MM/DD HH:mm:ss")
+                  }}
+                </div>
+              </template>
             </a-card-meta>
             <template class="ant-card-actions" #actions>
               <a-tooltip>
@@ -113,6 +120,7 @@ import { defineComponent, ref } from "vue";
 import Empty from "ant-design-vue/lib/empty";
 import message from "ant-design-vue/lib/message";
 import { RESTError } from "@/api/base";
+import { formatDatetime } from "@/utility/utility";
 
 export default defineComponent({
   name: "ExperimentsComponent",
@@ -161,6 +169,7 @@ export default defineComponent({
       createExperimentModalConfirmLoading,
       showCreateExperimentModal,
       handleCreateExperiment,
+      formatDatetime,
     };
   },
   components: {
