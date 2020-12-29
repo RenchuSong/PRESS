@@ -52,10 +52,12 @@
               </template>
             </a-card-meta>
             <template class="ant-card-actions" #actions>
-              <a-tooltip>
-                <template #title> Open experiment </template>
-                <folder-open-outlined key="open" />
-              </a-tooltip>
+              <router-link :to="'/experiment/' + experiment.Id">
+                <a-tooltip>
+                  <template #title> Open experiment </template>
+                  <folder-open-outlined key="open" />
+                </a-tooltip>
+              </router-link>
               <a-tooltip>
                 <template #title> Delete experiment </template>
                 <a-popconfirm
