@@ -1,28 +1,12 @@
 <template>
   <a-layout class="top-level-content-layout">
     <a-layout-content :style="{ padding: '0 24px', minHeight: '280px' }">
-      <a-row type="flex" justify="center" :gutter="[16, 16]">
-        <a-col :xs="24" :sm="16" :md="10" :lg="8" :xl="6" :xxl="5">
-          <a-input
-            class="experiment-search-wrapper"
-            v-model:value="searchQuery"
-            placeholder="Search experiments"
-          >
-            <template #suffix>
-              <search-outlined class="experiment-search-icon" />
-            </template>
-          </a-input>
-        </a-col>
-        <a-col :xs="24" :sm="6" :md="5" :lg="4" :xl="3" :xxl="2">
-          <a-button
-            type="primary"
-            @click="$refs.createExperiment.startCreateExperiment()"
-            block
-          >
-            Create
-          </a-button>
-        </a-col>
-      </a-row>
+      <SearchBar
+        v-model:searchQuery="searchQuery"
+        v-on:openCreateExperiment="
+          $refs.createExperiment.startCreateExperiment()
+        "
+      />
       <a-divider type="horizontal" />
       <a-row
         type="flex"
@@ -91,23 +75,17 @@
 </template>
 
 <script lang="ts">
-import {
-  DeleteOutlined,
-  FolderOpenOutlined,
-  SearchOutlined,
-} from "@ant-design/icons-vue";
+import { DeleteOutlined, FolderOpenOutlined } from "@ant-design/icons-vue";
 
 import CreateExperiment from "./experiments/CreateExperiment.vue";
+import SearchBar from "./experiments/SearchBar.vue";
 import useExperiments from "@/composables/experiments/useExperiments";
 import useExperimentsSearch from "@/composables/experiments/useExperimentsSearch";
 import { useStore } from "@/store";
-import { defineComponent, onMounted, ref } from "vue";
+import { defineComponent, onMounted } from "vue";
 import Empty from "ant-design-vue/lib/empty";
-import message from "ant-design-vue/lib/message";
-import { RESTError } from "@/api/base";
 import { formatDatetime } from "@/utility/utility";
 import { ActionTypes } from "@/store/store-types";
-import router from "@/router";
 
 export default defineComponent({
   name: "ExperimentsComponent",
@@ -143,8 +121,8 @@ export default defineComponent({
   components: {
     DeleteOutlined,
     FolderOpenOutlined,
-    SearchOutlined,
     CreateExperiment,
+    SearchBar,
   },
 });
 </script>

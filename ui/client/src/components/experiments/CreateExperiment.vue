@@ -26,7 +26,6 @@ import { useStore } from "@/store";
 import { defineComponent, ref } from "vue";
 import message from "ant-design-vue/lib/message";
 import { RESTError } from "@/api/base";
-import { ActionTypes } from "@/store/store-types";
 import router from "@/router";
 
 export default defineComponent({
