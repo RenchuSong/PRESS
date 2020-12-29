@@ -11,9 +11,9 @@ export class Experiments {
   public static async genCreateExperiment(
     name: string,
     image?: string
-  ): Promise<ExperimentMeta[]> {
+  ): Promise<ExperimentMeta> {
     return (
-      await restClient.post<ExperimentMeta[]>(`${apiBaseURL}/`, {
+      await restClient.post<ExperimentMeta>(`${apiBaseURL}/`, {
         Name: name,
         Image: image
       })

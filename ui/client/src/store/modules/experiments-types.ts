@@ -40,7 +40,7 @@ export interface ExperimentsActions {
   [ExperimentsActionTypes.CREATE_EXPERIMENTS](
     { commit }: AugmentedExperimentsActionContext,
     payload: { name: string; image?: string }
-  ): Promise<void>;
+  ): Promise<ExperimentMeta>;
   [ExperimentsActionTypes.REMOVE_EXPERIMENTS](
     { commit }: AugmentedExperimentsActionContext,
     payload: { name: string }

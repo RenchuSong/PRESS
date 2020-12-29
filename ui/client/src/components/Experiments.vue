@@ -121,6 +121,7 @@ import message from "ant-design-vue/lib/message";
 import { RESTError } from "@/api/base";
 import { formatDatetime } from "@/utility/utility";
 import { ActionTypes } from "@/store/store-types";
+import router from "@/router";
 
 export default defineComponent({
   name: "ExperimentsComponent",
@@ -148,8 +149,12 @@ export default defineComponent({
     const handleCreateExperiment = async () => {
       createExperimentModalConfirmLoading.value = true;
       try {
-        await createExperiment();
+        const newExperimentMeta = await createExperiment();
         createExperimentModalVisible.value = false;
+        router.push({
+          name: "Experiment",
+          params: { id: newExperimentMeta.Id },
+        });
       } catch (exception) {
         message.error((exception as RESTError).message);
       } finally {

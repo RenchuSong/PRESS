@@ -12,12 +12,16 @@ export default function useExperimentsCreate(store: Store) {
   });
 
   const createExperiment = async () => {
-    await store.dispatch(ActionTypes.CREATE_EXPERIMENTS, {
-      name: newExperimentForm.name,
-      image: newExperimentForm.image
-    });
+    const newExperimentMeta = await store.dispatch(
+      ActionTypes.CREATE_EXPERIMENTS,
+      {
+        name: newExperimentForm.name,
+        image: newExperimentForm.image
+      }
+    );
     newExperimentForm.name = "";
     newExperimentForm.image = undefined;
+    return newExperimentMeta;
   };
 
   return {
