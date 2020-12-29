@@ -1,23 +1,27 @@
 import { Store } from "@/store";
 import { ActionTypes } from "@/store/store-types";
-import { Ref, ref } from "vue";
+import { reactive, Ref } from "vue";
 
 export default function useExperimentsCreate(store: Store) {
-  const newExperimentName = ref("");
-  const newExperimentImage: Ref<string | undefined> = ref(undefined);
+  const newExperimentForm = reactive<{
+    name: string,
+    image: string | undefined
+  }>({
+    name: "",
+    image: undefined,
+  });
 
   const createExperiment = async () => {
     await store.dispatch(ActionTypes.CREATE_EXPERIMENTS, {
-      name: newExperimentName.value,
-      image: newExperimentImage.value
+      name: newExperimentForm.name,
+      image: newExperimentForm.image
     });
-    newExperimentName.value = "";
-    newExperimentImage.value = undefined;
+    newExperimentForm.name = "";
+    newExperimentForm.image = undefined;
   };
 
   return {
-    newExperimentName,
-    newExperimentImage,
+    newExperimentForm,
     createExperiment
   };
 }

@@ -70,12 +70,6 @@ export default defineComponent({
       experimentsMatchingSearchQuery,
     } = useExperimentsSearch(store);
 
-    const {
-      newExperimentName,
-      newExperimentImage,
-      createExperiment,
-    } = useExperimentsCreate(store);
-
     return {
       props,
       experiments: experimentsMatchingSearchQuery,
@@ -83,9 +77,6 @@ export default defineComponent({
       getExperiments,
       searchQuery,
       removeExperiment,
-      newExperimentName,
-      newExperimentImage,
-      createExperiment,
       routes: [
         {
           path: "index",

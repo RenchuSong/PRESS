@@ -18,6 +18,8 @@ import Menu from "ant-design-vue/lib/menu";
 import Breadcrumb from "ant-design-vue/lib/breadcrumb";
 import Tooltip from "ant-design-vue/lib/tooltip";
 import Input from "ant-design-vue/lib/input";
+import Modal from "ant-design-vue/lib/modal";
+import Form from "ant-design-vue/lib/form";
 
 import "ant-design-vue/dist/antd.css";
 
@@ -39,4 +41,6 @@ createApp(App)
   .use(Breadcrumb)
   .use(Tooltip)
   .use(Input)
+  .use(Modal)
+  .use(Form)
   .mount("#app");

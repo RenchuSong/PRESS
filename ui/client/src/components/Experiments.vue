@@ -14,7 +14,9 @@
           </a-input>
         </a-col>
         <a-col :xs="24" :sm="6" :md="5" :lg="4" :xl="3" :xxl="2">
-          <a-button type="primary" block> Create </a-button>
+          <a-button type="primary" @click="showCreateExperimentModal" block>
+            Create
+          </a-button>
         </a-col>
       </a-row>
       <a-divider type="horizontal" />
@@ -73,11 +75,27 @@
           <span> No experiments </span>
         </template>
       </a-empty>
-      <input v-model="newExperimentName" />
-      <input v-model="newExperimentImage" />
-      <button @click.prevent="createExperiment">add</button>
     </a-layout-content>
   </a-layout>
+  <a-modal
+    title="Create experiment"
+    v-model:visible="createExperimentModalVisible"
+    :confirm-loading="createExperimentModalConfirmLoading"
+    @ok="handleCreateExperiment"
+  >
+    <a-form
+      :model="newExperimentForm"
+      :label-col="{ xs: { span: 24 }, sm: { span: 6 } }"
+      :wrapper-col="{ xs: { span: 24 }, sm: { span: 16 } }"
+    >
+      <a-form-item label="Name">
+        <a-input v-model:value="newExperimentForm.name" />
+      </a-form-item>
+      <a-form-item label="Cover image">
+        <a-input v-model:value="newExperimentForm.image" />
+      </a-form-item>
+    </a-form>
+  </a-modal>
 </template>
 
 <script lang="ts">
@@ -91,8 +109,10 @@ import useExperiments from "@/composables/experiments/useExperiments";
 import useExperimentsCreate from "@/composables/experiments/useExperimentsCreate";
 import useExperimentsSearch from "@/composables/experiments/useExperimentsSearch";
 import { useStore } from "@/store";
-import { defineComponent } from "vue";
+import { defineComponent, ref } from "vue";
 import Empty from "ant-design-vue/lib/empty";
+import message from "ant-design-vue/lib/message";
+import { RESTError } from "@/api/base";
 
 export default defineComponent({
   name: "ExperimentsComponent",
@@ -110,11 +130,24 @@ export default defineComponent({
       experimentsMatchingSearchQuery,
     } = useExperimentsSearch(store);
 
-    const {
-      newExperimentName,
-      newExperimentImage,
-      createExperiment,
-    } = useExperimentsCreate(store);
+    const { newExperimentForm, createExperiment } = useExperimentsCreate(store);
+
+    const createExperimentModalVisible = ref(false);
+    const createExperimentModalConfirmLoading = ref(false);
+    const showCreateExperimentModal = () => {
+      createExperimentModalVisible.value = true;
+    };
+    const handleCreateExperiment = async () => {
+      createExperimentModalConfirmLoading.value = true;
+      try {
+        await createExperiment();
+        createExperimentModalVisible.value = false;
+      } catch (exception) {
+        message.error((exception as RESTError).message);
+      } finally {
+        createExperimentModalConfirmLoading.value = false;
+      }
+    };
 
     return {
       experiments: experimentsMatchingSearchQuery,
@@ -122,10 +155,12 @@ export default defineComponent({
       getExperiments,
       searchQuery,
       removeExperiment,
-      newExperimentName,
-      newExperimentImage,
-      createExperiment,
+      newExperimentForm,
       simpleImage: Empty.PRESENTED_IMAGE_SIMPLE,
+      createExperimentModalVisible,
+      createExperimentModalConfirmLoading,
+      showCreateExperimentModal,
+      handleCreateExperiment,
     };
   },
   components: {
