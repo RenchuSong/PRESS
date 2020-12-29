@@ -22,7 +22,11 @@ const routes: Array<RouteRecordRaw> = [
   {
     path: "/:pathMatch(.*)*",
     name: "NotFound",
-    component: () => import("../views/NotFound.vue")
+    props: true,
+    components: {
+      routeHint: () => import("../views/RouteHint.vue"),
+      content: () => import("../views/NotFound.vue")
+    }
   }
 ];
 
