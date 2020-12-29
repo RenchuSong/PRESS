@@ -1,4 +1,5 @@
-import { ExperimentMeta } from "@/model/experiment-meta";
+import { Experiment } from '@/api/experiment';
+import { ExperimentContext } from '@/model/experiment-context';
 import { ActionTree, GetterTree, MutationTree } from "vuex";
 import {
   ExperimentActions,
@@ -11,28 +12,36 @@ import {
 
 const state = () =>
   ({
-    experiment: undefined
+    currentExperimentContext: undefined
   } as ExperimentState);
 
 const getters: GetterTree<ExperimentState, ExperimentState> &
-  ExperimentGetters = {};
+  ExperimentGetters = {
+  currentExperimentContext: state => state.currentExperimentContext,
+};
 
 const mutations: MutationTree<ExperimentState> & ExperimentMutations = {
-  [ExperimentMutationTypes.SET_EXPERIMENT](
+  [ExperimentMutationTypes.SET_EXPERIMENT_CONTEXT](
     state: ExperimentState,
-    payload: ExperimentMeta
+    payload: ExperimentContext | undefined
   ) {
-    state.experiment = payload;
+    state.currentExperimentContext = payload;
   }
 };
 
 const actions: ActionTree<ExperimentState, ExperimentState> &
   ExperimentActions = {
-  async [ExperimentActionTypes.GET_EXPERIMENT]({ commit }) {
-    // commit(
-    //   ExperimentMutationTypes.SET_EXPERIMENT,
-    //   await Experiments.genAllExperimentsMeta()
-    // );
+  async [ExperimentActionTypes.OPEN_EXPERIMENT]({ commit }, payload) {
+    commit(
+      ExperimentMutationTypes.SET_EXPERIMENT_CONTEXT,
+      await Experiment.genOpenExperiment(payload.id)
+    );
+  },
+  async [ExperimentActionTypes.CLOSE_EXPERIMENT]({ commit }) {
+    commit(
+      ExperimentMutationTypes.SET_EXPERIMENT_CONTEXT,
+      undefined
+    );
   }
 };
 

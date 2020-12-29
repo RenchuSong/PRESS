@@ -115,11 +115,12 @@ import useExperiments from "@/composables/experiments/useExperiments";
 import useExperimentsCreate from "@/composables/experiments/useExperimentsCreate";
 import useExperimentsSearch from "@/composables/experiments/useExperimentsSearch";
 import { useStore } from "@/store";
-import { defineComponent, ref } from "vue";
+import { defineComponent, onMounted, ref } from "vue";
 import Empty from "ant-design-vue/lib/empty";
 import message from "ant-design-vue/lib/message";
 import { RESTError } from "@/api/base";
 import { formatDatetime } from "@/utility/utility";
+import { ActionTypes } from "@/store/store-types";
 
 export default defineComponent({
   name: "ExperimentsComponent",
@@ -155,6 +156,11 @@ export default defineComponent({
         createExperimentModalConfirmLoading.value = false;
       }
     };
+
+    onMounted(() => {
+      getExperiments();
+      store.dispatch(ActionTypes.CLOSE_EXPERIMENT);
+    });
 
     return {
       experiments: experimentsMatchingSearchQuery,

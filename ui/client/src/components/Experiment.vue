@@ -1,12 +1,7 @@
 <template>
   <a-layout class="top-level-content-layout">
     <a-layout-sider width="160">
-      <a-menu
-        mode="inline"
-        v-model:selectedKeys="selectedKeys2"
-        v-model:openKeys="openKeys"
-        style="height: 100%"
-      >
+      <a-menu mode="inline" style="height: 100%">
         <a-sub-menu key="sub1">
           <template #title>
             <span><user-outlined />subnav 1</span>
@@ -38,18 +33,25 @@
     </a-layout-sider>
     <a-layout-content :style="{ padding: '0 24px', minHeight: '280px' }">
       Content
+      <router-link to="/experiment/1">1</router-link>
+      <router-link to="/experiment/2">2</router-link>
     </a-layout-content>
   </a-layout>
 </template>
 
 <script lang="ts">
-import { StepBackwardOutlined } from "@ant-design/icons-vue";
+import {
+  StepBackwardOutlined,
+  UserOutlined,
+  LaptopOutlined,
+  NotificationOutlined,
+} from "@ant-design/icons-vue";
 
-import useExperiments from "@/composables/experiments/useExperiments";
-import useExperimentsCreate from "@/composables/experiments/useExperimentsCreate";
-import useExperimentsSearch from "@/composables/experiments/useExperimentsSearch";
+import useExperiment from "@/composables/experiment/useExperiment";
 import { useStore } from "@/store";
-import { defineComponent } from "vue";
+import { defineComponent, onMounted, onUpdated } from "vue";
+import message from "ant-design-vue/lib/message";
+import { RESTError } from "@/api/base";
 
 export default defineComponent({
   name: "ExperimentComponent",
@@ -58,54 +60,26 @@ export default defineComponent({
   },
   setup(props, context) {
     const store = useStore();
+    const { currentExperimentContext, openExperiment } = useExperiment(store);
 
-    const {
-      experimentsCount,
-      getExperiments,
-      removeExperiment,
-    } = useExperiments(store);
+    onMounted(async () => {
+      if (props.id && Number.isInteger(+props.id)) {
+        try {
+          await openExperiment(+props.id);
+        } catch (exception) {
+          message.error((exception as RESTError).message);
+        }
+      } else {
+        message.error("Invalid experiment id.");
+      }
+    });
 
-    const {
-      searchQuery,
-      experimentsMatchingSearchQuery,
-    } = useExperimentsSearch(store);
-
-    return {
-      props,
-      experiments: experimentsMatchingSearchQuery,
-      experimentsCount,
-      getExperiments,
-      searchQuery,
-      removeExperiment,
-      routes: [
-        {
-          path: "index",
-          breadcrumbName: "home",
-        },
-        {
-          path: "first",
-          breadcrumbName: "first",
-          children: [
-            {
-              path: "/general",
-              breadcrumbName: "General",
-            },
-            {
-              path: "/layout",
-              breadcrumbName: "Layout",
-            },
-            {
-              path: "/navigation",
-              breadcrumbName: "Navigation",
-            },
-          ],
-        },
-        {
-          path: "second",
-          breadcrumbName: "second",
-        },
-      ],
-    };
+    return {};
+  },
+  components: {
+    UserOutlined,
+    LaptopOutlined,
+    NotificationOutlined,
   },
 });
 </script>

@@ -1,26 +1,27 @@
-import { ExperimentMeta } from "@/model/experiment-meta";
+import { ExperimentContext } from '@/model/experiment-context';
 import { ActionContext } from "vuex";
 
 // state
 export interface ExperimentState {
-  experiment: ExperimentMeta | undefined;
+  currentExperimentContext: ExperimentContext | undefined;
 }
 
 // mutations
 export enum ExperimentMutationTypes {
-  SET_EXPERIMENT = "SET_EXPERIMENT"
+  SET_EXPERIMENT_CONTEXT = "SET_EXPERIMENT_CONTEXT"
 }
 
 export type ExperimentMutations<S = ExperimentState> = {
-  [ExperimentMutationTypes.SET_EXPERIMENT](
+  [ExperimentMutationTypes.SET_EXPERIMENT_CONTEXT](
     state: S,
-    payload: ExperimentMeta
+    payload: ExperimentContext | undefined
   ): void;
 };
 
 // actions
 export enum ExperimentActionTypes {
-  GET_EXPERIMENT = "GET_EXPERIMENT"
+  OPEN_EXPERIMENT = "OPEN_EXPERIMENT",
+  CLOSE_EXPERIMENT = "CLOSE_EXPERIMENT",
 }
 
 type AugmentedExperimentActionContext = {
@@ -31,11 +32,18 @@ type AugmentedExperimentActionContext = {
 } & Omit<ActionContext<ExperimentState, ExperimentState>, "commit">;
 
 export interface ExperimentActions {
-  [ExperimentActionTypes.GET_EXPERIMENT](
+  [ExperimentActionTypes.OPEN_EXPERIMENT](
     { commit }: AugmentedExperimentActionContext,
-    payload: ExperimentMeta
+    payload: { id: number }
+  ): Promise<void>;
+  [ExperimentActionTypes.CLOSE_EXPERIMENT](
+    { commit }: AugmentedExperimentActionContext,
+    payload: {}
   ): Promise<void>;
 }
 
 // getters
-export type ExperimentGetters = {};
+export type ExperimentGetters = {
+  currentExperimentContext(state: ExperimentState):
+    ExperimentContext | undefined;
+};

@@ -1,57 +1,34 @@
 <template>
-  <a-breadcrumb class="route-hint" :routes="routes">
-    <template #itemRender="{ route, routes, paths }">
-      <!-- {{ route }} -->
-      <span v-if="routes.indexOf(route) === routes.length - 1">
-        {{ route.breadcrumbName }}
-      </span>
-      <router-link v-else :to="`${basePath}/${paths.join('/')}`">
-        {{ route.breadcrumbName }}
-      </router-link>
-    </template>
+  <a-breadcrumb class="route-hint">
+    <a-breadcrumb-item>
+      <router-link to="/"> <home-outlined /> Experiments </router-link>
+    </a-breadcrumb-item>
+    <a-breadcrumb-item v-if="experimentName">
+      <experiment-outlined />
+      <span>{{ experimentName }}</span>
+    </a-breadcrumb-item>
   </a-breadcrumb>
 </template>
 
 <script lang="ts">
-import { defineComponent } from "vue";
+import { computed, defineComponent } from "vue";
+import { HomeOutlined, ExperimentOutlined } from "@ant-design/icons-vue";
+import { useStore } from "@/store";
 
 export default defineComponent({
   name: "RouteHint",
-  props: {
-    id: String,
+  components: {
+    HomeOutlined,
+    ExperimentOutlined,
   },
   setup(props, context) {
+    const store = useStore();
+    const experimentName = computed(
+      () => store.getters.currentExperimentContext?.Name || undefined
+    );
+
     return {
-      props,
-      basePath: "",
-      routes: [
-        {
-          path: "",
-          breadcrumbName: "Experiments",
-        },
-        {
-          path: "second",
-          breadcrumbName: "second",
-        },
-        {
-          path: "first",
-          breadcrumbName: "first",
-          children: [
-            {
-              path: "/general",
-              breadcrumbName: "General",
-            },
-            {
-              path: "/layout",
-              breadcrumbName: "Layout",
-            },
-            {
-              path: "/navigation",
-              breadcrumbName: "Navigation",
-            },
-          ],
-        },
-      ],
+      experimentName,
     };
   },
 });

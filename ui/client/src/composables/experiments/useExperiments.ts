@@ -1,6 +1,6 @@
 import { Store } from "@/store";
 import { ActionTypes } from "@/store/store-types";
-import { computed, onMounted } from "vue";
+import { computed } from "vue";
 
 export default function useExperiments(store: Store) {
   const experiments = computed(() => store.getters.experiments);
@@ -13,8 +13,6 @@ export default function useExperiments(store: Store) {
   const removeExperiment = async (name: string) => {
     await store.dispatch(ActionTypes.REMOVE_EXPERIMENTS, { name });
   };
-
-  onMounted(getExperiments);
 
   return {
     experiments,
