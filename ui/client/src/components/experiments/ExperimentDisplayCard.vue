@@ -11,7 +11,7 @@
         </div>
       </template>
     </a-card-meta>
-    <template class="ant-card-actions" #actions>
+    <template #actions>
       <router-link :to="'/experiment/' + experiment.Id">
         <a-tooltip>
           <template #title> Open experiment </template>
