@@ -38,12 +38,14 @@ const actions: ActionTree<ExperimentsState, ExperimentsState> &
     );
   },
   async [ExperimentsActionTypes.CREATE_EXPERIMENTS]({ commit }, payload) {
-    const newExperimentMeta =
-      await Experiments.genCreateExperiment(payload.name, payload.image);
-    commit(
-      ExperimentsMutationTypes.SET_EXPERIMENTS,
-      [...state.experiments, newExperimentMeta]
+    const newExperimentMeta = await Experiments.genCreateExperiment(
+      payload.name,
+      payload.image
     );
+    commit(ExperimentsMutationTypes.SET_EXPERIMENTS, [
+      ...state.experiments,
+      newExperimentMeta
+    ]);
     return newExperimentMeta;
   },
   async [ExperimentsActionTypes.REMOVE_EXPERIMENTS]({ commit }, payload) {

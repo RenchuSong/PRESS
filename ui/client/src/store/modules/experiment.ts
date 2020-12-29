@@ -1,5 +1,5 @@
-import { Experiment } from '@/api/experiment';
-import { ExperimentContext } from '@/model/experiment-context';
+import { Experiment } from "@/api/experiment";
+import { ExperimentContext } from "@/model/experiment-context";
 import { ActionTree, GetterTree, MutationTree } from "vuex";
 import {
   ExperimentActions,
@@ -38,10 +38,7 @@ const actions: ActionTree<ExperimentState, ExperimentState> &
     );
   },
   async [ExperimentActionTypes.CLOSE_EXPERIMENT]({ commit }) {
-    commit(
-      ExperimentMutationTypes.SET_EXPERIMENT_CONTEXT,
-      undefined
-    );
+    commit(ExperimentMutationTypes.SET_EXPERIMENT_CONTEXT, undefined);
   }
 };
 

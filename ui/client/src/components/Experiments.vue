@@ -14,7 +14,11 @@
           </a-input>
         </a-col>
         <a-col :xs="24" :sm="6" :md="5" :lg="4" :xl="3" :xxl="2">
-          <a-button type="primary" @click="showCreateExperimentModal" block>
+          <a-button
+            type="primary"
+            @click="$refs.createExperiment.startCreateExperiment()"
+            block
+          >
             Create
           </a-button>
         </a-col>
@@ -83,25 +87,7 @@
       </a-empty>
     </a-layout-content>
   </a-layout>
-  <a-modal
-    title="Create experiment"
-    v-model:visible="createExperimentModalVisible"
-    :confirm-loading="createExperimentModalConfirmLoading"
-    @ok="handleCreateExperiment"
-  >
-    <a-form
-      :model="newExperimentForm"
-      :label-col="{ xs: { span: 24 }, sm: { span: 6 } }"
-      :wrapper-col="{ xs: { span: 24 }, sm: { span: 16 } }"
-    >
-      <a-form-item label="Name">
-        <a-input v-model:value="newExperimentForm.name" />
-      </a-form-item>
-      <a-form-item label="Cover image">
-        <a-input v-model:value="newExperimentForm.image" />
-      </a-form-item>
-    </a-form>
-  </a-modal>
+  <CreateExperiment ref="createExperiment" />
 </template>
 
 <script lang="ts">
@@ -111,8 +97,8 @@ import {
   SearchOutlined,
 } from "@ant-design/icons-vue";
 
+import CreateExperiment from "./experiments/CreateExperiment.vue";
 import useExperiments from "@/composables/experiments/useExperiments";
-import useExperimentsCreate from "@/composables/experiments/useExperimentsCreate";
 import useExperimentsSearch from "@/composables/experiments/useExperimentsSearch";
 import { useStore } from "@/store";
 import { defineComponent, onMounted, ref } from "vue";
@@ -139,29 +125,6 @@ export default defineComponent({
       experimentsMatchingSearchQuery,
     } = useExperimentsSearch(store);
 
-    const { newExperimentForm, createExperiment } = useExperimentsCreate(store);
-
-    const createExperimentModalVisible = ref(false);
-    const createExperimentModalConfirmLoading = ref(false);
-    const showCreateExperimentModal = () => {
-      createExperimentModalVisible.value = true;
-    };
-    const handleCreateExperiment = async () => {
-      createExperimentModalConfirmLoading.value = true;
-      try {
-        const newExperimentMeta = await createExperiment();
-        createExperimentModalVisible.value = false;
-        router.push({
-          name: "Experiment",
-          params: { id: newExperimentMeta.Id },
-        });
-      } catch (exception) {
-        message.error((exception as RESTError).message);
-      } finally {
-        createExperimentModalConfirmLoading.value = false;
-      }
-    };
-
     onMounted(() => {
       getExperiments();
       store.dispatch(ActionTypes.CLOSE_EXPERIMENT);
@@ -173,12 +136,7 @@ export default defineComponent({
       getExperiments,
       searchQuery,
       removeExperiment,
-      newExperimentForm,
       simpleImage: Empty.PRESENTED_IMAGE_SIMPLE,
-      createExperimentModalVisible,
-      createExperimentModalConfirmLoading,
-      showCreateExperimentModal,
-      handleCreateExperiment,
       formatDatetime,
     };
   },
@@ -186,6 +144,7 @@ export default defineComponent({
     DeleteOutlined,
     FolderOpenOutlined,
     SearchOutlined,
+    CreateExperiment,
   },
 });
 </script>
