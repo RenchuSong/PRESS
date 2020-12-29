@@ -39,10 +39,7 @@
         >
           <a-card>
             <template #cover>
-              <img
-                alt="example"
-                src="https://media.sproutsocial.com/uploads/2017/08/Social-Media-Video-Specs-Feature-Image.png"
-              />
+              <img alt="example" src="@/assets/experiment-default.png" />
             </template>
             <a-card-meta :title="experiment.Name">
               <template #description>

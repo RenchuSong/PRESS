@@ -1,13 +1,13 @@
 <template>
   <a-breadcrumb class="route-hint" :routes="routes">
-    <template #itemRender="{ route /*, routes, paths*/ }">
-      {{ route }}
-      <!-- <span v-if="routes.indexOf(route) === routes.length - 1">
+    <template #itemRender="{ route, routes, paths }">
+      <!-- {{ route }} -->
+      <span v-if="routes.indexOf(route) === routes.length - 1">
         {{ route.breadcrumbName }}
       </span>
       <router-link v-else :to="`${basePath}/${paths.join('/')}`">
         {{ route.breadcrumbName }}
-      </router-link> -->
+      </router-link>
     </template>
   </a-breadcrumb>
 </template>
