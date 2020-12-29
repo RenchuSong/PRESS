@@ -2,15 +2,15 @@ import { Store } from "@/store";
 import { computed, ref } from "vue";
 
 export default function useExperimentsSearch(store: Store) {
-  const searchQuery = ref("");
+  const searchExperimentQuery = ref("");
   const experimentsMatchingSearchQuery = computed(() => {
     return store.getters.experiments.filter(experiment =>
-      experiment.Name.includes(searchQuery.value)
+      experiment.Name.includes(searchExperimentQuery.value)
     );
   });
 
   return {
-    searchQuery,
+    searchExperimentQuery,
     experimentsMatchingSearchQuery
   };
 }

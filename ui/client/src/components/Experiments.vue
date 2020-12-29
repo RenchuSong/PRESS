@@ -2,7 +2,7 @@
   <a-layout class="top-level-content-layout">
     <a-layout-content :style="{ padding: '0 24px', minHeight: '280px' }">
       <SearchBar
-        v-model:searchQuery="searchQuery"
+        v-model:searchQuery="searchExperimentQuery"
         v-on:openCreateExperiment="
           $refs.createExperiment.startCreateExperiment()
         "
@@ -25,43 +25,7 @@
           v-for="experiment in experiments"
           :key="experiment.Id"
         >
-          <a-card>
-            <template #cover>
-              <img alt="example" src="@/assets/experiment-default.png" />
-            </template>
-            <a-card-meta :title="experiment.Name">
-              <template #description>
-                <div style="float: left">Created at&nbsp;</div>
-                <div style="float: left">
-                  {{
-                    formatDatetime(experiment.CreationTime, "MM/DD HH:mm:ss")
-                  }}
-                </div>
-              </template>
-            </a-card-meta>
-            <template class="ant-card-actions" #actions>
-              <router-link :to="'/experiment/' + experiment.Id">
-                <a-tooltip>
-                  <template #title> Open experiment </template>
-                  <folder-open-outlined key="open" />
-                </a-tooltip>
-              </router-link>
-              <a-tooltip>
-                <template #title> Delete experiment </template>
-                <a-popconfirm
-                  ok-text="Yes"
-                  cancel-text="No"
-                  @confirm="removeExperiment(experiment.Id)"
-                >
-                  <template #title>
-                    Are you sure to delete this experiment?<br />
-                    All progress will be lost and the operation is irreversible.
-                  </template>
-                  <delete-outlined key="delete" />
-                </a-popconfirm>
-              </a-tooltip>
-            </template>
-          </a-card>
+          <ExperimentDisplayCard :experiment="experiment" />
         </a-col>
       </a-row>
       <a-empty v-if="experiments.length === 0" :image="simpleImage">
@@ -75,16 +39,14 @@
 </template>
 
 <script lang="ts">
-import { DeleteOutlined, FolderOpenOutlined } from "@ant-design/icons-vue";
-
 import CreateExperiment from "./experiments/CreateExperiment.vue";
 import SearchBar from "./experiments/SearchBar.vue";
+import ExperimentDisplayCard from "./experiments/ExperimentDisplayCard.vue";
 import useExperiments from "@/composables/experiments/useExperiments";
 import useExperimentsSearch from "@/composables/experiments/useExperimentsSearch";
 import { useStore } from "@/store";
 import { defineComponent, onMounted } from "vue";
 import Empty from "ant-design-vue/lib/empty";
-import { formatDatetime } from "@/utility/utility";
 import { ActionTypes } from "@/store/store-types";
 
 export default defineComponent({
@@ -99,7 +61,7 @@ export default defineComponent({
     } = useExperiments(store);
 
     const {
-      searchQuery,
+      searchExperimentQuery,
       experimentsMatchingSearchQuery,
     } = useExperimentsSearch(store);
 
@@ -111,39 +73,15 @@ export default defineComponent({
     return {
       experiments: experimentsMatchingSearchQuery,
       experimentsCount,
-      getExperiments,
-      searchQuery,
+      searchExperimentQuery,
       removeExperiment,
       simpleImage: Empty.PRESENTED_IMAGE_SIMPLE,
-      formatDatetime,
     };
   },
   components: {
-    DeleteOutlined,
-    FolderOpenOutlined,
     CreateExperiment,
     SearchBar,
+    ExperimentDisplayCard,
   },
 });
 </script>
-
-<style scoped lang="scss">
-.gutter-example ::v-deep(.ant-row > div) {
-  background: transparent;
-  border: 0;
-}
-.gutter-box {
-  background: #00a0e9;
-  padding: 5px 0;
-}
-.gutter-box-2 {
-  background: #99a0e9;
-  padding: 5px 0;
-}
-
-.experiment-search-icon {
-  color: #6e6e6e;
-  transition: all 0.3s cubic-bezier(0.645, 0.045, 0.355, 1);
-  font-size: 16px;
-}
-</style>
