@@ -3,11 +3,13 @@ import { ActionContext } from "vuex";
 
 // state
 export interface ExperimentState {
+  inExperiment: boolean;
   currentExperimentContext: ExperimentContext | undefined;
 }
 
 // mutations
 export enum ExperimentMutationTypes {
+  TOGGLE_EXPERIMENT = "TOGGLE_EXPERIMENT",
   SET_EXPERIMENT_CONTEXT = "SET_EXPERIMENT_CONTEXT"
 }
 
@@ -15,6 +17,10 @@ export type ExperimentMutations<S = ExperimentState> = {
   [ExperimentMutationTypes.SET_EXPERIMENT_CONTEXT](
     state: S,
     payload: ExperimentContext | undefined
+  ): void;
+  [ExperimentMutationTypes.TOGGLE_EXPERIMENT](
+    state: S,
+    payload: boolean
   ): void;
 };
 

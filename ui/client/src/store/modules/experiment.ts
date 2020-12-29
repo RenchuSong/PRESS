@@ -12,6 +12,7 @@ import {
 
 const state = () =>
   ({
+    inExperiment: false,
     currentExperimentContext: undefined
   } as ExperimentState);
 
@@ -25,13 +26,22 @@ const mutations: MutationTree<ExperimentState> & ExperimentMutations = {
     state: ExperimentState,
     payload: ExperimentContext | undefined
   ) {
-    state.currentExperimentContext = payload;
+    if (state.inExperiment) {
+      state.currentExperimentContext = payload;
+    }
+  },
+  [ExperimentMutationTypes.TOGGLE_EXPERIMENT](
+    state: ExperimentState,
+    payload: boolean
+  ) {
+    state.inExperiment = payload;
   }
 };
 
 const actions: ActionTree<ExperimentState, ExperimentState> &
   ExperimentActions = {
   async [ExperimentActionTypes.OPEN_EXPERIMENT]({ commit }, payload) {
+    commit(ExperimentMutationTypes.TOGGLE_EXPERIMENT, true);
     commit(
       ExperimentMutationTypes.SET_EXPERIMENT_CONTEXT,
       await Experiment.genOpenExperiment(payload.id)
@@ -39,6 +49,7 @@ const actions: ActionTree<ExperimentState, ExperimentState> &
   },
   async [ExperimentActionTypes.CLOSE_EXPERIMENT]({ commit }) {
     commit(ExperimentMutationTypes.SET_EXPERIMENT_CONTEXT, undefined);
+    commit(ExperimentMutationTypes.TOGGLE_EXPERIMENT, false);
   }
 };
 
