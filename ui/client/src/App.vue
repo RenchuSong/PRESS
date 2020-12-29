@@ -25,6 +25,9 @@
   .top-level-header {
     h1,
     h3 {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
       color: #fff;
     }
   }
