@@ -8858,10 +8858,10 @@ vm-browserify@^1.0.1:
   resolved "https://registry.yarnpkg.com/vm-browserify/-/vm-browserify-1.1.2.tgz#78641c488b8e6ca91a75f511e7a3b32a86e5dda0"
   integrity sha512-2ham8XPWTONajOR0ohOKOHXkm3+gaBmGut3SRuu75xLd/RRaY6vqgh8NBYYk7+RW3u5AtzPQZG8F10LHkl0lAQ==
 
-vue-advanced-cropper@^2.0.2:
-  version "2.0.2"
-  resolved "https://registry.yarnpkg.com/vue-advanced-cropper/-/vue-advanced-cropper-2.0.2.tgz#fab00218ad443ad08166aaecec66c0b8560316da"
-  integrity sha512-n62iEd7Xz/J8oHLnFE7A8vxo8vGKM04RlrYUDWR/77lpUqhBZhWztsy2MSXbIJU+o1g93qa86LNGVHNq0VWnFg==
+vue-advanced-cropper@^2.0.3:
+  version "2.0.3"
+  resolved "https://registry.yarnpkg.com/vue-advanced-cropper/-/vue-advanced-cropper-2.0.3.tgz#e641673b8bfc8d06808b2e2bdb8f8da1e9091f29"
+  integrity sha512-e1WMqJxwE3KdrJErFhnOKqW8A0MT7EfgbunYx8z2aDtMc0ChsmXCDfXEDt/TAP0+jdAESCDiuePaBp4qAWdTKA==
   dependencies:
     classnames "^2.2.6"
     debounce "^1.2.0"

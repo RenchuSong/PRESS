@@ -18,6 +18,7 @@
       </a-form-item>
       <input type="file" accept=".png" @change="imageChanged" />
       <cropper
+        v-if="imageBeforeCrop"
         class="cropper"
         :src="imageBeforeCrop"
         :stencil-props="{
