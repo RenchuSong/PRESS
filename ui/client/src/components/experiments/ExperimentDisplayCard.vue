@@ -1,7 +1,7 @@
 <template>
   <a-card>
     <template #cover>
-      <img alt="example" src="@/assets/experiment-default.png" />
+      <img alt="Cover image" :src="experiment.Image" />
     </template>
     <a-card-meta :title="experiment.Name">
       <template #description>

@@ -14,13 +14,35 @@
         <a-input v-model:value="newExperimentForm.name" />
       </a-form-item>
       <a-form-item label="Cover image">
-        <a-input v-model:value="newExperimentForm.image" />
+        <a-button @click="$refs.coverImageInput.click()">
+          <UploadOutlined />Choose PNG image
+        </a-button>
+        <input
+          type="file"
+          accept=".png"
+          @change="imageChanged"
+          ref="coverImageInput"
+          style="display: none"
+        />
+        <cropper
+          v-if="imageBeforeCrop"
+          class="cropper"
+          :src="imageBeforeCrop"
+          :stencil-props="{
+            aspectRatio: 16 / 9,
+          }"
+          :resize-image="false"
+          :move-image="false"
+          @change="cropImage"
+        ></cropper>
       </a-form-item>
     </a-form>
   </a-modal>
 </template>
 
 <script lang="ts">
+import { UploadOutlined } from "@ant-design/icons-vue";
+
 import useExperimentsCreate from "@/composables/experiments/useExperimentsCreate";
 import { useStore } from "@/store";
 import { defineComponent, ref } from "vue";
@@ -28,12 +50,31 @@ import message from "ant-design-vue/lib/message";
 import { RESTError } from "@/api/base";
 import router from "@/router";
 
+import { Cropper } from "vue-advanced-cropper";
+import "vue-advanced-cropper/dist/style.css";
+
 export default defineComponent({
   name: "CreateExperiment",
+  methods: {
+    cropImage(event: { canvas: { toDataURL: () => string } }) {
+      this.newExperimentForm.image = event.canvas.toDataURL();
+    },
+    imageChanged(e: Event) {
+      const fr = new FileReader();
+      fr.onload = (event) => {
+        this.imageBeforeCrop = (event.target as any).result as string;
+      };
+      fr.readAsDataURL((e.target as any)["files"][0]);
+    },
+  },
+  components: {
+    Cropper,
+    UploadOutlined,
+  },
   setup(props, context) {
     const store = useStore();
     const { newExperimentForm, createExperiment } = useExperimentsCreate(store);
-    const createExperimentModalVisible = ref(false);
+    const createExperimentModalVisible = ref(true);
     const createExperimentModalConfirmLoading = ref(false);
     const startCreateExperiment = () => {
       createExperimentModalVisible.value = true;
@@ -53,13 +94,27 @@ export default defineComponent({
         createExperimentModalConfirmLoading.value = false;
       }
     };
+
+    const imageBeforeCrop = ref("");
+    const imageAfterCrop = ref("");
     return {
       newExperimentForm,
       createExperimentModalVisible,
       createExperimentModalConfirmLoading,
       startCreateExperiment,
       handleCreateExperiment,
+      imageBeforeCrop,
+      imageAfterCrop,
     };
   },
 });
 </script>
+
+<style scoped lang="scss">
+.cropper {
+  padding: 0;
+  margin: 0;
+  height: 200px;
+  background: #ddd;
+}
+</style>
