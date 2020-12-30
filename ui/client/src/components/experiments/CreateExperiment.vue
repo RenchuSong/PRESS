@@ -14,25 +14,35 @@
         <a-input v-model:value="newExperimentForm.name" />
       </a-form-item>
       <a-form-item label="Cover image">
-        <a-input v-model:value="newExperimentForm.image" />
+        <a-button @click="$refs.coverImageInput.click()">
+          <UploadOutlined />Choose PNG image
+        </a-button>
+        <input
+          type="file"
+          accept=".png"
+          @change="imageChanged"
+          ref="coverImageInput"
+          style="display: none"
+        />
+        <cropper
+          v-if="imageBeforeCrop"
+          class="cropper"
+          :src="imageBeforeCrop"
+          :stencil-props="{
+            aspectRatio: 16 / 9,
+          }"
+          :resize-image="false"
+          :move-image="false"
+          @change="cropImage"
+        ></cropper>
       </a-form-item>
-      <input type="file" accept=".png" @change="imageChanged" />
-      <cropper
-        v-if="imageBeforeCrop"
-        class="cropper"
-        :src="imageBeforeCrop"
-        :stencil-props="{
-          aspectRatio: 16 / 9,
-        }"
-        :resize-image="false"
-        :move-image="false"
-        @change="cropImage"
-      ></cropper>
     </a-form>
   </a-modal>
 </template>
 
 <script lang="ts">
+import { UploadOutlined } from "@ant-design/icons-vue";
+
 import useExperimentsCreate from "@/composables/experiments/useExperimentsCreate";
 import { useStore } from "@/store";
 import { defineComponent, ref } from "vue";
@@ -46,12 +56,8 @@ import "vue-advanced-cropper/dist/style.css";
 export default defineComponent({
   name: "CreateExperiment",
   methods: {
-    cropImage(event: Event) {
-      console.log(event);
-      // console.log((event.target as any).result as string);
-      // this.imageAfterCrop = (this.$refs.cropper as any)
-      //   .getCroppedCanvas()
-      //   .toDataURL();
+    cropImage(event: { canvas: { toDataURL: () => string } }) {
+      this.newExperimentForm.image = event.canvas.toDataURL();
     },
     imageChanged(e: Event) {
       const fr = new FileReader();
@@ -63,6 +69,7 @@ export default defineComponent({
   },
   components: {
     Cropper,
+    UploadOutlined,
   },
   setup(props, context) {
     const store = useStore();
