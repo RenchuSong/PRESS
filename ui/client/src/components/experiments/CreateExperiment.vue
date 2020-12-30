@@ -25,7 +25,7 @@
         }"
         :resize-image="false"
         :move-image="false"
-        @change="alert(null)"
+        @change="cropImage"
       ></cropper>
     </a-form>
   </a-modal>
@@ -45,12 +45,13 @@ import "vue-advanced-cropper/dist/style.css";
 export default defineComponent({
   name: "CreateExperiment",
   methods: {
-    // cropImage(event: Event) {
-    //   console.log((event.target as any).result as string);
-    //   // this.imageAfterCrop = (this.$refs.cropper as any)
-    //   //   .getCroppedCanvas()
-    //   //   .toDataURL();
-    // },
+    cropImage(event: Event) {
+      console.log(event);
+      // console.log((event.target as any).result as string);
+      // this.imageAfterCrop = (this.$refs.cropper as any)
+      //   .getCroppedCanvas()
+      //   .toDataURL();
+    },
     imageChanged(e: Event) {
       const fr = new FileReader();
       fr.onload = (event) => {
@@ -96,9 +97,6 @@ export default defineComponent({
       handleCreateExperiment,
       imageBeforeCrop,
       imageAfterCrop,
-      cropImage: (event: Event) => {
-        console.log(event);
-      },
     };
   },
 });
