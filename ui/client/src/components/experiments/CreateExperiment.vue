@@ -99,7 +99,7 @@ export default defineComponent({
   setup(props, context) {
     const store = useStore();
     const { newExperimentForm, createExperiment } = useExperimentsCreate(store);
-    const createExperimentModalVisible = ref(true);
+    const createExperimentModalVisible = ref(false);
     const createExperimentModalConfirmLoading = ref(false);
     const startCreateExperiment = () => {
       createExperimentModalVisible.value = true;
