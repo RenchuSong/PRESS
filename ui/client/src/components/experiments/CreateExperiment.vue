@@ -6,14 +6,19 @@
     @ok="handleCreateExperiment"
   >
     <a-form
+      ref="theForm"
+      :rules="rules"
       :model="newExperimentForm"
       :label-col="{ xs: { span: 24 }, sm: { span: 6 } }"
       :wrapper-col="{ xs: { span: 24 }, sm: { span: 16 } }"
     >
-      <a-form-item label="Name">
-        <a-input v-model:value="newExperimentForm.name" />
+      <a-form-item label="Name" name="name">
+        <a-input
+          v-model:value="newExperimentForm.name"
+          placeholder="Example: my experiment"
+        />
       </a-form-item>
-      <a-form-item label="Cover image">
+      <a-form-item label="Cover image" name="cover">
         <a-button @click="$refs.coverImageInput.click()">
           <UploadOutlined />Choose PNG image
         </a-button>
@@ -66,6 +71,26 @@ export default defineComponent({
       };
       fr.readAsDataURL((e.target as any)["files"][0]);
     },
+    async handleCreateExperiment() {
+      (this.$refs.theForm as any)
+        .validate()
+        .then(async () => {
+          this.createExperimentModalConfirmLoading = true;
+          try {
+            const newExperimentMeta = await this.createExperiment();
+            this.createExperimentModalVisible = false;
+            router.push({
+              name: "Experiment",
+              params: { id: newExperimentMeta.Id },
+            });
+          } catch (exception) {
+            message.error((exception as RESTError).message);
+          } finally {
+            this.createExperimentModalConfirmLoading = false;
+          }
+        })
+        .catch(() => message.error("Please fix all errors in the form."));
+    },
   },
   components: {
     Cropper,
@@ -79,32 +104,22 @@ export default defineComponent({
     const startCreateExperiment = () => {
       createExperimentModalVisible.value = true;
     };
-    const handleCreateExperiment = async () => {
-      createExperimentModalConfirmLoading.value = true;
-      try {
-        const newExperimentMeta = await createExperiment();
-        createExperimentModalVisible.value = false;
-        router.push({
-          name: "Experiment",
-          params: { id: newExperimentMeta.Id },
-        });
-      } catch (exception) {
-        message.error((exception as RESTError).message);
-      } finally {
-        createExperimentModalConfirmLoading.value = false;
-      }
-    };
-
     const imageBeforeCrop = ref("");
     const imageAfterCrop = ref("");
     return {
+      createExperiment,
       newExperimentForm,
       createExperimentModalVisible,
       createExperimentModalConfirmLoading,
       startCreateExperiment,
-      handleCreateExperiment,
       imageBeforeCrop,
       imageAfterCrop,
+      rules: {
+        name: {
+          required: true,
+          message: "Please give the experiment a name",
+        },
+      },
     };
   },
 });
