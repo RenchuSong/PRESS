@@ -42,5 +42,9 @@
     background: #fff;
     min-height: calc(100vh - 144px);
   }
+
+  .ant-card-hoverable {
+    cursor: default;
+  }
 }
 </style>

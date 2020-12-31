@@ -1,5 +1,5 @@
 <template>
-  <a-card>
+  <a-card hoverable>
     <template #cover>
       <img alt="Cover image" :src="experiment.Image" />
     </template>
