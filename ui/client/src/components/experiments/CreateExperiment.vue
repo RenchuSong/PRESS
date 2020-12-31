@@ -3,6 +3,9 @@
     title="Create experiment"
     v-model:visible="createExperimentModalVisible"
     :confirm-loading="createExperimentModalConfirmLoading"
+    centered
+    :closable="false"
+    :maskClosable="false"
     @ok="handleCreateExperiment"
   >
     <a-form
