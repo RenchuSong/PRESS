@@ -20,6 +20,7 @@ This is an ongoing effort. Currently only PRESS core service is finished.
 | Dependency | Version |
 |------------|---------|
 | g++        | 4.8.2   |
+| go         | 1.15.6  |
 
 ### Verified OS
 
