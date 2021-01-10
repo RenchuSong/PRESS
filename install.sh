@@ -6,6 +6,7 @@ GREEN='\033[1;32m'
 NC='\033[0m'
 DIR=${PWD}
 DIR_CORE=${DIR}/core
+DIR_APP_SERVER=${DIR}/ui/server
 
 fail_on_err() {
   if [ $? -ne 0 ]; then
@@ -24,6 +25,12 @@ printf "${BLUE}Building PRESS Test Client ...${NC}\n"
 cd ${DIR_CORE}/src
 g++ -o ${DIR}/bin/press_core_test_client -std=c++11 press_core_test_client.cpp */*.cpp */*/*.cpp
 fail_on_err "Building PRESS Test Client Failed"
+cd ${DIR}
+
+printf "${BLUE}Building PRESS App Server ...${NC}\n"
+cd ${DIR_APP_SERVER}
+go build -o ${DIR}/bin/press_app_server_d
+fail_on_err "Building PRESS App Server Failed"
 cd ${DIR}
 
 printf "${BLUE}Generating Config File ...${NC}\n"
