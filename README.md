@@ -29,9 +29,9 @@ PRESS is verified to run on the following OS:
 | Dependency | Version |
 |------------|---------|
 | g++        | 4.8.2   |
-| go         | 1.15.6  |
+| Go         | 1.15.6  |
 
-Follow this document to install [latest go](https://golang.org/doc/install) for your OS.
+Follow this document to install [latest Go](https://golang.org/doc/install) for your OS.
 
 ### Install PRESS
 
