@@ -15,13 +15,6 @@ To get the initial experiment code, switch to master branch and take a look at v
 
 This is an ongoing effort. Currently only PRESS core service is finished.
 
-### Dependencies
-
-| Dependency | Version |
-|------------|---------|
-| g++        | 4.8.2   |
-| go         | 1.15.6  |
-
 ### Verified OS
 
 PRESS is verified to run on the following OS:
@@ -30,6 +23,15 @@ PRESS is verified to run on the following OS:
 |------------|---------|
 | MacOS      | 10.13.3 |
 | Ubuntu     | 14.04   |
+
+### Dependencies
+
+| Dependency | Version |
+|------------|---------|
+| g++        | 4.8.2   |
+| go         | 1.15.6  |
+
+Follow this document to install [latest go](https://golang.org/doc/install) for your OS.
 
 ### Install PRESS
 
