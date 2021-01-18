@@ -1,8 +1,16 @@
 {
-  "core": {
+  "experiments":"[ROOT]/experiments/",
+  "data":"[ROOT]/data/",
+  "core":{
     "tmp":"[ROOT]/core/tmp/",
     "data":"[ROOT]/data/",
     "logs":"[ROOT]/core/logs/",
     "log_level":"INFO"
+  },
+  "appServer":{
+  	"logs":"[ROOT]/logs/app_server/",
+  	"logLevel":"INFO",
+  	"port":8081,
+  	"handlers":1
   }
 }
