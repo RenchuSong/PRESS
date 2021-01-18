@@ -3,14 +3,11 @@ package svc
 import (
 	"fmt"
 	"net/http"
-	"os"
 	"time"
 
 	"github.com/gin-contrib/static"
 	"github.com/gin-gonic/gin"
 	"github.com/thinkerou/favicon"
-
-	log "github.com/sirupsen/logrus"
 )
 
 // Config for service.
@@ -56,33 +53,6 @@ func NewService(c Config) *Service {
 		sse:    s,
 		config: c,
 	}
-}
-
-func setLogger(c *Config) {
-	log.SetFormatter(&log.TextFormatter{
-		FullTimestamp: true,
-	})
-	switch c.LogLevel {
-	case "ERROR":
-		log.SetLevel(log.ErrorLevel)
-	case "WARN":
-		log.SetLevel(log.WarnLevel)
-	case "INFO":
-		log.SetLevel(log.InfoLevel)
-	case "DEBUG":
-		log.SetLevel(log.DebugLevel)
-	default:
-		log.SetLevel(log.InfoLevel)
-	}
-	f, err := os.OpenFile(
-		c.Logs+"access.log",
-		os.O_APPEND|os.O_CREATE|os.O_WRONLY,
-		0644,
-	)
-	if err != nil {
-		log.Fatal("Failed to open log file, ", err)
-	}
-	log.SetOutput(f)
 }
 
 // Run spawns the service.
