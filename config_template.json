@@ -8,9 +8,10 @@
     "log_level":"INFO"
   },
   "appServer":{
-  	"logs":"[ROOT]/logs/app_server/",
-  	"logLevel":"INFO",
-  	"port":8081,
-  	"handlers":1
+    "logs":"[ROOT]/logs/app_server/",
+    "logLevel":"INFO",
+    "port":8081,
+    "staticHandlers":6,
+    "apiHandlers":1
   }
 }
