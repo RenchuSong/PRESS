@@ -7,9 +7,11 @@ import (
 )
 
 func setLogger(c *Config) {
+	// Timestamp format.
 	log.SetFormatter(&log.TextFormatter{
 		FullTimestamp: true,
 	})
+	// Log level.
 	switch c.LogLevel {
 	case "ERROR":
 		log.SetLevel(log.ErrorLevel)
@@ -22,6 +24,7 @@ func setLogger(c *Config) {
 	default:
 		log.SetLevel(log.InfoLevel)
 	}
+	// Log path.
 	f, err := os.OpenFile(
 		c.Logs+"access.log",
 		os.O_APPEND|os.O_CREATE|os.O_WRONLY,

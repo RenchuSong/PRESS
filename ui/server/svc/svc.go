@@ -1,15 +1,5 @@
 package svc
 
-import (
-	"fmt"
-	"net/http"
-	"time"
-
-	"github.com/gin-contrib/static"
-	"github.com/gin-gonic/gin"
-	"github.com/thinkerou/favicon"
-)
-
 // Config for service.
 type Config struct {
 	Experiments string
@@ -24,7 +14,7 @@ type Config struct {
 // Service for App.
 type Service struct {
 	config Config
-	web    *gin.Engine
+	http   *HTTP
 	sse    *SSEHandler
 }
 
@@ -32,24 +22,8 @@ type Service struct {
 func NewService(c Config) *Service {
 	s := NewSSEHandler()
 
-	r := gin.Default()
-	r.Use(favicon.New(c.Static + "favicon.ico"))
-	r.GET("/ping", func(c *gin.Context) {
-		s.Send("123")
-		c.JSON(http.StatusOK, gin.H{
-			"message": "pong",
-		})
-	})
-	r.GET("/api/subscribe", func(c *gin.Context) {
-		s.Subscribe(c)
-	})
-	r.Use(static.Serve("/", static.LocalFile(c.Static, true)))
-	r.NoRoute(func(ctx *gin.Context) {
-		ctx.File(c.Static + "index.html")
-	})
-
 	return &Service{
-		web:    r,
+		http:   NewHTTP(s, &c),
 		sse:    s,
 		config: c,
 	}
@@ -60,9 +34,5 @@ func (s *Service) Run() {
 	setLogger(&s.config)
 
 	go s.sse.Run()
-	go s.web.Run(fmt.Sprintf(":%v", s.config.Port))
-
-	for {
-		time.Sleep(time.Second)
-	}
+	s.http.Run()
 }
