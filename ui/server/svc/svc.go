@@ -3,6 +3,7 @@ package svc
 import (
 	"fmt"
 	"net/http"
+	"os"
 	"time"
 
 	"github.com/gin-contrib/static"
@@ -57,12 +58,36 @@ func NewService(c Config) *Service {
 	}
 }
 
-// Run spawns the service.
-func (s *Service) Run() {
+func setLogger(c *Config) {
 	log.SetFormatter(&log.TextFormatter{
 		FullTimestamp: true,
 	})
-	log.SetLevel(log.DebugLevel)
+	switch c.LogLevel {
+	case "ERROR":
+		log.SetLevel(log.ErrorLevel)
+	case "WARN":
+		log.SetLevel(log.WarnLevel)
+	case "INFO":
+		log.SetLevel(log.InfoLevel)
+	case "DEBUG":
+		log.SetLevel(log.DebugLevel)
+	default:
+		log.SetLevel(log.InfoLevel)
+	}
+	f, err := os.OpenFile(
+		c.Logs+"access.log",
+		os.O_APPEND|os.O_CREATE|os.O_WRONLY,
+		0644,
+	)
+	if err != nil {
+		log.Fatal("Failed to open log file, ", err)
+	}
+	log.SetOutput(f)
+}
+
+// Run spawns the service.
+func (s *Service) Run() {
+	setLogger(&s.config)
 
 	go s.sse.Run()
 	go s.web.Run(fmt.Sprintf(":%v", s.config.Port))
