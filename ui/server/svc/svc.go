@@ -22,7 +22,7 @@ type Config struct {
 	APIHandlers int
 }
 
-// Service for App
+// Service for App.
 type Service struct {
 	config Config
 	web    *gin.Engine

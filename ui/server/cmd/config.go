@@ -14,7 +14,7 @@ type config struct {
 	AppServer   appServerConfig `json:"appServer"`
 }
 
-// App server config
+// App server config.
 type appServerConfig struct {
 	Logs        string `json:"logs"`
 	LogLevel    string `json:"logLevel"`
