@@ -3,13 +3,9 @@ package main
 import (
 	"encoding/json"
 	"flag"
-	"fmt"
-	"net/http"
 
+	"github.com/RenchuSong/PRESS/tree/v3/ui/server/svc"
 	log "github.com/sirupsen/logrus"
-
-	"github.com/gin-contrib/static"
-	"github.com/gin-gonic/gin"
 )
 
 func main() {
@@ -19,18 +15,16 @@ func main() {
 
 	c := readConfig(confPath)
 	str, _ := json.Marshal(c)
-
 	log.Infof(string(str))
 
-	r := gin.Default()
-	r.GET("/ping", func(c *gin.Context) {
-		c.JSON(http.StatusOK, gin.H{
-			"message": "pong",
-		})
+	service := svc.NewService(svc.Config{
+		Experiments: c.Experiments,
+		Data:        c.Data,
+		Logs:        c.AppServer.Logs,
+		LogLevel:    c.AppServer.LogLevel,
+		Port:        c.AppServer.Port,
+		Static:      c.AppServer.Static,
+		APIHandlers: c.AppServer.APIHandlers,
 	})
-	r.Use(static.Serve("/", static.LocalFile(c.AppServer.Static, true)))
-	r.NoRoute(func(ctx *gin.Context) {
-		ctx.File(c.AppServer.Static + "index.html")
-	})
-	r.Run(fmt.Sprintf(":%v", c.AppServer.Port))
+	service.Run()
 }
