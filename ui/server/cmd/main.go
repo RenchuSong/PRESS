@@ -1,11 +1,9 @@
 package main
 
 import (
-	"encoding/json"
 	"flag"
 
 	"github.com/RenchuSong/PRESS/tree/v3/ui/server/svc"
-	log "github.com/sirupsen/logrus"
 )
 
 func main() {
@@ -14,8 +12,6 @@ func main() {
 	flag.Parse()
 
 	c := readConfig(confPath)
-	str, _ := json.Marshal(c)
-	log.Infof(string(str))
 
 	service := svc.NewService(svc.Config{
 		Experiments: c.Experiments,

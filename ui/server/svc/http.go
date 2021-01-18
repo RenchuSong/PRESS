@@ -4,6 +4,9 @@ import (
 	"fmt"
 	"net/http"
 
+	"github.com/RenchuSong/PRESS/tree/v3/ui/server/ctr/example"
+	"github.com/RenchuSong/PRESS/tree/v3/ui/server/exe"
+	"github.com/RenchuSong/PRESS/tree/v3/ui/server/util"
 	"github.com/gin-contrib/static"
 	"github.com/gin-gonic/gin"
 	"github.com/thinkerou/favicon"
@@ -16,22 +19,25 @@ type HTTP struct {
 }
 
 // NewHTTP creates a new HTTP service.
-func NewHTTP(s *SSEHandler, c *Config) *HTTP {
+func NewHTTP(
+	s *SSEHandler,
+	cq *exe.TaskQueue,
+	oq *exe.TaskQueue,
+	c *Config,
+) *HTTP {
 	r := gin.Default()
 	r.Use(favicon.New(c.Static + "favicon.ico"))
-	r.GET("/ping", func(c *gin.Context) {
-		s.Send("123")
-		c.JSON(http.StatusOK, gin.H{
-			"message": "pong",
-		})
-	})
-	r.GET("/api/subscribe", func(c *gin.Context) {
-		s.Subscribe(c)
-	})
 	r.Use(static.Serve("/", static.LocalFile(c.Static, true)))
+	r.Use(requestIDMiddleware())
 	r.NoRoute(func(ctx *gin.Context) {
 		ctx.File(c.Static + "index.html")
 	})
+	r.GET("/subscribe", func(c *gin.Context) {
+		s.Subscribe(c)
+	})
+	api := r.Group("/api")
+	api.Use(respMiddleware())
+	example.Register(api, cq, oq)
 
 	return &HTTP{
 		web:  r,
@@ -42,4 +48,21 @@ func NewHTTP(s *SSEHandler, c *Config) *HTTP {
 // Run spawns the HTTP service.
 func (s *HTTP) Run() {
 	s.web.Run(fmt.Sprintf(":%v", s.port))
+}
+
+func requestIDMiddleware() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		id := util.NewUUID()
+		c.Writer.Header().Set("X-Request-Id", id)
+		c.Next()
+	}
+}
+
+func respMiddleware() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		c.Next()
+		c.JSON(http.StatusOK, gin.H{
+			"message": "Request received",
+		})
+	}
 }

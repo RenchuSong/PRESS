@@ -36,7 +36,7 @@ func NewSSEHandler() *SSEHandler {
 	}
 }
 
-// Send send out a JSON string object to all clients.
+// Send out a JSON string object to all clients.
 func (b *SSEHandler) Send(obj interface{}) {
 	tmp, err := json.Marshal(obj)
 	if err != nil {
@@ -46,7 +46,7 @@ func (b *SSEHandler) Send(obj interface{}) {
 	}
 }
 
-// Subscribe adds a new client.
+// Subscribe a new client.
 func (b *SSEHandler) Subscribe(c *gin.Context) {
 	w := c.Writer
 	f, ok := w.(http.Flusher)
