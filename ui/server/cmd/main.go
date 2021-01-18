@@ -8,6 +8,7 @@ import (
 
 	log "github.com/sirupsen/logrus"
 
+	"github.com/gin-contrib/static"
 	"github.com/gin-gonic/gin"
 )
 
@@ -26,6 +27,10 @@ func main() {
 		c.JSON(http.StatusOK, gin.H{
 			"message": "pong",
 		})
+	})
+	r.Use(static.Serve("/", static.LocalFile(c.AppServer.Static, true)))
+	r.NoRoute(func(ctx *gin.Context) {
+		ctx.File(c.AppServer.Static + "index.html")
 	})
 	r.Run(fmt.Sprintf(":%v", c.AppServer.Port))
 }
