@@ -29,7 +29,7 @@ cd ${DIR}
 
 printf "${BLUE}Building PRESS App Server ...${NC}\n"
 cd ${DIR_APP_SERVER}
-go build -o ${DIR}/bin/press_app_server_d
+go build -o ${DIR}/bin/press_app_server_d cmd/*.go
 fail_on_err "Building PRESS App Server Failed"
 cd ${DIR}
 

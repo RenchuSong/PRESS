@@ -2,14 +2,9 @@ package main
 
 import (
 	"encoding/json"
-	"flag"
-	"fmt"
 	"io/ioutil"
-	"net/http"
 
 	log "github.com/sirupsen/logrus"
-
-	"github.com/gin-gonic/gin"
 )
 
 // PRESS config.
@@ -28,10 +23,7 @@ type appServerConfig struct {
 	APIHandlers    int    `json:"apiHandlers"`
 }
 
-func main() {
-	var confPath string
-	flag.StringVar(&confPath, "config", "./config.json", "the config file path")
-	flag.Parse()
+func readConfig(confPath string) *config {
 	data, err := ioutil.ReadFile(confPath)
 	if err != nil {
 		log.Fatalf(
@@ -47,15 +39,5 @@ func main() {
 			err,
 		)
 	}
-	str, err := json.Marshal(c)
-
-	log.Infof(string(str))
-
-	r := gin.Default()
-	r.GET("/ping", func(c *gin.Context) {
-		c.JSON(http.StatusOK, gin.H{
-			"message": "pong",
-		})
-	})
-	r.Run(fmt.Sprintf(":%v", c.AppServer.Port))
+	return &c
 }
