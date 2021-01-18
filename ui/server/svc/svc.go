@@ -7,6 +7,7 @@ import (
 
 	"github.com/gin-contrib/static"
 	"github.com/gin-gonic/gin"
+	"github.com/thinkerou/favicon"
 
 	log "github.com/sirupsen/logrus"
 )
@@ -31,6 +32,7 @@ type Service struct {
 // NewService creates a new service.
 func NewService(c Config) *Service {
 	r := gin.Default()
+	r.Use(favicon.New(c.Static + "favicon.ico"))
 	r.GET("/ping", func(c *gin.Context) {
 		c.JSON(http.StatusOK, gin.H{
 			"message": "pong",
