@@ -16,11 +16,11 @@ type config struct {
 
 // App server config
 type appServerConfig struct {
-	Logs           string `json:"logs"`
-	LogLevel       string `json:"logLevel"`
-	Port           int    `json:"port"`
-	StaticHandlers int    `json:"staticHandlers"`
-	APIHandlers    int    `json:"apiHandlers"`
+	Logs        string `json:"logs"`
+	LogLevel    string `json:"logLevel"`
+	Port        int    `json:"port"`
+	Static      string `json:"static"`
+	APIHandlers int    `json:"apiHandlers"`
 }
 
 func readConfig(confPath string) *config {

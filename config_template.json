@@ -11,7 +11,7 @@
     "logs":"[ROOT]/logs/app_server/",
     "logLevel":"INFO",
     "port":8081,
-    "staticHandlers":6,
+    "static":"[ROOT]/bin/public/",
     "apiHandlers":1
   }
 }
