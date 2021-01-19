@@ -1,6 +1,8 @@
 package svc
 
-import "github.com/RenchuSong/PRESS/tree/v3/ui/server/exe"
+import (
+	"github.com/RenchuSong/PRESS/tree/v3/ui/server/util"
+)
 
 // Config for service.
 type Config struct {
@@ -18,15 +20,25 @@ type Service struct {
 	config        Config
 	http          *HTTP
 	sse           *SSEHandler
-	coreTskQueue  *exe.TaskQueue
-	otherTskQueue *exe.TaskQueue
+	coreTskQueue  *util.TaskQueue
+	otherTskQueue *util.TaskQueue
+	coreExes      []*Exe
+	otherExes     []*Exe
 }
 
 // NewService creates a new service.
 func NewService(c Config) *Service {
 	s := NewSSEHandler()
-	cq := exe.NewTaskQueue("core", 50)
-	oq := exe.NewTaskQueue("other", 1024)
+	cq := util.NewTaskQueue("core", 50)
+	oq := util.NewTaskQueue("other", 1024)
+	ce := make([]*Exe, 0, c.APIHandlers)
+	for i := 0; i < c.APIHandlers; i++ {
+		ce = append(ce, NewExe(cq, s))
+	}
+	oe := make([]*Exe, 0, 4)
+	for i := 0; i < 4; i++ {
+		oe = append(oe, NewExe(oq, s))
+	}
 
 	return &Service{
 		http:          NewHTTP(s, cq, oq, &c),
@@ -34,6 +46,8 @@ func NewService(c Config) *Service {
 		config:        c,
 		coreTskQueue:  cq,
 		otherTskQueue: oq,
+		coreExes:      ce,
+		otherExes:     oe,
 	}
 }
 
@@ -42,5 +56,13 @@ func (s *Service) Run() {
 	setLogger(&s.config)
 
 	go s.sse.Run()
+
+	for _, e := range s.coreExes {
+		go e.Run()
+	}
+	for _, e := range s.otherExes {
+		go e.Run()
+	}
+
 	s.http.Run()
 }

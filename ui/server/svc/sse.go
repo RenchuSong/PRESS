@@ -37,7 +37,7 @@ func NewSSEHandler() *SSEHandler {
 }
 
 // Send out a JSON string object to all clients.
-func (b *SSEHandler) Send(obj interface{}) {
+func (b *SSEHandler) Send(obj *util.TaskResult) {
 	tmp, err := json.Marshal(obj)
 	if err != nil {
 		log.Info("Error while sending JSON object:", err)
@@ -84,28 +84,26 @@ func (b *SSEHandler) Subscribe(c *gin.Context) {
 
 // Run spawns SSE handler.
 func (b *SSEHandler) Run() {
-	go func() {
-		for {
-			select {
-			// New clients added.
-			case c := <-b.newClients:
-				b.clients[c.id] = c.channel
-				log.Debug("Client connected: ", c.id)
-			// Disconnect clients.
-			case s := <-b.defunctClients:
-				if ch, ok := b.clients[s]; ok {
-					close(ch)
-					delete(b.clients, s)
-					log.Debug("Client disconnected: ", s)
-				} else {
-					log.Warn("Failed to disconnect client:", s)
-				}
-			// Broadcast events.
-			case msg := <-b.messages:
-				for _, ch := range b.clients {
-					ch <- msg
-				}
+	for {
+		select {
+		// New clients added.
+		case c := <-b.newClients:
+			b.clients[c.id] = c.channel
+			log.Debug("Client connected: ", c.id)
+		// Disconnect clients.
+		case s := <-b.defunctClients:
+			if ch, ok := b.clients[s]; ok {
+				close(ch)
+				delete(b.clients, s)
+				log.Debug("Client disconnected: ", s)
+			} else {
+				log.Warn("Failed to disconnect client:", s)
+			}
+		// Broadcast events.
+		case msg := <-b.messages:
+			for _, ch := range b.clients {
+				ch <- msg
 			}
 		}
-	}()
+	}
 }

@@ -1,12 +1,14 @@
 package example
 
 import (
-	"github.com/RenchuSong/PRESS/tree/v3/ui/server/exe"
+	"time"
+
+	"github.com/RenchuSong/PRESS/tree/v3/ui/server/util"
 	"github.com/gin-gonic/gin"
 )
 
-// Register request handlers.
-func Register(r *gin.RouterGroup, cq *exe.TaskQueue, oq *exe.TaskQueue) {
+// RegisterPing request handlers.
+func RegisterPing(r *gin.RouterGroup, cq *util.TaskQueue, oq *util.TaskQueue) {
 	r.GET("/ping", func(c *gin.Context) {
 		oq.Add(c, PingGet)
 	})
@@ -16,16 +18,17 @@ func Register(r *gin.RouterGroup, cq *exe.TaskQueue, oq *exe.TaskQueue) {
 }
 
 // PingGet is get example.
-func PingGet(c *gin.Context, b interface{}) *exe.TaskResult {
-	return &exe.TaskResult{
+func PingGet(c *gin.Context, b interface{}) *util.TaskResult {
+	return &util.TaskResult{
 		Code: 200,
 		Data: "pong",
 	}
 }
 
 // PingPost is post example.
-func PingPost(c *gin.Context, b interface{}) *exe.TaskResult {
-	return &exe.TaskResult{
+func PingPost(c *gin.Context, b interface{}) *util.TaskResult {
+	time.Sleep(5 * time.Second)
+	return &util.TaskResult{
 		Code:    200,
 		Message: "pong",
 		Data:    b,

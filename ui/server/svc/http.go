@@ -5,7 +5,6 @@ import (
 	"net/http"
 
 	"github.com/RenchuSong/PRESS/tree/v3/ui/server/ctr/example"
-	"github.com/RenchuSong/PRESS/tree/v3/ui/server/exe"
 	"github.com/RenchuSong/PRESS/tree/v3/ui/server/util"
 	"github.com/gin-contrib/static"
 	"github.com/gin-gonic/gin"
@@ -21,8 +20,8 @@ type HTTP struct {
 // NewHTTP creates a new HTTP service.
 func NewHTTP(
 	s *SSEHandler,
-	cq *exe.TaskQueue,
-	oq *exe.TaskQueue,
+	cq *util.TaskQueue,
+	oq *util.TaskQueue,
 	c *Config,
 ) *HTTP {
 	r := gin.Default()
@@ -37,7 +36,9 @@ func NewHTTP(
 	})
 	api := r.Group("/api")
 	api.Use(respMiddleware())
-	example.Register(api, cq, oq)
+	{
+		example.RegisterPing(api, cq, oq)
+	}
 
 	return &HTTP{
 		web:  r,
