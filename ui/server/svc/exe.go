@@ -27,12 +27,15 @@ func (e *Exe) Run() {
 			var b interface{}
 			if err := json.Unmarshal([]byte(t.Body), &b); err != nil {
 				e.sse.Send(&util.TaskResult{
+					ID:      t.ID,
 					Code:    503,
 					Message: "Failed to parse payload.",
 				})
 				return
 			}
-			e.sse.Send(t.Handler(t.Ctx, b))
+			resp := t.Handler(t.Ctx, b)
+			resp.ID = t.ID
+			e.sse.Send(resp)
 		} else {
 			break
 		}

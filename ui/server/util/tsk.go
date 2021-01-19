@@ -18,6 +18,7 @@ type Task struct {
 
 // TaskResult is the execution result of the task.
 type TaskResult struct {
+	ID      string      `json:"requestID"`
 	Code    int         `json:"code"`
 	Message string      `json:"message"`
 	Data    interface{} `json:"data"`
@@ -50,7 +51,7 @@ func (t *TaskQueue) Add(
 		body = string(b)
 	}
 	t.Tasks <- Task{
-		ID:      c.GetHeader("X-Request-Id"),
+		ID:      c.Writer.Header().Get("X-Request-Id"),
 		Ctx:     c.Copy(),
 		Body:    body,
 		Handler: handler,
