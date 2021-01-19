@@ -14,13 +14,14 @@ func main() {
 	c := readConfig(confPath)
 
 	service := svc.NewService(svc.Config{
-		Experiments: c.Experiments,
-		Data:        c.Data,
-		Logs:        c.AppServer.Logs,
-		LogLevel:    c.AppServer.LogLevel,
-		Port:        c.AppServer.Port,
-		Static:      c.AppServer.Static,
-		APIHandlers: c.AppServer.APIHandlers,
+		Experiments:      c.Experiments,
+		Data:             c.Data,
+		Logs:             c.AppServer.Logs,
+		LogLevel:         c.AppServer.LogLevel,
+		Port:             c.AppServer.Port,
+		Static:           c.AppServer.Static,
+		CoreAPIHandlers:  c.AppServer.CoreAPIHandlers,
+		OtherAPIHandlers: c.AppServer.OtherAPIHandlers,
 	})
 	service.Run()
 }

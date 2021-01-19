@@ -12,6 +12,7 @@
     "logLevel":"INFO",
     "port":8081,
     "static":"[ROOT]/bin/public/",
-    "apiHandlers":1
+    "coreAPIHandlers":1,
+    "otherAPIHandlers":32
   }
 }

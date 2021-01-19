@@ -6,13 +6,14 @@ import (
 
 // Config for service.
 type Config struct {
-	Experiments string
-	Data        string
-	Logs        string
-	LogLevel    string
-	Port        int
-	Static      string
-	APIHandlers int
+	Experiments      string
+	Data             string
+	Logs             string
+	LogLevel         string
+	Port             int
+	Static           string
+	CoreAPIHandlers  int
+	OtherAPIHandlers int
 }
 
 // Service for App.
@@ -31,12 +32,12 @@ func NewService(c Config) *Service {
 	s := NewSSEHandler()
 	cq := util.NewTaskQueue("core", 50)
 	oq := util.NewTaskQueue("other", 1024)
-	ce := make([]*Exe, 0, c.APIHandlers)
-	for i := 0; i < c.APIHandlers; i++ {
+	ce := make([]*Exe, 0, c.CoreAPIHandlers)
+	for i := 0; i < c.CoreAPIHandlers; i++ {
 		ce = append(ce, NewExe(cq, s))
 	}
-	oe := make([]*Exe, 0, 4)
-	for i := 0; i < 4; i++ {
+	oe := make([]*Exe, 0, c.OtherAPIHandlers)
+	for i := 0; i < c.OtherAPIHandlers; i++ {
 		oe = append(oe, NewExe(oq, s))
 	}
 
