@@ -1,4 +1,5 @@
 tools
 bin/*
+experiments/*
 logs/*
 config.json
