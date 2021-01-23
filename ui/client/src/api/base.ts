@@ -1,6 +1,8 @@
+import { logger } from "@/utility/logger";
 import axios, { AxiosRequestConfig, AxiosResponse } from "axios";
 
 export const baseURL = process.env.VUE_APP_POSTMAN_URL + "/api";
+export const esURL = process.env.VUE_APP_POSTMAN_URL + "/subscribe";
 
 export interface RequestConfig {
   headers?: any;
@@ -20,9 +22,58 @@ export interface RESTError {
   message: string;
 }
 
+interface EventSourceData {
+  requestID: string;
+  code: number;
+  message: string;
+  data: any;
+}
+
 // TODO: use sse to decouple request and response form API to avoid
 // browser 1 minute retry "feature".
 class RESTClient {
+  evtSource: EventSource;
+  requestMap: Map<string, (value: Response | RESTError) => void> = new Map();
+  responseMap: Map<string, Response | RESTError> = new Map();
+
+  private parseSSEResponse(data: EventSourceData): Response | RESTError {
+    if (data.code >= 200 && data.code < 300) {
+      return {
+        data: data.data,
+        status: data.code,
+        message: data.message
+      } as Response;
+    } else {
+      return {
+        status: data.code,
+        message: data.message
+      } as RESTError;
+    }
+  }
+
+  public constructor() {
+    this.evtSource = new EventSource(esURL);
+
+    this.evtSource.addEventListener("response", event => {
+      const data = JSON.parse((event as MessageEvent).data) as EventSourceData;
+      // Hold the response.
+      if (!this.requestMap.has(data.requestID)) {
+        this.responseMap.set(data.requestID, this.parseSSEResponse(data));
+        return;
+      }
+
+      // Resolve the request.
+      const resolver = this.requestMap.get(data.requestID);
+      if (resolver !== undefined) {
+        resolver(this.parseSSEResponse(data));
+        this.requestMap.delete(data.requestID)
+      }
+    });
+    this.evtSource.onerror = function (err) {
+      logger.error("EventSource error:", err);
+    };
+  }
+
   public async get<T>(
     url: string,
     config?: RequestConfig
@@ -96,11 +147,20 @@ class RESTClient {
           throw new Error(`Not supported medhod ${method}`);
         }
       }
-      return {
-        data: response.data,
-        status: response.status,
-        message: response.statusText
-      };
+      const result = new Promise((resolve, _) => {
+        if (this.responseMap.has(response.headers['x-request-id'])) {
+          // Already got the response, resolve directly.
+          resolve(this.responseMap.get(response.headers['x-request-id']));
+          this.responseMap.delete(response.headers['x-request-id']);
+        } else {
+          // Hold the request until get the response.
+          this.requestMap.set(
+            response.headers['x-request-id'],
+            resolve
+          );
+        }
+      });
+      return result as Promise<Response<T>>;
     } catch (err) {
       throw {
         status: err.response?.status || 500,

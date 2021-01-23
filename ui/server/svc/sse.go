@@ -70,13 +70,15 @@ func (b *SSEHandler) Subscribe(c *gin.Context) {
 	w.Header().Set("Content-Type", "text/event-stream")
 	w.Header().Set("Cache-Control", "no-cache")
 	w.Header().Set("Connection", "keep-alive")
+	// TODO: Remove for production.
+	w.Header().Set("access-control-allow-origin", "*")
 
 	for {
 		msg, ok := <-cli.channel
 		if !ok {
 			break
 		}
-		fmt.Fprintf(w, "%s\n", msg)
+		fmt.Fprintf(w, "event: response\ndata: %s\n\n", msg)
 		f.Flush()
 		log.Debugf("Server event sent to client %s: %s", cli.id, msg)
 	}

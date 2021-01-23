@@ -54,7 +54,7 @@ func (s *HTTP) Run() {
 func requestIDMiddleware() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		id := util.NewUUID()
-		c.Writer.Header().Set("X-Request-Id", id)
+		c.Writer.Header().Set("x-request-id", id)
 		c.Next()
 	}
 }
@@ -62,6 +62,9 @@ func requestIDMiddleware() gin.HandlerFunc {
 func respMiddleware() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		c.Next()
+		// TODO: Remove for production.
+		c.Writer.Header().Set("access-control-allow-origin", "*")
+		c.Writer.Header().Set("Access-Control-Expose-Headers", "x-request-id")
 		c.JSON(http.StatusOK, gin.H{
 			"message": "Request received",
 		})

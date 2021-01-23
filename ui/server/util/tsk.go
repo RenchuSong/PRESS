@@ -51,7 +51,7 @@ func (t *TaskQueue) Add(
 		body = string(b)
 	}
 	t.Tasks <- Task{
-		ID:      c.Writer.Header().Get("X-Request-Id"),
+		ID:      c.Writer.Header().Get("x-request-id"),
 		Ctx:     c.Copy(),
 		Body:    body,
 		Handler: handler,

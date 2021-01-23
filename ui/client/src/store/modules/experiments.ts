@@ -1,3 +1,4 @@
+import { Experiment } from "@/api/experiment";
 import { Experiments } from "@/api/experiments";
 import { ExperimentMeta } from "@/model/experiment-meta";
 import { ActionTree, GetterTree, MutationTree } from "vuex";
