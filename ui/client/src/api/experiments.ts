@@ -14,8 +14,8 @@ export class Experiments {
   ): Promise<ExperimentMeta> {
     return (
       await restClient.post<ExperimentMeta>(`${apiBaseURL}/`, {
-        Name: name,
-        Image: image
+        name: name,
+        image: image
       })
     ).data;
   }

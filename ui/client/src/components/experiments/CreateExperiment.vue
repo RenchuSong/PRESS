@@ -84,7 +84,7 @@ export default defineComponent({
             this.createExperimentModalVisible = false;
             router.push({
               name: "Experiment",
-              params: { id: newExperimentMeta.Id },
+              params: { id: newExperimentMeta.id },
             });
           } catch (exception) {
             message.error((exception as RESTError).message);

@@ -34,21 +34,6 @@ class RESTClient {
   requestMap: Map<string, (value: Response | RESTError) => void> = new Map();
   responseMap: Map<string, Response | RESTError> = new Map();
 
-  private parseSSEResponse(data: EventSourceData): Response | RESTError {
-    if (data.code >= 200 && data.code < 300) {
-      return {
-        data: data.data,
-        status: data.code,
-        message: data.message
-      } as Response;
-    } else {
-      return {
-        status: data.code,
-        message: data.message
-      } as RESTError;
-    }
-  }
-
   public constructor() {
     this.evtSource = new EventSource(esURL);
 
@@ -177,6 +162,21 @@ class RESTClient {
         timeout: config.timeout,
         timeoutErrorMessage: config.timeoutErrorMessage
       };
+    }
+  }
+
+  private parseSSEResponse(data: EventSourceData): Response | RESTError {
+    if (data.code >= 200 && data.code < 300) {
+      return {
+        data: data.data,
+        status: data.code,
+        message: data.message
+      } as Response;
+    } else {
+      return {
+        status: data.code,
+        message: data.message
+      } as RESTError;
     }
   }
 }
