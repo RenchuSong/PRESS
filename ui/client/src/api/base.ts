@@ -29,8 +29,6 @@ interface EventSourceData {
   data: any;
 }
 
-// TODO: use sse to decouple request and response form API to avoid
-// browser 1 minute retry "feature".
 class RESTClient {
   evtSource: EventSource;
   requestMap: Map<string, (value: Response | RESTError) => void> = new Map();
