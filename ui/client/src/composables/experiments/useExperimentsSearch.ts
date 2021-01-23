@@ -5,7 +5,7 @@ export default function useExperimentsSearch(store: Store) {
   const searchExperimentQuery = ref("");
   const experimentsMatchingSearchQuery = computed(() => {
     return store.getters.experiments.filter(experiment =>
-      experiment.Name.includes(searchExperimentQuery.value)
+      experiment.name.includes(searchExperimentQuery.value)
     );
   });
 

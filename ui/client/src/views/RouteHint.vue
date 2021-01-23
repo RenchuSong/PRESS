@@ -33,7 +33,7 @@ export default defineComponent({
   setup(props, context) {
     const store = useStore();
     const experimentName = computed(
-      () => store.getters.currentExperimentContext?.Name || undefined
+      () => store.getters.currentExperimentContext?.name || undefined
     );
     return {
       experimentName,
