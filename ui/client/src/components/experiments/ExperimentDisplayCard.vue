@@ -23,7 +23,7 @@
         <a-popconfirm
           ok-text="Yes"
           cancel-text="No"
-          @confirm="removeExperiment(experiment.id)"
+          @confirm="handleRemoveExperiment(experiment.id)"
         >
           <template #title>
             Are you sure to delete this experiment?<br />
@@ -43,6 +43,8 @@ import useExperiments from "@/composables/experiments/useExperiments";
 import { useStore } from "@/store";
 import { defineComponent } from "vue";
 import { formatDatetime } from "@/utility/utility";
+import { RESTError } from "@/api/base";
+import message from "ant-design-vue/lib/message";
 
 export default defineComponent({
   name: "ExperimentsComponent",
@@ -54,8 +56,16 @@ export default defineComponent({
 
     const { removeExperiment } = useExperiments(store);
 
+    const handleRemoveExperiment = async (id: number) => {
+      try {
+        await removeExperiment(id);
+      } catch (exception) {
+        message.error((exception as RESTError).message);
+      }
+    };
+
     return {
-      removeExperiment,
+      handleRemoveExperiment,
       formatDatetime,
     };
   },

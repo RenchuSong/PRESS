@@ -21,9 +21,9 @@ export class Experiments {
   }
 
   public static async genRemoveExperiment(
-    name: string
+    id: number
   ): Promise<ExperimentMeta[]> {
-    return (await restClient.delete<ExperimentMeta[]>(`${apiBaseURL}/${name}`))
+    return (await restClient.delete<ExperimentMeta[]>(`${apiBaseURL}/${id}`))
       .data;
   }
 }

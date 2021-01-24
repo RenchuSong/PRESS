@@ -44,15 +44,15 @@ const actions: ActionTree<ExperimentsState, ExperimentsState> &
       payload.image
     );
     commit(ExperimentsMutationTypes.SET_EXPERIMENTS, [
-      ...state.experiments,
-      newExperimentMeta
+      newExperimentMeta,
+      ...state.experiments
     ]);
     return newExperimentMeta;
   },
   async [ExperimentsActionTypes.REMOVE_EXPERIMENTS]({ commit }, payload) {
     return commit(
       ExperimentsMutationTypes.SET_EXPERIMENTS,
-      await Experiments.genRemoveExperiment(payload.name)
+      await Experiments.genRemoveExperiment(payload.id)
     );
   }
 };

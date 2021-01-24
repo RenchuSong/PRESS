@@ -17,8 +17,8 @@ func RegisterExperiments(r *gin.RouterGroup, cq *util.TaskQueue, oq *util.TaskQu
 	r.POST("/experiments", func(c *gin.Context) {
 		oq.Add(c, ExperimentsPost)
 	})
-	r.OPTIONS("/experiments", func(c *gin.Context) {
-		oq.Add(c, ExperimentsPost)
+	r.DELETE("/experiments/:id", func(c *gin.Context) {
+		oq.Add(c, ExperimentsDelete)
 	})
 }
 
@@ -53,6 +53,32 @@ func ExperimentsPost(c *gin.Context, b interface{}) *util.TaskResult {
 		return &util.TaskResult{
 			Code:    500,
 			Message: "Failed to create experiment: " + err.Error(),
+		}
+	}
+
+	return &util.TaskResult{
+		Code: 200,
+		Data: ret,
+	}
+}
+
+// ExperimentsDelete deletes an experiment.
+func ExperimentsDelete(c *gin.Context, b interface{}) *util.TaskResult {
+	expListLock.Lock()
+	defer expListLock.Unlock()
+
+	if err := deleteExperiment(c.Param("id")); err != nil {
+		return &util.TaskResult{
+			Code:    500,
+			Message: "Failed to delete experiment: " + err.Error(),
+		}
+	}
+
+	ret, err := getAllExperiments()
+	if err != nil {
+		return &util.TaskResult{
+			Code:    500,
+			Message: "Failed to get all experiments: " + err.Error(),
 		}
 	}
 

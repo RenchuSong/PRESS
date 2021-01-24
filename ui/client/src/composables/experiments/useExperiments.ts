@@ -10,8 +10,8 @@ export default function useExperiments(store: Store) {
     await store.dispatch(ActionTypes.GET_EXPERIMENTS);
   };
 
-  const removeExperiment = async (name: string) => {
-    await store.dispatch(ActionTypes.REMOVE_EXPERIMENTS, { name });
+  const removeExperiment = async (id: number) => {
+    await store.dispatch(ActionTypes.REMOVE_EXPERIMENTS, { id });
   };
 
   return {
