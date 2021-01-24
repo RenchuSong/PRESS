@@ -5,6 +5,7 @@ import (
 	"io/ioutil"
 	"os"
 	"path"
+	"sort"
 	"strconv"
 	"time"
 
@@ -30,6 +31,9 @@ func getAllExperiments() ([]mod.ExperimentMeta, error) {
 			}
 		}
 	}
+	sort.Slice(ret, func(i, j int) bool {
+		return ret[i].CreationTime > ret[j].CreationTime
+	})
 	return ret, nil
 }
 
