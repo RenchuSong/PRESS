@@ -4,18 +4,6 @@ import (
 	"github.com/RenchuSong/PRESS/tree/v3/ui/server/util"
 )
 
-// Config for service.
-type Config struct {
-	Experiments      string
-	Data             string
-	Logs             string
-	LogLevel         string
-	Port             int
-	Static           string
-	CoreAPIHandlers  int
-	OtherAPIHandlers int
-}
-
 // Service for App.
 type Service struct {
 	config        Config

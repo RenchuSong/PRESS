@@ -31,8 +31,11 @@ interface EventSourceData {
 
 class RESTClient {
   evtSource: EventSource;
-  requestMap: Map<string, (value: Response | RESTError) => void> = new Map();
-  responseMap: Map<string, Response | RESTError> = new Map();
+  requestMap: Map<string, {
+    resolver: (value: Response | RESTError) => void,
+    rejector: (value: Response | RESTError) => void
+  }> = new Map();
+  responseMap: Map<string, [Response | RESTError, boolean]> = new Map();
 
   public constructor() {
     this.evtSource = new EventSource(esURL);
@@ -46,9 +49,14 @@ class RESTClient {
       }
 
       // Resolve the request.
-      const resolver = this.requestMap.get(data.requestID);
-      if (resolver !== undefined) {
-        resolver(this.parseSSEResponse(data));
+      const request = this.requestMap.get(data.requestID);
+      if (request !== undefined) {
+        const [result, success] = this.parseSSEResponse(data);
+        if (success) {
+          request.resolver(result);
+        } else {
+          request.rejector(result);
+        }
         this.requestMap.delete(data.requestID)
       }
     });
@@ -130,16 +138,26 @@ class RESTClient {
           throw new Error(`Not supported medhod ${method}`);
         }
       }
-      const result = new Promise((resolve, _) => {
+      const result = new Promise((resolve, reject) => {
         if (this.responseMap.has(response.headers['x-request-id'])) {
-          // Already got the response, resolve directly.
-          resolve(this.responseMap.get(response.headers['x-request-id']));
+          // Already got the response, resolve or reject directly.
+          const [resp, success] =
+            this.responseMap.get(response.headers['x-request-id']) as
+            [RESTError | Response<any>, boolean];
+          if (success) {
+            resolve(resp);
+          } else {
+            reject(resp);
+          }
           this.responseMap.delete(response.headers['x-request-id']);
         } else {
           // Hold the request until get the response.
           this.requestMap.set(
             response.headers['x-request-id'],
-            resolve
+            {
+              resolver: resolve,
+              rejector: reject
+            }
           );
         }
       });
@@ -165,18 +183,26 @@ class RESTClient {
     }
   }
 
-  private parseSSEResponse(data: EventSourceData): Response | RESTError {
+  private parseSSEResponse(
+    data: EventSourceData
+  ): [Response | RESTError, boolean] {
     if (data.code >= 200 && data.code < 300) {
-      return {
-        data: data.data,
-        status: data.code,
-        message: data.message
-      } as Response;
+      return [
+        {
+          data: data.data,
+          status: data.code,
+          message: data.message
+        } as Response,
+        true
+      ];
     } else {
-      return {
-        status: data.code,
-        message: data.message
-      } as RESTError;
+      return [
+        {
+          status: data.code,
+          message: data.message
+        } as RESTError,
+        false
+      ];
     }
   }
 }

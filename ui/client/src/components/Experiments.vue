@@ -48,6 +48,8 @@ import { useStore } from "@/store";
 import { defineComponent, onMounted } from "vue";
 import Empty from "ant-design-vue/lib/empty";
 import { ActionTypes } from "@/store/store-types";
+import { RESTError } from "@/api/base";
+import message from "ant-design-vue/lib/message";
 
 export default defineComponent({
   name: "ExperimentsComponent",
@@ -65,8 +67,12 @@ export default defineComponent({
       experimentsMatchingSearchQuery,
     } = useExperimentsSearch(store);
 
-    onMounted(() => {
-      getExperiments();
+    onMounted(async () => {
+      try {
+        await getExperiments();
+      } catch (exception) {
+        message.error((exception as RESTError).message);
+      }
       store.dispatch(ActionTypes.CLOSE_EXPERIMENT);
     });
 

@@ -1,18 +1,18 @@
 <template>
   <a-card hoverable>
     <template #cover>
-      <img alt="Cover image" :src="experiment.Image" />
+      <img alt="Cover image" :src="experiment.image" />
     </template>
     <a-card-meta :title="experiment.Name">
       <template #description>
         <div style="float: left">Created at&nbsp;</div>
         <div style="float: left">
-          {{ formatDatetime(experiment.CreationTime, "MM/DD HH:mm:ss") }}
+          {{ formatDatetime(experiment.creationTime, "MM/DD HH:mm:ss") }}
         </div>
       </template>
     </a-card-meta>
     <template #actions>
-      <router-link :to="'/experiment/' + experiment.Id">
+      <router-link :to="'/experiment/' + experiment.id">
         <a-tooltip>
           <template #title> Open experiment </template>
           <folder-open-outlined key="open" />
@@ -23,7 +23,7 @@
         <a-popconfirm
           ok-text="Yes"
           cancel-text="No"
-          @confirm="removeExperiment(experiment.Id)"
+          @confirm="removeExperiment(experiment.id)"
         >
           <template #title>
             Are you sure to delete this experiment?<br />

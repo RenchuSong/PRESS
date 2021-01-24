@@ -5,7 +5,7 @@ const apiBaseURL = `${baseURL}/experiments`;
 
 export class Experiments {
   public static async genAllExperimentsMeta(): Promise<ExperimentMeta[]> {
-    return (await restClient.get<ExperimentMeta[]>(`${apiBaseURL}/`)).data;
+    return (await restClient.get<ExperimentMeta[]>(`${apiBaseURL}`)).data;
   }
 
   public static async genCreateExperiment(
@@ -13,7 +13,7 @@ export class Experiments {
     image?: string
   ): Promise<ExperimentMeta> {
     return (
-      await restClient.post<ExperimentMeta>(`${apiBaseURL}/`, {
+      await restClient.post<ExperimentMeta>(`${apiBaseURL}`, {
         name: name,
         image: image
       })

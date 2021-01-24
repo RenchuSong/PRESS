@@ -4,7 +4,9 @@ import (
 	"fmt"
 	"net/http"
 
+	"github.com/RenchuSong/PRESS/tree/v3/ui/server/ctr"
 	"github.com/RenchuSong/PRESS/tree/v3/ui/server/ctr/example"
+	"github.com/RenchuSong/PRESS/tree/v3/ui/server/ctr/experiment"
 	"github.com/RenchuSong/PRESS/tree/v3/ui/server/util"
 	"github.com/gin-contrib/static"
 	"github.com/gin-gonic/gin"
@@ -15,6 +17,11 @@ import (
 type HTTP struct {
 	port int
 	web  *gin.Engine
+}
+
+var routes = []func(r *gin.RouterGroup, cq *util.TaskQueue, oq *util.TaskQueue){
+	example.RegisterPing,
+	experiment.RegisterExperiments,
 }
 
 // NewHTTP creates a new HTTP service.
@@ -36,8 +43,9 @@ func NewHTTP(
 	})
 	api := r.Group("/api")
 	api.Use(respMiddleware())
-	{
-		example.RegisterPing(api, cq, oq)
+	ctr.SetConfig(c.Experiments, c.Data)
+	for _, regFn := range routes {
+		regFn(api, cq, oq)
 	}
 
 	return &HTTP{
@@ -64,6 +72,7 @@ func respMiddleware() gin.HandlerFunc {
 		c.Next()
 		// TODO: Remove for production.
 		c.Writer.Header().Set("access-control-allow-origin", "*")
+		c.Writer.Header().Set("Access-Control-Allow-Origin", "*")
 		c.Writer.Header().Set("Access-Control-Expose-Headers", "x-request-id")
 		c.JSON(http.StatusOK, gin.H{
 			"message": "Request received",
