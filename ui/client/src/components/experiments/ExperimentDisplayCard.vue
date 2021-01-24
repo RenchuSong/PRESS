@@ -3,7 +3,7 @@
     <template #cover>
       <img alt="Cover image" :src="experiment.image" />
     </template>
-    <a-card-meta :title="experiment.Name">
+    <a-card-meta :title="experiment.name">
       <template #description>
         <div style="float: left">Created at&nbsp;</div>
         <div style="float: left">

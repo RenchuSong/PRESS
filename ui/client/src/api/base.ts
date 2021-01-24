@@ -1,8 +1,13 @@
 import { logger } from "@/utility/logger";
 import axios, { AxiosRequestConfig, AxiosResponse } from "axios";
 
+// Development.
 export const baseURL = process.env.VUE_APP_POSTMAN_URL + "/api";
 export const esURL = process.env.VUE_APP_POSTMAN_URL + "/subscribe";
+
+// Production.
+// export const baseURL = "/api";
+// export const esURL = "/subscribe";
 
 export interface RequestConfig {
   headers?: any;
