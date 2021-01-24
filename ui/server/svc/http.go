@@ -32,6 +32,7 @@ func NewHTTP(
 	c *Config,
 ) *HTTP {
 	r := gin.Default()
+	r.Use(CORSMiddleware())
 	r.Use(favicon.New(c.Static + "favicon.ico"))
 	r.Use(static.Serve("/", static.LocalFile(c.Static, true)))
 	r.Use(requestIDMiddleware())
@@ -70,12 +71,30 @@ func requestIDMiddleware() gin.HandlerFunc {
 func respMiddleware() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		c.Next()
-		// TODO: Remove for production.
-		c.Writer.Header().Set("access-control-allow-origin", "*")
-		c.Writer.Header().Set("Access-Control-Allow-Origin", "*")
-		c.Writer.Header().Set("Access-Control-Expose-Headers", "x-request-id")
+
+		if c.Request.Method == "OPTIONS" {
+			c.AbortWithStatus(204)
+		}
+
 		c.JSON(http.StatusOK, gin.H{
 			"message": "Request received",
 		})
+	}
+}
+
+// CORSMiddleware get CORS work during development.
+// TODO: Remove for production.
+func CORSMiddleware() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		c.Writer.Header().Set("Access-Control-Allow-Origin", "*")
+		c.Writer.Header().Set("Access-Control-Allow-Credentials", "true")
+		c.Writer.Header().Set("Access-Control-Allow-Methods", "POST, OPTIONS, GET, PUT")
+		c.Writer.Header().Set("Access-Control-Expose-Headers", "x-request-id")
+		c.Writer.Header().Set("Access-Control-Allow-Headers", "Content-Type, Content-Length, Accept-Encoding, X-CSRF-Token, Authorization, accept, origin, Cache-Control, X-Requested-With")
+		if c.Request.Method == "OPTIONS" {
+			c.AbortWithStatus(204)
+		}
+
+		c.Next()
 	}
 }
