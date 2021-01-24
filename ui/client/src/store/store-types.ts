@@ -1,3 +1,4 @@
+import { CommonGetters, CommonMutations, CommonMutationTypes, CommonState } from "./modules/common-types";
 import {
   ExperimentActions,
   ExperimentActionTypes,
@@ -16,19 +17,23 @@ import {
 } from "./modules/experiments-types";
 
 // state
-export type RootStoreState = ExperimentsState & ExperimentState;
+export type RootStoreState = CommonState & ExperimentsState & ExperimentState;
 export type RootState = {
+  common: CommonState;
   experiments: ExperimentsState;
   experiment: ExperimentState;
 };
 
 // mutations
 export const MutationTypes = {
+  ...CommonMutationTypes,
   ...ExperimentsMutationTypes,
   ...ExperimentMutationTypes
 };
 export type MutationTypes = typeof MutationTypes;
-export type Mutations<S = RootState> = ExperimentsMutations<S> &
+export type Mutations<S = RootState> =
+  CommonMutations<S> &
+  ExperimentsMutations<S> &
   ExperimentMutations<S>;
 
 // actions
@@ -40,4 +45,4 @@ export type ActionTypes = typeof ActionTypes;
 export interface Actions extends ExperimentActions, ExperimentsActions { };
 
 // getters
-export type Getters = ExperimentsGetters & ExperimentGetters;
+export type Getters = CommonGetters & ExperimentsGetters & ExperimentGetters;

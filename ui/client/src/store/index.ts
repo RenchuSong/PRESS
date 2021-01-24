@@ -1,4 +1,3 @@
-import { ExperimentMeta } from "@/model/experiment-meta";
 import { InjectionKey } from "vue";
 import {
   createStore,
@@ -8,6 +7,7 @@ import {
   CommitOptions,
   DispatchOptions
 } from "vuex";
+import common from "./modules/common";
 import experiment from "./modules/experiment";
 import experiments from "./modules/experiments";
 import {
@@ -43,6 +43,7 @@ export type Store = Omit<
 
 export const store = createStore<RootStoreState>({
   modules: {
+    common,
     experiments,
     experiment
   },

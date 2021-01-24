@@ -1,5 +1,5 @@
 import { Store } from "@/store";
-import { ActionTypes } from "@/store/store-types";
+import { ActionTypes, MutationTypes } from "@/store/store-types";
 import { reactive, Ref } from "vue";
 
 export default function useExperimentsCreate(store: Store) {
@@ -12,6 +12,10 @@ export default function useExperimentsCreate(store: Store) {
   });
 
   const createExperiment = async () => {
+    store.commit(MutationTypes.START_JOB, {
+      id: ActionTypes.CREATE_EXPERIMENTS,
+      text: "Creating experiment"
+    });
     const newExperimentMeta = await store.dispatch(
       ActionTypes.CREATE_EXPERIMENTS,
       {
@@ -21,6 +25,9 @@ export default function useExperimentsCreate(store: Store) {
     );
     newExperimentForm.name = "";
     newExperimentForm.image = undefined;
+    store.commit(MutationTypes.FINISH_JOB, {
+      id: ActionTypes.CREATE_EXPERIMENTS
+    });
     return newExperimentMeta;
   };
 

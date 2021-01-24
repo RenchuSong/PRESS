@@ -1,15 +1,32 @@
 <template>
-  <a-layout id="top-level-layout">
-    <a-layout-header class="top-level-header">
-      <div class="logo"><h1>PRESS</h1></div>
-      <h3>A Novel Framework of Trajectory Compression in Road Networks</h3>
-    </a-layout-header>
-    <a-layout-content style="padding: 0 50px">
-      <router-view name="routeHint" />
-      <router-view name="content" />
-    </a-layout-content>
-  </a-layout>
+  <a-spin :tip="loadingTip" size="large" :spinning="spinning">
+    <a-layout id="top-level-layout">
+      <a-layout-header class="top-level-header">
+        <div class="logo"><h1>PRESS</h1></div>
+        <h3>A Novel Framework of Trajectory Compression in Road Networks</h3>
+      </a-layout-header>
+      <a-layout-content style="padding: 0 50px">
+        <router-view name="routeHint" />
+        <router-view name="content" />
+      </a-layout-content>
+    </a-layout>
+  </a-spin>
 </template>
+
+<script lang="ts">
+import { useStore } from "@/store";
+import { computed, defineComponent, ref } from "vue";
+export default defineComponent({
+  name: "App",
+  setup(_props, _context) {
+    const store = useStore();
+    return {
+      loadingTip: computed(() => store.getters.currentLoadingJobs),
+      spinning: computed(() => store.getters.isLoading),
+    };
+  },
+});
+</script>
 
 <style lang="scss">
 #top-level-layout {
@@ -46,5 +63,9 @@
   .ant-card-hoverable {
     cursor: default;
   }
+}
+
+.ant-spin {
+  position: fixed !important;
 }
 </style>

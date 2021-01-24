@@ -4,6 +4,7 @@ import router from "./router";
 import { key, store } from "./store";
 
 import Empty from "ant-design-vue/lib/empty";
+import Spin from "ant-design-vue/lib/spin";
 import Button from "ant-design-vue/lib/button";
 import DatePicker from "ant-design-vue/lib/date-picker";
 import Col from "ant-design-vue/lib/col";
@@ -43,4 +44,5 @@ createApp(App)
   .use(Input)
   .use(Modal)
   .use(Form)
+  .use(Spin)
   .mount("#app");
