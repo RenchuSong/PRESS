@@ -58,14 +58,13 @@ struct RangeQuery {
 struct ReqRespHelper {
   std::string inPath;
   std::string outPath;
-  std::ifstream reqStream;
-  std::ofstream respStream;
   std::string data;
   std::string response;
 
   ReqRespHelper(char* inPath, const char* outPath): inPath(inPath), outPath(outPath) { }
 
   std::string& readNext() {
+    std::ifstream reqStream;
     reqStream.open(inPath, std::ifstream::in);
     if (!reqStream.is_open()) {
       std::cout << "Fail to open request stream.";
@@ -77,6 +76,7 @@ struct ReqRespHelper {
   }
 
   void writeNext(std::string data) {
+    std::ofstream respStream;
     respStream.open(outPath, std::ofstream::out);
     if (!respStream.is_open()) {
       std::cout << "Fail to open response stream.";
@@ -122,7 +122,7 @@ int main(int argc, char** argv) {
   reqRespHelper.writeNext("{\"Cmd\":\"ReadRoadnetFromDataSource\", \"Folder\":\"WA_roadnetwork_and_single_trajectory\", \"GraphReaderType\":\"SEATTLE_SAMPLE_ROADNET\"}");
   reqRespHelper.explainResponse(reqRespHelper.readNext());
   // Dump roadnet to binary.
-  reqRespHelper.writeNext("{\"Cmd\":\"DumpRoadnetToBinary\"}");
+  reqRespHelper.writeNext("{\"Cmd\":\"DumpRoadnetToBinary\", \"Folder\":\"WA_roadnetwork_and_single_trajectory\"}");
   reqRespHelper.explainResponse(reqRespHelper.readNext());
   // Build grid index.
   reqRespHelper.writeNext("{\"Cmd\":\"BuildGridIndex\", \"CellWidth\":50, \"CellHeight\":50}");

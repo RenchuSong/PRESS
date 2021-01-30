@@ -60,6 +60,7 @@ std::vector<PRESSTrajectory> pressDeCompressedTrajectories;
 
 // Config for PRESS core.
 struct CoreConfig {
+  std::string expFolder;
   std::string tmpFolder;
   std::string dataFolder;
   std::string logsFolder;
@@ -74,9 +75,10 @@ struct CoreConfig {
       exit(EXIT_FAILURE);
     }
     // Get config entries.
+    expFolder = configJson.get("experiments").get<std::string>();
+    dataFolder = configJson.get("data").get<std::string>();
     auto& coreConfig = configJson.get("core");
     tmpFolder = coreConfig.get("tmp").get<std::string>();
-    dataFolder = coreConfig.get("data").get<std::string>();
     logsFolder = coreConfig.get("logs").get<std::string>();
     logLevel = coreConfig.get("log_level").get<std::string>();
   }
@@ -242,13 +244,14 @@ void handleReadRoadnetFromDataSource(picojson::value& requestJson, std::string& 
   response = successResponse("Roadnet of dataset " + folder + " is loaded.");
 }
 
-// Handle dump roadnet to ${TMP_FOLDER}/[roadnetName]/road_network.bin
+// Handle dump roadnet to ${EXP_FOLDER}/[folder]/road_network.bin
 void handleDumpRoadnetToBinary(picojson::value& requestJson, std::string& response) {
   if (!roadnetReady) {
     response = errorResponse("Roadnet is not ready.");
     return;
   }
-  auto folderName = config.tmpFolder + roadnetName + "/";
+  auto& folder = requestJson.get("Folder").get<std::string>();
+  auto folderName = config.expFolder + folder + "/";
   if (!fileExists(folderName.c_str()) && !createFolder(folderName)) {
     FILE_LOG(TLogLevel::lerror) << "Failed to create storage folder: " << folderName;
     response = errorResponse("Failed to create storage folder.");
@@ -260,11 +263,11 @@ void handleDumpRoadnetToBinary(picojson::value& requestJson, std::string& respon
   response = successResponse("Roadnet is dumped to " + fileName + ".");
 }
 
-// Handle load roadnet from ${TMP_FOLDER}/[folder]/road_network.bin
+// Handle load roadnet from ${EXP_FOLDER}/[folder]/road_network.bin
 void handleLoadRoadnetFromBinary(picojson::value& requestJson, std::string& response) {
   clearComponent(Component::ROADNET);
   auto folder = requestJson.get("Folder").get<std::string>();
-  auto fileName = config.tmpFolder + folder + "/road_network.bin";
+  auto fileName = config.expFolder + folder + "/road_network.bin";
   if (!fileExists(fileName.c_str())) {
     FILE_LOG(TLogLevel::lerror) << "Roadnet binary file does not exist: " << fileName;
     response = errorResponse("Failed to load roadnet.");
@@ -1745,14 +1748,13 @@ void handleRangeOnPRESSCompressedTrajectory(picojson::value& requestJson, std::s
 struct ReqRespHelper {
   std::string inPath;
   std::string outPath;
-  std::ifstream reqStream;
-  std::ofstream respStream;
   std::string data;
   std::string response;
 
   ReqRespHelper(char* inPath, const char* outPath): inPath(inPath), outPath(outPath) { }
 
   std::string& readNext() {
+    std::ifstream reqStream;
     reqStream.open(inPath, std::ifstream::in);
     if (!reqStream.is_open()) {
       FILE_LOG(TLogLevel::lerror) << "Fail to open request stream.";
@@ -1764,6 +1766,7 @@ struct ReqRespHelper {
   }
 
   void writeNext(std::string& data) {
+    std::ofstream respStream;
     respStream.open(outPath, std::ofstream::out);
     if (!respStream.is_open()) {
       FILE_LOG(TLogLevel::lerror) << "Fail to open response stream.";

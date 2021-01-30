@@ -3,7 +3,6 @@
   "data":"[ROOT]/data/",
   "core":{
     "tmp":"[ROOT]/core/tmp/",
-    "data":"[ROOT]/data/",
     "logs":"[ROOT]/core/logs/",
     "log_level":"INFO"
   },
