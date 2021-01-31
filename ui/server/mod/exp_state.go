@@ -20,6 +20,20 @@ var ExpState = ExperimentState{
 	IsOpen: false,
 }
 
+// IsExpOpen is experiment open.
+func (es *ExperimentState) IsExpOpen() bool {
+	expStateLock.RLock()
+	defer expStateLock.RUnlock()
+	return es.IsOpen
+}
+
+// IsRoadnetReady is roadnet ready.
+func (es *ExperimentState) IsRoadnetReady() bool {
+	expStateLock.RLock()
+	defer expStateLock.RUnlock()
+	return es.RoadnetReady
+}
+
 // Open an experiment.
 func (es *ExperimentState) Open(id int, name string) error {
 	expStateLock.Lock()

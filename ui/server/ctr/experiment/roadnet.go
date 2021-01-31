@@ -8,15 +8,18 @@ import (
 
 // RegisterRoadnet request handlers.
 func RegisterRoadnet(r *gin.RouterGroup, cq *util.TaskQueue, oq *util.TaskQueue) {
-	r.GET("/roadnet/loadfromfile/:folder/:graphReaderType", func(c *gin.Context) {
+	r.PUT("/roadnet/loadfromfile/:folder/:graphReaderType", func(c *gin.Context) {
 		cq.Add(c, LoadRoadnetFromFile)
+	})
+	r.GET("/roadnet", func(c *gin.Context) {
+		cq.Add(c, RoadnetGet)
 	})
 }
 
 // LoadRoadnetFromFile loads roadnet from file.
 func LoadRoadnetFromFile(c *gin.Context, b interface{}) *util.TaskResult {
 	// Only load roadnet in an open experiment.
-	if !mod.ExpState.IsOpen {
+	if !mod.ExpState.IsExpOpen() {
 		return &util.TaskResult{
 			Code:    500,
 			Message: "Please open an experiment first.",
@@ -54,5 +57,36 @@ func LoadRoadnetFromFile(c *gin.Context, b interface{}) *util.TaskResult {
 		Code:    200,
 		Message: ret.Message,
 		Data:    mod.ExpState,
+	}
+}
+
+// RoadnetGet gets the roadnet.
+func RoadnetGet(c *gin.Context, b interface{}) *util.TaskResult {
+	// Cannot get roadnet before loaded.
+	if !mod.ExpState.IsRoadnetReady() {
+		return &util.TaskResult{
+			Code:    500,
+			Message: "Please load roadnet first.",
+		}
+	}
+
+	// Send get roadnet request to core.
+	util.Core.SendRequest(struct {
+		Cmd string
+	}{
+		Cmd: "GetRoadnet",
+	})
+	ret, err := util.Core.GetResponse()
+
+	if err != nil {
+		return &util.TaskResult{
+			Code:    500,
+			Message: "Failed to get roadnet: " + err.Error(),
+		}
+	}
+
+	return &util.TaskResult{
+		Code: 200,
+		Data: ret.Data,
 	}
 }

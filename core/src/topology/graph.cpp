@@ -7,6 +7,7 @@
 //
 
 #include <cassert>
+#include <iomanip>
 
 #include "graph.hpp"
 #include "../util/helper.hpp"
@@ -123,6 +124,7 @@ void Edge::toJSON(std::stringstream& ss) const {
       ss << ",";
     }
     auto gps = point2D2GPS(shape.at(i), 0);
+    ss.precision(9);
     ss << "{\"Lat\":" << gps.latitude << ",\"Long\":" << gps.longitude << "}";
   }
   ss << "]";
