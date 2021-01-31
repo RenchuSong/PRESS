@@ -11,10 +11,10 @@ import {
 } from "./experiment-types";
 
 const state = () =>
-  ({
-    inExperiment: false,
-    currentExperimentContext: undefined
-  } as ExperimentState);
+({
+  inExperiment: false,
+  currentExperimentContext: undefined
+} as ExperimentState);
 
 const getters: GetterTree<ExperimentState, ExperimentState> &
   ExperimentGetters = {
@@ -48,7 +48,10 @@ const actions: ActionTree<ExperimentState, ExperimentState> &
     );
   },
   async [ExperimentActionTypes.CLOSE_EXPERIMENT]({ commit }) {
-    commit(ExperimentMutationTypes.SET_EXPERIMENT_CONTEXT, undefined);
+    commit(
+      ExperimentMutationTypes.SET_EXPERIMENT_CONTEXT,
+      await Experiment.genCloseExperiment()
+    );
     commit(ExperimentMutationTypes.TOGGLE_EXPERIMENT, false);
   }
 };

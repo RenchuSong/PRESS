@@ -10,4 +10,11 @@ export class Experiment {
       {}
     )).data;
   }
+
+  public static async genCloseExperiment(): Promise<ExperimentContext> {
+    return (await restClient.put<ExperimentContext>(
+      `${apiBaseURL}/close`,
+      {}
+    )).data;
+  }
 }

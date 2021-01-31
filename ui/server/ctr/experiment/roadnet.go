@@ -19,7 +19,7 @@ func RegisterRoadnet(r *gin.RouterGroup, cq *util.TaskQueue, oq *util.TaskQueue)
 // LoadRoadnetFromFile loads roadnet from file.
 func LoadRoadnetFromFile(c *gin.Context, b interface{}) *util.TaskResult {
 	// Only load roadnet in an open experiment.
-	if !mod.ExpState.IsExpOpen() {
+	if !mod.ExpCtx.IsExpOpen() {
 		return &util.TaskResult{
 			Code:    500,
 			Message: "Please open an experiment first.",
@@ -27,7 +27,7 @@ func LoadRoadnetFromFile(c *gin.Context, b interface{}) *util.TaskResult {
 	}
 
 	// Send load roadnet request to core.
-	mod.ExpState.StartRefreshRoadnet()
+	mod.ExpCtx.StartRefreshRoadnet()
 	util.Core.SendRequest(struct {
 		Cmd             string
 		Folder          string
@@ -51,19 +51,19 @@ func LoadRoadnetFromFile(c *gin.Context, b interface{}) *util.TaskResult {
 			Message: ret.Message,
 		}
 	}
-	mod.ExpState.EndRefreshRoadnet()
+	mod.ExpCtx.EndRefreshRoadnet()
 
 	return &util.TaskResult{
 		Code:    200,
 		Message: ret.Message,
-		Data:    mod.ExpState,
+		Data:    mod.ExpCtx,
 	}
 }
 
 // RoadnetGet gets the roadnet.
 func RoadnetGet(c *gin.Context, b interface{}) *util.TaskResult {
 	// Cannot get roadnet before loaded.
-	if !mod.ExpState.IsRoadnetReady() {
+	if !mod.ExpCtx.IsRoadnetReady() {
 		return &util.TaskResult{
 			Code:    500,
 			Message: "Please load roadnet first.",

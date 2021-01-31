@@ -1,6 +1,8 @@
 import { ExperimentMeta } from './experiment-meta';
 
 export interface ExperimentContext extends ExperimentMeta {
-  dataFolder: string;
+  isOpen: string;
+  id: number;
+  name: string;
   roadnetReady: boolean;
 };

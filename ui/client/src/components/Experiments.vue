@@ -50,11 +50,14 @@ import Empty from "ant-design-vue/lib/empty";
 import { ActionTypes } from "@/store/store-types";
 import { RESTError } from "@/api/base";
 import message from "ant-design-vue/lib/message";
+import useExperiment from "@/composables/experiment/useExperiment";
 
 export default defineComponent({
   name: "ExperimentsComponent",
   setup(props, context) {
     const store = useStore();
+
+    const { closeExperiment } = useExperiment(store);
 
     const {
       experimentsCount,
@@ -68,12 +71,12 @@ export default defineComponent({
     } = useExperimentsSearch(store);
 
     onMounted(async () => {
+      closeExperiment();
       try {
         await getExperiments();
       } catch (exception) {
         message.error((exception as RESTError).message);
       }
-      store.dispatch(ActionTypes.CLOSE_EXPERIMENT);
     });
 
     return {

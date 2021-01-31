@@ -35,7 +35,7 @@ func Open(c *gin.Context, b interface{}) *util.TaskResult {
 		}
 	}
 
-	if err := mod.ExpState.Open(id, exp.Name); err != nil {
+	if err := mod.ExpCtx.Open(id, exp.Name); err != nil {
 		return &util.TaskResult{
 			Code:    500,
 			Message: "Failed to open experiment: " + err.Error(),
@@ -43,15 +43,15 @@ func Open(c *gin.Context, b interface{}) *util.TaskResult {
 	}
 	return &util.TaskResult{
 		Code: 200,
-		Data: mod.ExpState,
+		Data: mod.ExpCtx,
 	}
 }
 
 // Close the experiment.
 func Close(c *gin.Context, b interface{}) *util.TaskResult {
-	mod.ExpState.Close()
+	mod.ExpCtx.Close()
 	return &util.TaskResult{
 		Code: 200,
-		Data: mod.ExpState,
+		Data: mod.ExpCtx,
 	}
 }
