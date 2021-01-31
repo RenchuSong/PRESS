@@ -12,6 +12,7 @@
 
 #include <csignal>
 #include <fstream>
+#include <sstream>
 #include <sys/stat.h>
 #include <sys/types.h>
 #include <thread>
@@ -242,6 +243,18 @@ void handleReadRoadnetFromDataSource(picojson::value& requestJson, std::string& 
   roadnetReady = true;
   roadnetName = folder;
   response = successResponse("Roadnet of dataset " + folder + " is loaded.");
+}
+
+// Handle get roadnet as a JSON.
+void handleGetRoadnet(picojson::value& requestJson, std::string& response) {
+  if (!roadnetReady) {
+    response = errorResponse("Roadnet is not ready.");
+    return;
+  }
+  std::stringstream ss;
+  roadnet.toJSON(ss);
+  std::string json = ss.str();
+  response = successResponseWithData(json);
 }
 
 // Handle dump roadnet to ${EXP_FOLDER}/[folder]/road_network.bin
@@ -1792,6 +1805,8 @@ struct ReqRespHelper {
       // Handles each type of requests.
       if (cmd == "ReadRoadnetFromDataSource") {
         handleReadRoadnetFromDataSource(requestJson, response);
+      } else if (cmd == "GetRoadnet") {
+        handleGetRoadnet(requestJson, response);
       } else if (cmd == "DumpRoadnetToBinary") {
         handleDumpRoadnetToBinary(requestJson, response);
       } else if (cmd == "LoadRoadnetFromBinary") {

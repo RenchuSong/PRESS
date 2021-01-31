@@ -116,6 +116,18 @@ void Edge::print() const {
   std::cout << std::endl;
 }
 
+void Edge::toJSON(std::stringstream& ss) const {
+  ss << "[";
+  for (int i = 0; i < geoSize; ++i) {
+    if (i > 0) {
+      ss << ",";
+    }
+    auto gps = point2D2GPS(shape.at(i), 0);
+    ss << "{\"Lat\":" << gps.latitude << ",\"Long\":" << gps.longitude << "}";
+  }
+  ss << "]";
+}
+
 Edge::~Edge() { }
 
 
@@ -278,6 +290,17 @@ void Graph::print() const {
     }
     std::cout << std::endl;
   }
+}
+
+void Graph::toJSON(std::stringstream& ss) const {
+  ss << "[";
+  for (int i = 0; i < edgeNumber; ++i) {
+    if (i > 0) {
+      ss << ",";
+    }
+    edgeList.at(i).toJSON(ss);
+  }
+  ss << "]";
 }
 
 Graph::~Graph() { }

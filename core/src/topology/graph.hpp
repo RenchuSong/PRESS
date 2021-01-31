@@ -10,6 +10,7 @@
 #define graph_hpp
 
 #include <iostream>
+#include <sstream>
 #include <vector>
 #include <unordered_map>
 
@@ -56,6 +57,7 @@ public:
   const std::vector<Point2D>& getShape() const;
   double getDistance() const;
   void print() const;
+  void toJSON(std::stringstream& ss) const;
   ~Edge();
 };
 
@@ -89,6 +91,7 @@ public:
   void store(FileWriter& graphWriter);
   void print() const;
   void clear();
+  void toJSON(std::stringstream& ss) const;
   ~Graph();
   
   // FIXME: hack for check MM result. Should be removed.
