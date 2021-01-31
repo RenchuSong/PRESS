@@ -28,6 +28,7 @@ export type ExperimentMutations<S = ExperimentState> = {
 export enum ExperimentActionTypes {
   OPEN_EXPERIMENT = "OPEN_EXPERIMENT",
   CLOSE_EXPERIMENT = "CLOSE_EXPERIMENT",
+  LOAD_ROADNET_FROM_FILE = "LOAD_ROADNET_FROM_FILE",
 }
 
 type AugmentedExperimentActionContext = {
@@ -45,6 +46,10 @@ export interface ExperimentActions {
   [ExperimentActionTypes.CLOSE_EXPERIMENT](
     { commit }: AugmentedExperimentActionContext,
     payload: {}
+  ): Promise<void>;
+  [ExperimentActionTypes.LOAD_ROADNET_FROM_FILE](
+    { commit }: AugmentedExperimentActionContext,
+    payload: { folder: string, graphReaderType: string }
   ): Promise<void>;
 }
 

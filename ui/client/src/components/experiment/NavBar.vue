@@ -46,7 +46,7 @@ import {
   NotificationOutlined,
   RadarChartOutlined,
 } from "@ant-design/icons-vue";
-import { defineComponent } from "vue";
+import { computed, defineComponent } from "vue";
 import { useStore } from "@/store";
 
 export default defineComponent({
@@ -61,7 +61,9 @@ export default defineComponent({
     const store = useStore();
     const { currentExperimentContext } = useExperiment(store);
     return {
-      roadnetReady: currentExperimentContext.value?.roadnetReady,
+      roadnetReady: computed(
+        () => currentExperimentContext.value?.roadnetReady
+      ),
     };
   },
   data() {

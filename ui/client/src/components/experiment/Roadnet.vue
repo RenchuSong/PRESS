@@ -1,7 +1,7 @@
 <template>
   <a-button
     @click="
-      loadRoadnetFromFile(
+      handleLoadRoadnetFromFile(
         'WA_roadnetwork_and_single_trajectory',
         'SEATTLE_SAMPLE_ROADNET'
       )
@@ -14,14 +14,28 @@
 import { defineComponent } from "vue";
 import { useStore } from "@/store";
 import useRoadnet from "@/composables/experiment/useRoadnet";
+import { RESTError } from "@/api/base";
+import message from "ant-design-vue/lib/message";
 
 export default defineComponent({
   name: "Roadnet",
   setup(_props, _context) {
     const store = useStore();
     const { loadRoadnetFromFile } = useRoadnet(store);
+
+    const handleLoadRoadnetFromFile = async (
+      folder: string,
+      graphReaderType: string
+    ) => {
+      try {
+        await loadRoadnetFromFile(folder, graphReaderType);
+      } catch (exception) {
+        message.error((exception as RESTError).message);
+      }
+    };
+
     return {
-      loadRoadnetFromFile,
+      handleLoadRoadnetFromFile,
     };
   },
 });

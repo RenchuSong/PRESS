@@ -1,4 +1,5 @@
 import { Experiment } from "@/api/experiment";
+import { Roadnet } from "@/api/roadnet";
 import { ExperimentContext } from "@/model/experiment-context";
 import { ActionTree, GetterTree, MutationTree } from "vuex";
 import {
@@ -53,7 +54,13 @@ const actions: ActionTree<ExperimentState, ExperimentState> &
       await Experiment.genCloseExperiment()
     );
     commit(ExperimentMutationTypes.TOGGLE_EXPERIMENT, false);
-  }
+  },
+  async [ExperimentActionTypes.LOAD_ROADNET_FROM_FILE]({ commit }, payload) {
+    commit(
+      ExperimentMutationTypes.SET_EXPERIMENT_CONTEXT,
+      await Roadnet.genLoadRoadnetFromFile(payload.folder, payload.graphReaderType)
+    );
+  },
 };
 
 export default {
