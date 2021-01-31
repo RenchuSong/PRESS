@@ -47,14 +47,13 @@ import useExperimentsSearch from "@/composables/experiments/useExperimentsSearch
 import { useStore } from "@/store";
 import { defineComponent, onMounted } from "vue";
 import Empty from "ant-design-vue/lib/empty";
-import { ActionTypes } from "@/store/store-types";
 import { RESTError } from "@/api/base";
 import message from "ant-design-vue/lib/message";
 import useExperiment from "@/composables/experiment/useExperiment";
 
 export default defineComponent({
   name: "ExperimentsComponent",
-  setup(props, context) {
+  setup(_props, _context) {
     const store = useStore();
 
     const { closeExperiment } = useExperiment(store);

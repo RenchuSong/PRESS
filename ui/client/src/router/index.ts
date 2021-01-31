@@ -11,13 +11,23 @@ const routes: Array<RouteRecordRaw> = [
     }
   },
   {
-    path: "/experiment/:id",
+    path: "/experiment/:id(\\d+)",
     name: "Experiment",
     props: true,
     components: {
       routeHint: () => import("../views/RouteHint.vue"),
       content: () => import("../views/ExperimentView.vue")
-    }
+    },
+    children: [
+      {
+        path: "",
+        component: () => import("../views/experiment/RoadnetView.vue")
+      },
+      {
+        path: "gindexsptable",
+        component: () => import("../views/experiment/GridIndexSPTableView.vue")
+      },
+    ]
   },
   {
     path: "/:pathMatch(.*)*",

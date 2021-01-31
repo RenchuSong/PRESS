@@ -42,7 +42,7 @@ func (es *ExperimentContext) Open(id int, name string) error {
 	expCtxLock.Lock()
 	defer expCtxLock.Unlock()
 
-	if ExpCtx.IsOpen {
+	if ExpCtx.IsOpen && ExpCtx.ID != id {
 		return errors.New("only one experiment can be opened")
 	}
 	ExpCtx.IsOpen = true

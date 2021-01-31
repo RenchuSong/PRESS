@@ -21,6 +21,7 @@ import Tooltip from "ant-design-vue/lib/tooltip";
 import Input from "ant-design-vue/lib/input";
 import Modal from "ant-design-vue/lib/modal";
 import Form from "ant-design-vue/lib/form";
+import Steps from "ant-design-vue/lib/steps";
 
 import "ant-design-vue/dist/antd.css";
 
@@ -45,4 +46,5 @@ createApp(App)
   .use(Modal)
   .use(Form)
   .use(Spin)
+  .use(Steps)
   .mount("#app");

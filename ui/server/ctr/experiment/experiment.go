@@ -34,6 +34,12 @@ func Open(c *gin.Context, b interface{}) *util.TaskResult {
 			Message: "Failed to check experiments " + err.Error(),
 		}
 	}
+	if exp == nil {
+		return &util.TaskResult{
+			Code:    500,
+			Message: "Experiment doesn't exist.",
+		}
+	}
 
 	if err := mod.ExpCtx.Open(id, exp.Name); err != nil {
 		return &util.TaskResult{
