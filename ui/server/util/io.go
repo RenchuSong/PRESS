@@ -1,6 +1,9 @@
 package util
 
-import "io/ioutil"
+import (
+	"io/ioutil"
+	"os"
+)
 
 // ListDir lists all directories in given path.
 func ListDir(path string) ([]string, error) {
@@ -13,4 +16,13 @@ func ListDir(path string) ([]string, error) {
 		ret = append(ret, f.Name())
 	}
 	return ret, nil
+}
+
+// FileExists check if file exists.
+func FileExists(name string) (bool, error) {
+	_, err := os.Stat(name)
+	if os.IsNotExist(err) {
+		return false, nil
+	}
+	return err != nil, err
 }

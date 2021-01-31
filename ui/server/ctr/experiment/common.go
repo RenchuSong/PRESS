@@ -14,12 +14,12 @@ import (
 	"github.com/RenchuSong/PRESS/tree/v3/ui/server/util"
 )
 
-func getAllExperiments() ([]mod.ExperimentMeta, error) {
+func getAllExperiments() ([]*mod.ExperimentMeta, error) {
 	exp, err := util.ListDir(ctr.Config.Experiments)
 	if err != nil {
 		return nil, err
 	}
-	ret := make([]mod.ExperimentMeta, 0, len(exp))
+	ret := make([]*mod.ExperimentMeta, 0, len(exp))
 	for _, n := range exp {
 		metaStr, err := ioutil.ReadFile(
 			path.Join(ctr.Config.Experiments, n, "meta.json"),
@@ -27,7 +27,7 @@ func getAllExperiments() ([]mod.ExperimentMeta, error) {
 		if err == nil {
 			var meta mod.ExperimentMeta
 			if err := json.Unmarshal(metaStr, &meta); err == nil {
-				ret = append(ret, meta)
+				ret = append(ret, &meta)
 			}
 		}
 	}
@@ -35,6 +35,19 @@ func getAllExperiments() ([]mod.ExperimentMeta, error) {
 		return ret[i].CreationTime > ret[j].CreationTime
 	})
 	return ret, nil
+}
+
+func getExperimentByID(id int) (*mod.ExperimentMeta, error) {
+	expList, err := getAllExperiments()
+	if err != nil {
+		return nil, err
+	}
+	for _, e := range expList {
+		if e.ID == id {
+			return e, nil
+		}
+	}
+	return nil, nil
 }
 
 func createExperiment(

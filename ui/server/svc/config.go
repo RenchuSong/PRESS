@@ -6,6 +6,7 @@ type Config struct {
 	Data             string
 	Logs             string
 	LogLevel         string
+	Pipe             string
 	Port             int
 	Static           string
 	CoreAPIHandlers  int

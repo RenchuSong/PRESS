@@ -22,6 +22,8 @@ type HTTP struct {
 var routes = []func(r *gin.RouterGroup, cq *util.TaskQueue, oq *util.TaskQueue){
 	example.RegisterPing,
 	experiment.RegisterExperiments,
+	experiment.RegisterExperiment,
+	experiment.RegisterRoadnet,
 }
 
 // NewHTTP creates a new HTTP service.
@@ -44,10 +46,13 @@ func NewHTTP(
 	})
 	api := r.Group("/api")
 	api.Use(respMiddleware())
+
 	ctr.SetConfig(c.Experiments, c.Data)
 	for _, regFn := range routes {
 		regFn(api, cq, oq)
 	}
+
+	util.NewCore(c.Pipe)
 
 	return &HTTP{
 		web:  r,
