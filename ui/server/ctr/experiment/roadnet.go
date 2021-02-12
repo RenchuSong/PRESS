@@ -14,6 +14,9 @@ func RegisterRoadnet(r *gin.RouterGroup, cq *util.TaskQueue, oq *util.TaskQueue)
 	r.GET("/roadnet", func(c *gin.Context) {
 		cq.Add(c, RoadnetGet)
 	})
+	r.GET("/roadnet/readerTypes", func(c *gin.Context) {
+		cq.Add(c, RoadnetReaderTypesGet)
+	})
 }
 
 // LoadRoadnetFromFile loads roadnet from file.
@@ -82,6 +85,29 @@ func RoadnetGet(c *gin.Context, b interface{}) *util.TaskResult {
 		return &util.TaskResult{
 			Code:    500,
 			Message: "Failed to get roadnet: " + err.Error(),
+		}
+	}
+
+	return &util.TaskResult{
+		Code: 200,
+		Data: ret.Data,
+	}
+}
+
+// RoadnetReaderTypesGet gets all roadnet reader types.
+func RoadnetReaderTypesGet(c *gin.Context, b interface{}) *util.TaskResult {
+	// Send get roadnet reader types request to core.
+	util.Core.SendRequest(struct {
+		Cmd string
+	}{
+		Cmd: "GetRoadnetReaderTypes",
+	})
+	ret, err := util.Core.GetResponse()
+
+	if err != nil {
+		return &util.TaskResult{
+			Code:    500,
+			Message: "Failed to get roadnet reader types: " + err.Error(),
 		}
 	}
 

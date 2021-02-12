@@ -1757,6 +1757,31 @@ void handleRangeOnPRESSCompressedTrajectory(picojson::value& requestJson, std::s
   std::string queryResult = vecPrimitiveToJSONString(result);
   response = successResponseWithData(queryResult);
 }
+/**
+ * Get all roadnet reader types.
+ * Query payload:
+ * {
+ *   Cmd ...
+ * }
+ * Response:
+ * {
+ *   Success ...
+ *   Message ...
+ *   Data: [
+ *     SEATTLE_SAMPLE_ROADNET,
+ *     GraphReaderType2,
+ *     ...
+ *   ]
+ * }
+ */
+void handleGetRoadnetReaderTypes(picojson::value& requestJson, std::string& response) {
+  std::vector<std::string> result;
+  for (auto& graphReaderType: GraphReaderTypeStrings) {
+    result.push_back(graphReaderType);
+  }
+  std::string queryResult = vecStringToJSONString(result);
+  response = successResponseWithData(queryResult);
+}
 
 struct ReqRespHelper {
   std::string inPath;
@@ -1899,6 +1924,8 @@ struct ReqRespHelper {
         handleWhenAtOnPRESSCompressedTrajectory(requestJson, response);
       } else if (cmd == "RangeOnPRESSCompressedTrajectory") {
         handleRangeOnPRESSCompressedTrajectory(requestJson, response);
+      } else if (cmd == "GetRoadnetReaderTypes") {
+        handleGetRoadnetReaderTypes(requestJson, response);
       } else {
         FILE_LOG(TLogLevel::lerror) << "Unknown request: " << request;
         response = errorResponse("Unknown request.");

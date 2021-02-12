@@ -19,6 +19,10 @@ enum GraphReaderType {
   SEATTLE_SAMPLE_ROADNET,
   // [USER DEFINE]: Define your own graph reader types here.
 };
+static const char *GraphReaderTypeStrings[] = {
+  "SEATTLE_SAMPLE_ROADNET",
+  // [USER DEFINE]: Define your own graph reader types here.
+};
 
 // Get graph reader type from string name.
 GraphReaderType getGraphReaderType(const std::string& graphReaderType);
@@ -26,6 +30,10 @@ GraphReaderType getGraphReaderType(const std::string& graphReaderType);
 // Different types of GPS trajectory readers.
 enum GPSTrajectoryReaderType {
   SEATTLE_SAMPLE_GPS,
+  // [USER DEFINE]: Define your own GPS trajectory reader types here.
+};
+static const char *GPSTrajectoryReaderTypeStrings[] = {
+  "SEATTLE_SAMPLE_GPS",
   // [USER DEFINE]: Define your own GPS trajectory reader types here.
 };
 

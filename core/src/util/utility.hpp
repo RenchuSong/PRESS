@@ -18,6 +18,9 @@ bool fileExists(const char* name);
 bool createFolder(const std::string& dirName);
 bool listDirectory(const std::string& dirName, std::vector<std::string>& fileNames);
 bool clearDirectory(const std::string& dirName);
+std::string vecStringToJSONString(const std::vector<std::string>& data);
+std::string toJSONString(const std::string& str);
+
 template<typename T> std::string vecToJSONString(const std::vector<T>& data) {
   std::string result("[");
   auto len = data.size();

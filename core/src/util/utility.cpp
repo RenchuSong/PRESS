@@ -50,3 +50,21 @@ bool listDirectory(const std::string& dirName, std::vector<std::string>& fileNam
 bool clearDirectory(const std::string& dirName) {
   return system(("rm -rf " + dirName + "*").c_str()) == 0;
 }
+
+std::string vecStringToJSONString(const std::vector<std::string>& data) {
+  std::string result("[");
+  auto len = data.size();
+  if (len > 0) {
+    result += toJSONString(data.at(0));
+  }
+  for (auto i = 1; i < len; ++i) {
+    result += "," + toJSONString(data.at(i));
+  }
+  result += "]";
+  return result;
+}
+
+std::string toJSONString(const std::string& str) {
+  // TODO: escape quotes and backslash in str.
+  return "\"" + str + "\"";
+}
