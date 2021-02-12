@@ -12,10 +12,13 @@ func RegisterRoadnet(r *gin.RouterGroup, cq *util.TaskQueue, oq *util.TaskQueue)
 		cq.Add(c, LoadRoadnetFromFile)
 	})
 	r.GET("/roadnet", func(c *gin.Context) {
-		cq.Add(c, RoadnetGet)
+		cq.Add(c, GetRoadnet)
 	})
 	r.GET("/roadnet/readertypes", func(c *gin.Context) {
-		cq.Add(c, RoadnetReaderTypesGet)
+		cq.Add(c, GetRoadnetReaderTypes)
+	})
+	r.GET("/roadnet/filesources", func(c *gin.Context) {
+		oq.Add(c, GetFileSources)
 	})
 }
 
@@ -63,8 +66,8 @@ func LoadRoadnetFromFile(c *gin.Context, b interface{}) *util.TaskResult {
 	}
 }
 
-// RoadnetGet gets the roadnet.
-func RoadnetGet(c *gin.Context, b interface{}) *util.TaskResult {
+// GetRoadnet gets the roadnet.
+func GetRoadnet(c *gin.Context, b interface{}) *util.TaskResult {
 	// Cannot get roadnet before loaded.
 	if !mod.ExpCtx.IsRoadnetReady() {
 		return &util.TaskResult{
@@ -94,8 +97,8 @@ func RoadnetGet(c *gin.Context, b interface{}) *util.TaskResult {
 	}
 }
 
-// RoadnetReaderTypesGet gets all roadnet reader types.
-func RoadnetReaderTypesGet(c *gin.Context, b interface{}) *util.TaskResult {
+// GetRoadnetReaderTypes gets all roadnet reader types.
+func GetRoadnetReaderTypes(c *gin.Context, b interface{}) *util.TaskResult {
 	// Send get roadnet reader types request to core.
 	util.Core.SendRequest(struct {
 		Cmd string
@@ -114,5 +117,22 @@ func RoadnetReaderTypesGet(c *gin.Context, b interface{}) *util.TaskResult {
 	return &util.TaskResult{
 		Code: 200,
 		Data: ret.Data,
+	}
+}
+
+// GetFileSources gets all roadnet file sources.
+func GetFileSources(c *gin.Context, b interface{}) *util.TaskResult {
+	ret, err := getAllRoadnetDataSources()
+
+	if err != nil {
+		return &util.TaskResult{
+			Code:    500,
+			Message: "Failed to get roadnet file sources: " + err.Error(),
+		}
+	}
+
+	return &util.TaskResult{
+		Code: 200,
+		Data: ret,
 	}
 }

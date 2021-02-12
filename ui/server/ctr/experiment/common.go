@@ -14,6 +14,52 @@ import (
 	"github.com/RenchuSong/PRESS/tree/v3/ui/server/util"
 )
 
+// DataSourceConfig is the config for a data source folder.
+type DataSourceConfig struct {
+	RoadnetReader string `json:"roadnetReader"`
+	GPSReader     string `json:"gpsReader"`
+}
+
+// RoadnetDataSource is the roadnet data source with filename
+// and (optional) reader type.
+type RoadnetDataSource struct {
+	Filename      string  `json:"filename"`
+	RoadnetReader *string `json:"roadnetReader,omitempty"`
+}
+
+func getAllRoadnetDataSources() ([]*RoadnetDataSource, error) {
+	dfs, err := util.ListDir(ctr.Config.Data)
+	if err != nil {
+		return nil, err
+	}
+	ret := make([]*RoadnetDataSource, 0, len(dfs))
+	for _, df := range dfs {
+		// Roadnet file must exist.
+		if fe, _ := util.FileExists(
+			path.Join(ctr.Config.Data, df, "road_network.txt"),
+		); !fe {
+			continue
+		}
+		rds := &RoadnetDataSource{
+			Filename: path.Join(df, "road_network.txt"),
+		}
+
+		// Roadnet reader is optional.
+		cfgStr, err := ioutil.ReadFile(
+			path.Join(ctr.Config.Data, df, "config.json"),
+		)
+		if err == nil {
+			var cfg DataSourceConfig
+			if err := json.Unmarshal(cfgStr, &cfg); err == nil {
+				rds.RoadnetReader = &cfg.RoadnetReader
+			}
+		}
+
+		ret = append(ret, rds)
+	}
+	return ret, nil
+}
+
 func getAllExperiments() ([]*mod.ExperimentMeta, error) {
 	exp, err := util.ListDir(ctr.Config.Experiments)
 	if err != nil {
