@@ -14,7 +14,7 @@ func RegisterRoadnet(r *gin.RouterGroup, cq *util.TaskQueue, oq *util.TaskQueue)
 	r.GET("/roadnet", func(c *gin.Context) {
 		cq.Add(c, RoadnetGet)
 	})
-	r.GET("/roadnet/readerTypes", func(c *gin.Context) {
+	r.GET("/roadnet/readertypes", func(c *gin.Context) {
 		cq.Add(c, RoadnetReaderTypesGet)
 	})
 }
