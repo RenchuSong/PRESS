@@ -1,4 +1,5 @@
 import { ExperimentContext } from '@/model/experiment-context';
+import { RoadnetDataSource } from '@/model/roadnet-data-source';
 import { baseURL, restClient } from "./base";
 
 const apiBaseURL = `${baseURL}/roadnet`;
@@ -7,6 +8,20 @@ export class Roadnet {
   public static async genLoadRoadnetFromFile(folder: string, graphReaderType: string): Promise<ExperimentContext> {
     return (await restClient.put<ExperimentContext>(
       `${apiBaseURL}/loadfromfile/${folder}/${graphReaderType}`,
+      {}
+    )).data;
+  }
+
+  public static async genReaderTypes(): Promise<string[]> {
+    return (await restClient.get<string[]>(
+      `${apiBaseURL}/readertypes`,
+      {}
+    )).data;
+  }
+
+  public static async genDataSources(): Promise<RoadnetDataSource[]> {
+    return (await restClient.get<RoadnetDataSource[]>(
+      `${apiBaseURL}/datasources`,
       {}
     )).data;
   }

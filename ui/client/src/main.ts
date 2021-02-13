@@ -22,6 +22,9 @@ import Input from "ant-design-vue/lib/input";
 import Modal from "ant-design-vue/lib/modal";
 import Form from "ant-design-vue/lib/form";
 import Steps from "ant-design-vue/lib/steps";
+import PageHeader from "ant-design-vue/lib/page-header";
+import Descriptions from "ant-design-vue/lib/descriptions";
+import Select from "ant-design-vue/lib/select";
 
 import "ant-design-vue/dist/antd.css";
 
@@ -47,4 +50,7 @@ createApp(App)
   .use(Form)
   .use(Spin)
   .use(Steps)
+  .use(PageHeader)
+  .use(Descriptions)
+  .use(Select)
   .mount("#app");

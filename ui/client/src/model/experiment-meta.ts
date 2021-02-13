@@ -1,5 +1,5 @@
 export interface ExperimentMeta {
-  id: number,
+  id: number;
   name: string;
   creationTime: number;
   image: string;

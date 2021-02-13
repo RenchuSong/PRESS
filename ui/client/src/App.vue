@@ -68,4 +68,12 @@ export default defineComponent({
 .ant-spin {
   position: fixed !important;
 }
+
+.section {
+  border: 1px solid rgb(235, 237, 240);
+}
+
+.full-width {
+  width: 100%;
+}
 </style>
