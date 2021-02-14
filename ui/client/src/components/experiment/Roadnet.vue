@@ -6,7 +6,7 @@
           <a-row type="flex" justify="space-between" :gutter="10">
             <a-col :span="10">
               <a-select
-                @change="handleChange"
+                @change="handleChangeRoadnetFileName"
                 v-model:value="roadnetFileName"
                 class="full-width"
               >
@@ -27,6 +27,7 @@
                 @change="handleChange"
                 class="full-width"
                 v-model:value="roadnetReaderType"
+                :disabled="graphReaderChoiceDisabled"
               >
                 <a-select-option value="tooltip" disabled>
                   With Roadnet Reader
@@ -44,11 +45,9 @@
               <a-button
                 class="full-width"
                 type="primary"
+                :disabled="loadFromFileDisabled"
                 @click="
-                  handleLoadRoadnetFromFile(
-                    'WA_roadnetwork_and_single_trajectory',
-                    'SEATTLE_SAMPLE_ROADNET'
-                  )
+                  handleLoadRoadnetFromFile(roadnetFileName, roadnetReaderType)
                 "
               >
                 LOAD
@@ -118,12 +117,11 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, onMounted, ref } from "vue";
+import { computed, defineComponent, onMounted, ref } from "vue";
 import { useStore } from "@/store";
 import useRoadnet from "@/composables/experiment/useRoadnet";
 import { RESTError } from "@/api/base";
 import message from "ant-design-vue/lib/message";
-import { RoadnetDataSource } from "@/model/roadnet-data-source";
 
 export default defineComponent({
   name: "Roadnet",
@@ -141,13 +139,38 @@ export default defineComponent({
     });
 
     const handleLoadRoadnetFromFile = async (
-      folder: string,
+      filename: string,
       graphReaderType: string
     ) => {
       try {
-        await loadRoadnetFromFile(folder, graphReaderType);
+        await loadRoadnetFromFile(filename, graphReaderType);
       } catch (exception) {
         message.error((exception as RESTError).message);
+      }
+    };
+
+    const roadnetReaderType = ref("tooltip");
+    const roadnetFileName = ref("tooltip");
+    const loadFromFileDisabled = computed(
+      () =>
+        roadnetReaderType.value === "tooltip" ||
+        roadnetFileName.value === "tooltip"
+    );
+    const graphReaderChoiceDisabled = computed(
+      () =>
+        roadnetDataSources.value.find(
+          (source) => source.filename === roadnetFileName.value
+        )?.roadnetReader !== undefined
+    );
+
+    const handleChangeRoadnetFileName = (newRoadnetFilename: string) => {
+      const dataSource = roadnetDataSources.value.find(
+        (source) => source.filename === newRoadnetFilename
+      );
+      if (dataSource !== undefined && dataSource.roadnetReader !== undefined) {
+        roadnetReaderType.value = dataSource.roadnetReader;
+      } else {
+        roadnetReaderType.value = "tooltip";
       }
     };
 
@@ -155,8 +178,11 @@ export default defineComponent({
       handleLoadRoadnetFromFile,
       roadnetReaderTypes,
       roadnetDataSources,
-      roadnetReaderType: ref("tooltip"),
-      roadnetFileName: ref("tooltip"),
+      roadnetReaderType,
+      roadnetFileName,
+      loadFromFileDisabled,
+      graphReaderChoiceDisabled,
+      handleChangeRoadnetFileName,
     };
   },
 });
