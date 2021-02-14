@@ -1,4 +1,4 @@
 export interface RoadnetDataSource {
-  fileName: string;
+  filename: string;
   roadnetReader?: string;
 }

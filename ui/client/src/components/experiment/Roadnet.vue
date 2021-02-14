@@ -1,25 +1,43 @@
 <template>
   <a-space direction="vertical" class="full-width">
     <a-page-header class="section" title="Load Roadnet">
-      <a-row type="flex" justify="left">
+      <a-row type="flex">
         <a-col style="width: calc(60% - 20px)">
           <a-row type="flex" justify="space-between" :gutter="10">
             <a-col :span="10">
-              <a-select @change="handleChange" class="full-width">
+              <a-select
+                @change="handleChange"
+                v-model:value="roadnetFileName"
+                class="full-width"
+              >
                 <a-select-option value="tooltip" disabled>
                   From File
                 </a-select-option>
-                <a-select-option value="lucy">Lucy</a-select-option>
-                <a-select-option value="Yiminghe">yiminghe</a-select-option>
+                <a-select-option
+                  v-for="roadnetDataSource in roadnetDataSources"
+                  :key="roadnetDataSource.filename"
+                  :value="roadnetDataSource.filename"
+                >
+                  {{ roadnetDataSource.filename }}
+                </a-select-option>
               </a-select>
             </a-col>
             <a-col :span="10">
-              <a-select @change="handleChange" class="full-width">
+              <a-select
+                @change="handleChange"
+                class="full-width"
+                v-model:value="roadnetReaderType"
+              >
                 <a-select-option value="tooltip" disabled>
-                  Using Roadnet Reader
+                  With Roadnet Reader
                 </a-select-option>
-                <a-select-option value="lucy">Lucy</a-select-option>
-                <a-select-option value="Yiminghe">yiminghe</a-select-option>
+                <a-select-option
+                  v-for="roadnetReaderType in roadnetReaderTypes"
+                  :key="roadnetReaderType"
+                  :value="roadnetReaderType"
+                >
+                  {{ roadnetReaderType }}
+                </a-select-option>
               </a-select>
             </a-col>
             <a-col :span="4">
@@ -100,17 +118,27 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from "vue";
+import { defineComponent, onMounted, ref } from "vue";
 import { useStore } from "@/store";
 import useRoadnet from "@/composables/experiment/useRoadnet";
 import { RESTError } from "@/api/base";
 import message from "ant-design-vue/lib/message";
+import { RoadnetDataSource } from "@/model/roadnet-data-source";
 
 export default defineComponent({
   name: "Roadnet",
   setup(_props, _context) {
     const store = useStore();
-    const { loadRoadnetFromFile } = useRoadnet(store);
+    const {
+      initRoadnet,
+      loadRoadnetFromFile,
+      roadnetReaderTypes,
+      roadnetDataSources,
+    } = useRoadnet(store);
+
+    onMounted(async () => {
+      await initRoadnet();
+    });
 
     const handleLoadRoadnetFromFile = async (
       folder: string,
@@ -125,6 +153,10 @@ export default defineComponent({
 
     return {
       handleLoadRoadnetFromFile,
+      roadnetReaderTypes,
+      roadnetDataSources,
+      roadnetReaderType: ref("tooltip"),
+      roadnetFileName: ref("tooltip"),
     };
   },
 });

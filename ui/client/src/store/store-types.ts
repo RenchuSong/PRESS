@@ -1,4 +1,9 @@
-import { CommonGetters, CommonMutations, CommonMutationTypes, CommonState } from "./modules/common-types";
+import {
+  CommonGetters,
+  CommonMutations,
+  CommonMutationTypes,
+  CommonState
+} from "./modules/common-types";
 import {
   ExperimentActions,
   ExperimentActionTypes,

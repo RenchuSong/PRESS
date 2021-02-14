@@ -1,6 +1,7 @@
 import { Experiment } from "@/api/experiment";
 import { Roadnet } from "@/api/roadnet";
 import { ExperimentContext } from "@/model/experiment-context";
+import { RoadnetDataSource } from "@/model/roadnet-data-source";
 import { ActionTree, GetterTree, MutationTree } from "vuex";
 import {
   ExperimentActions,
@@ -14,12 +15,16 @@ import {
 const state = () =>
 ({
   inExperiment: false,
-  currentExperimentContext: undefined
+  currentExperimentContext: undefined,
+  roadnetReaderTypes: [],
+  roadnetDataSources: []
 } as ExperimentState);
 
 const getters: GetterTree<ExperimentState, ExperimentState> &
   ExperimentGetters = {
   currentExperimentContext: state => state.currentExperimentContext,
+  roadnetReaderTypes: state => state.roadnetReaderTypes,
+  roadnetDataSources: state => state.roadnetDataSources,
 };
 
 const mutations: MutationTree<ExperimentState> & ExperimentMutations = {
@@ -36,6 +41,18 @@ const mutations: MutationTree<ExperimentState> & ExperimentMutations = {
     payload: boolean
   ) {
     state.inExperiment = payload;
+  },
+  [ExperimentMutationTypes.SET_ROADNET_READER_TYPES](
+    state: ExperimentState,
+    payload: string[]
+  ) {
+    state.roadnetReaderTypes = payload;
+  },
+  [ExperimentMutationTypes.SET_ROADNET_DATA_SOURCES](
+    state: ExperimentState,
+    payload: RoadnetDataSource[]
+  ) {
+    state.roadnetDataSources = payload;
   }
 };
 
@@ -59,6 +76,16 @@ const actions: ActionTree<ExperimentState, ExperimentState> &
     commit(
       ExperimentMutationTypes.SET_EXPERIMENT_CONTEXT,
       await Roadnet.genLoadRoadnetFromFile(payload.folder, payload.graphReaderType)
+    );
+  },
+  async [ExperimentActionTypes.INIT_ROADNET_OPTIONS]({ commit }) {
+    commit(
+      ExperimentMutationTypes.SET_ROADNET_READER_TYPES,
+      await Roadnet.genReaderTypes()
+    );
+    commit(
+      ExperimentMutationTypes.SET_ROADNET_DATA_SOURCES,
+      await Roadnet.genDataSources()
     );
   },
 };
