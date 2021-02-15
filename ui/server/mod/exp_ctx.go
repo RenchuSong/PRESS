@@ -64,12 +64,20 @@ func (es *ExperimentContext) Close() {
 
 // StartRefreshRoadnet start fresh roadnet.
 func (es *ExperimentContext) StartRefreshRoadnet() {
-	expCtxLock.Lock()
 	ExpCtx.RoadnetReady = false
 }
 
 // EndRefreshRoadnet end fresh roadnet.
 func (es *ExperimentContext) EndRefreshRoadnet() {
-	defer expCtxLock.Unlock()
 	ExpCtx.RoadnetReady = true
+}
+
+// LockCtxLock locks the ctx lock.
+func (es *ExperimentContext) LockCtxLock() {
+	expCtxLock.Lock()
+}
+
+// UnlockCtxLock unlocks the ctx lock.
+func (es *ExperimentContext) UnlockCtxLock() {
+	expCtxLock.Unlock()
 }

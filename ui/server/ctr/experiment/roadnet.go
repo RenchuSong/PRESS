@@ -1,6 +1,8 @@
 package experiment
 
 import (
+	"strconv"
+
 	"github.com/RenchuSong/PRESS/tree/v3/ui/server/mod"
 	"github.com/RenchuSong/PRESS/tree/v3/ui/server/util"
 	"github.com/gin-gonic/gin"
@@ -20,6 +22,9 @@ func RegisterRoadnet(r *gin.RouterGroup, cq *util.TaskQueue, oq *util.TaskQueue)
 	r.GET("/roadnet/datasources", func(c *gin.Context) {
 		oq.Add(c, GetFileSources)
 	})
+	r.PUT("/roadnet/dumptobinary/:id", func(c *gin.Context) {
+		cq.Add(c, DumpRoadnetToBinary)
+	})
 }
 
 // LoadRoadnetFromFile loads roadnet from file.
@@ -33,6 +38,8 @@ func LoadRoadnetFromFile(c *gin.Context, b interface{}) *util.TaskResult {
 	}
 
 	// Send load roadnet request to core.
+	mod.ExpCtx.LockCtxLock()
+	defer mod.ExpCtx.UnlockCtxLock()
 	mod.ExpCtx.StartRefreshRoadnet()
 	util.Core.SendRequest(struct {
 		Cmd             string
@@ -135,4 +142,51 @@ func GetFileSources(c *gin.Context, b interface{}) *util.TaskResult {
 		Code: 200,
 		Data: ret,
 	}
+}
+
+// DumpRoadnetToBinary dumps roadnet to binary.
+func DumpRoadnetToBinary(c *gin.Context, b interface{}) *util.TaskResult {
+	// Cannot dump roadnet before it's been loaded.
+	if !mod.ExpCtx.RoadnetReady {
+		return &util.TaskResult{
+			Code:    500,
+			Message: "Please load roadnet first.",
+		}
+	}
+
+	_, err := strconv.Atoi(c.Param("id"))
+	if err != nil {
+		return &util.TaskResult{
+			Code:    500,
+			Message: "Invalid experiment ID: " + err.Error(),
+		}
+	}
+
+	// Send load roadnet request to core.
+	mod.ExpCtx.LockCtxLock()
+	defer mod.ExpCtx.UnlockCtxLock()
+	util.Core.SendRequest(struct {
+		Cmd             string
+		Folder          string
+		GraphReaderType string
+	}{
+		Cmd:    "DumpRoadnetToBinary",
+		Folder: "Experiment_" + c.Param("id"),
+	})
+
+	ret, err := util.Core.GetResponse()
+	if err != nil {
+		return &util.TaskResult{
+			Code:    500,
+			Message: "Failed to dump roadnet: " + err.Error(),
+		}
+	}
+	if !ret.Success {
+		return &util.TaskResult{
+			Code:    500,
+			Message: ret.Message,
+		}
+	}
+
+	return Auxiliaries(c, b)
 }
