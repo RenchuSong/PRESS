@@ -17,7 +17,9 @@ const state = () =>
   inExperiment: false,
   currentExperimentContext: undefined,
   roadnetReaderTypes: [],
-  roadnetDataSources: []
+  roadnetDataSources: [],
+  currentExperimentAuxiliaries: [],
+  currentExperimentStep: "roadnet",
 } as ExperimentState);
 
 const getters: GetterTree<ExperimentState, ExperimentState> &
@@ -25,6 +27,11 @@ const getters: GetterTree<ExperimentState, ExperimentState> &
   currentExperimentContext: state => state.currentExperimentContext,
   roadnetReaderTypes: state => state.roadnetReaderTypes,
   roadnetDataSources: state => state.roadnetDataSources,
+  currentExperimentRoadnetBinaries:
+    state => state.currentExperimentAuxiliaries.filter(
+      value => value === 'road_network.bin'
+    ),
+  currentExperimentStep: state => state.currentExperimentStep,
 };
 
 const mutations: MutationTree<ExperimentState> & ExperimentMutations = {
@@ -53,6 +60,18 @@ const mutations: MutationTree<ExperimentState> & ExperimentMutations = {
     payload: RoadnetDataSource[]
   ) {
     state.roadnetDataSources = payload;
+  },
+  [ExperimentMutationTypes.SET_CURRENT_EXPERIMENT_AUXILIARIES](
+    state: ExperimentState,
+    payload: string[]
+  ) {
+    state.currentExperimentAuxiliaries = payload;
+  },
+  [ExperimentMutationTypes.NAVIGATE_IN_EXPERIMENT](
+    state: ExperimentState,
+    payload: string
+  ) {
+    state.currentExperimentStep = payload;
   }
 };
 
@@ -86,6 +105,12 @@ const actions: ActionTree<ExperimentState, ExperimentState> &
     commit(
       ExperimentMutationTypes.SET_ROADNET_DATA_SOURCES,
       await Roadnet.genDataSources()
+    );
+  },
+  async [ExperimentActionTypes.GET_EXPERIMENT_AUXILIARIES]({ commit }, payload) {
+    commit(
+      ExperimentMutationTypes.SET_CURRENT_EXPERIMENT_AUXILIARIES,
+      await Experiment.genAuxiliaries(payload.id)
     );
   },
 };

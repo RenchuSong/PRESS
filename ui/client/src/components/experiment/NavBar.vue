@@ -2,7 +2,7 @@
   <a-menu
     mode="inline"
     style="height: 100%"
-    v-model:selectedKeys="currentSteps"
+    v-model:selectedKeys="currentExperimentStep"
     @click="changeStep"
   >
     <a-menu-item key="roadnet">
@@ -57,32 +57,22 @@ export default defineComponent({
     NotificationOutlined,
     RadarChartOutlined,
   },
-  setup(props, _context) {
+  setup(_props, _context) {
     const store = useStore();
-    const { currentExperimentContext } = useExperiment(store);
+    const { navigate, currentExperimentContext } = useExperiment(store);
     return {
       roadnetReady: computed(
         () => currentExperimentContext.value?.roadnetReady
       ),
-    };
-  },
-  data() {
-    const last = this.$route.path.substr(this.$route.path.lastIndexOf("/") + 1);
-    const currentStep = isNaN(+last) ? last : "roadnet";
-    return {
-      currentSteps: [currentStep],
+      navigate,
+      currentExperimentStep: computed(() => [
+        store.getters.currentExperimentStep,
+      ]),
     };
   },
   methods: {
     changeStep({ key }: any) {
-      const pathSplit = this.$route.path.split("/");
-      if (isNaN(+pathSplit[pathSplit.length - 1])) {
-        pathSplit.pop();
-      }
-      if (key !== "roadnet") {
-        pathSplit.push(key);
-      }
-      this.$router.push(pathSplit.join("/"));
+      this.navigate(this.$route, this.$router, key);
     },
   },
 });

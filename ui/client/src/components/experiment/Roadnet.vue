@@ -14,6 +14,13 @@
                   From File
                 </a-select-option>
                 <a-select-option
+                  value="noFile"
+                  v-if="roadnetDataSources.length === 0"
+                  disabled
+                >
+                  No Roadnet File Available
+                </a-select-option>
+                <a-select-option
                   v-for="roadnetDataSource in roadnetDataSources"
                   :key="roadnetDataSource.filename"
                   :value="roadnetDataSource.filename"
@@ -24,7 +31,6 @@
             </a-col>
             <a-col :span="10">
               <a-select
-                @change="handleChange"
                 class="full-width"
                 v-model:value="roadnetReaderType"
                 :disabled="graphReaderChoiceDisabled"
@@ -65,18 +71,34 @@
         <a-col style="width: calc(40% - 20px)">
           <a-row type="flex" justify="space-between" :gutter="10">
             <a-col :span="18">
-              <a-select @change="handleChange" class="full-width">
+              <a-select
+                class="full-width"
+                v-model:value="roadnetBinaryFileName"
+              >
                 <a-select-option value="tooltip" disabled>
                   From Binary
                 </a-select-option>
-                <a-select-option value="lucy">Lucy</a-select-option>
-                <a-select-option value="Yiminghe">yiminghe</a-select-option>
+                <a-select-option
+                  value="noBinary"
+                  v-if="currentRoadnetBinaries.length === 0"
+                  disabled
+                >
+                  No Binary Available
+                </a-select-option>
+                <a-select-option
+                  v-for="currentRoadnetBinary in currentRoadnetBinaries"
+                  :key="currentRoadnetBinary"
+                  :value="currentRoadnetBinary"
+                >
+                  {{ currentRoadnetBinary }}
+                </a-select-option>
               </a-select>
             </a-col>
             <a-col :span="6">
               <a-button
                 class="full-width"
                 type="primary"
+                :disabled="loadFromBinaryDisabled"
                 @click="
                   handleLoadRoadnetFromFile(
                     'WA_roadnetwork_and_single_trajectory',
@@ -102,12 +124,8 @@
         <a-button
           class="full-width"
           type="primary"
-          @click="
-            handleLoadRoadnetFromFile(
-              'WA_roadnetwork_and_single_trajectory',
-              'SEATTLE_SAMPLE_ROADNET'
-            )
-          "
+          :disabled="!roadnetReady"
+          @click="gotoGridIndexAndSPTable()"
         >
           Next: Grid Index & SP Table
         </a-button>
@@ -122,6 +140,7 @@ import { useStore } from "@/store";
 import useRoadnet from "@/composables/experiment/useRoadnet";
 import { RESTError } from "@/api/base";
 import message from "ant-design-vue/lib/message";
+import useExperiment from "@/composables/experiment/useExperiment";
 
 export default defineComponent({
   name: "Roadnet",
@@ -132,7 +151,9 @@ export default defineComponent({
       loadRoadnetFromFile,
       roadnetReaderTypes,
       roadnetDataSources,
+      currentRoadnetBinaries,
     } = useRoadnet(store);
+    const { currentExperimentContext, navigate } = useExperiment(store);
 
     onMounted(async () => {
       await initRoadnet();
@@ -151,6 +172,7 @@ export default defineComponent({
 
     const roadnetReaderType = ref("tooltip");
     const roadnetFileName = ref("tooltip");
+    const roadnetBinaryFileName = ref("tooltip");
     const loadFromFileDisabled = computed(
       () =>
         roadnetReaderType.value === "tooltip" ||
@@ -161,6 +183,9 @@ export default defineComponent({
         roadnetDataSources.value.find(
           (source) => source.filename === roadnetFileName.value
         )?.roadnetReader !== undefined
+    );
+    const loadFromBinaryDisabled = computed(
+      () => roadnetBinaryFileName.value === "tooltip"
     );
 
     const handleChangeRoadnetFileName = (newRoadnetFilename: string) => {
@@ -183,7 +208,19 @@ export default defineComponent({
       loadFromFileDisabled,
       graphReaderChoiceDisabled,
       handleChangeRoadnetFileName,
+      currentRoadnetBinaries,
+      roadnetBinaryFileName,
+      loadFromBinaryDisabled,
+      roadnetReady: computed(
+        () => currentExperimentContext.value?.roadnetReady
+      ),
+      navigate,
     };
+  },
+  methods: {
+    gotoGridIndexAndSPTable() {
+      this.navigate(this.$route, this.$router, "gindexsptable");
+    },
   },
 });
 </script>

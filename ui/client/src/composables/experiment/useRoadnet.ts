@@ -5,6 +5,9 @@ import { computed } from "vue";
 export default function useRoadnet(store: Store) {
   const roadnetReaderTypes = computed(() => store.getters.roadnetReaderTypes);
   const roadnetDataSources = computed(() => store.getters.roadnetDataSources);
+  const currentRoadnetBinaries = computed(
+    () => store.getters.currentExperimentRoadnetBinaries
+  );
 
   const initRoadnet = async () => {
     store.commit(MutationTypes.START_JOB, {
@@ -35,6 +38,7 @@ export default function useRoadnet(store: Store) {
     initRoadnet,
     loadRoadnetFromFile,
     roadnetReaderTypes,
-    roadnetDataSources
+    roadnetDataSources,
+    currentRoadnetBinaries
   };
 }

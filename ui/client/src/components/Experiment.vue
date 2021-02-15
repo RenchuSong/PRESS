@@ -24,11 +24,12 @@ export default defineComponent({
   },
   setup(props, _context) {
     const store = useStore();
-    const { currentExperimentContext, openExperiment } = useExperiment(store);
+    const { openExperiment, getExperimentAuxiliaries } = useExperiment(store);
     onMounted(async () => {
       if (props.id && Number.isInteger(+props.id)) {
         try {
           await openExperiment(+props.id);
+          await getExperimentAuxiliaries(+props.id);
         } catch (exception) {
           message.error((exception as RESTError).message);
         }

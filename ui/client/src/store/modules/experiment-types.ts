@@ -8,6 +8,8 @@ export interface ExperimentState {
   currentExperimentContext: ExperimentContext | undefined;
   roadnetReaderTypes: string[];
   roadnetDataSources: RoadnetDataSource[];
+  currentExperimentAuxiliaries: string[];
+  currentExperimentStep: string;
 }
 
 // mutations
@@ -16,6 +18,8 @@ export enum ExperimentMutationTypes {
   SET_EXPERIMENT_CONTEXT = "SET_EXPERIMENT_CONTEXT",
   SET_ROADNET_READER_TYPES = "SET_ROADNET_READER_TYPES",
   SET_ROADNET_DATA_SOURCES = "SET_ROADNET_DATA_SOURCES",
+  SET_CURRENT_EXPERIMENT_AUXILIARIES = "SET_CURRENT_EXPERIMENT_AUXILIARIES",
+  NAVIGATE_IN_EXPERIMENT = "NAVIGATE_IN_EXPERIMENT",
 }
 
 export type ExperimentMutations<S = ExperimentState> = {
@@ -35,6 +39,14 @@ export type ExperimentMutations<S = ExperimentState> = {
     state: S,
     payload: RoadnetDataSource[]
   ): void;
+  [ExperimentMutationTypes.SET_CURRENT_EXPERIMENT_AUXILIARIES](
+    state: S,
+    payload: string[]
+  ): void;
+  [ExperimentMutationTypes.NAVIGATE_IN_EXPERIMENT](
+    state: S,
+    payload: string
+  ): void;
 };
 
 // actions
@@ -43,6 +55,7 @@ export enum ExperimentActionTypes {
   CLOSE_EXPERIMENT = "CLOSE_EXPERIMENT",
   INIT_ROADNET_OPTIONS = "INIT_ROADNET_OPTIONS",
   LOAD_ROADNET_FROM_FILE = "LOAD_ROADNET_FROM_FILE",
+  GET_EXPERIMENT_AUXILIARIES = "GET_EXPERIMENT_AUXILIARIES",
 }
 
 type AugmentedExperimentActionContext = {
@@ -69,6 +82,10 @@ export interface ExperimentActions {
     { commit }: AugmentedExperimentActionContext,
     payload: {}
   ): Promise<void>;
+  [ExperimentActionTypes.GET_EXPERIMENT_AUXILIARIES](
+    { commit }: AugmentedExperimentActionContext,
+    payload: { id: number }
+  ): Promise<void>;
 }
 
 // getters
@@ -77,4 +94,6 @@ export type ExperimentGetters = {
     ExperimentContext | undefined;
   roadnetReaderTypes(state: ExperimentState): string[];
   roadnetDataSources(state: ExperimentState): RoadnetDataSource[];
+  currentExperimentRoadnetBinaries(state: ExperimentState): string[];
+  currentExperimentStep(state: ExperimentState): string;
 };
