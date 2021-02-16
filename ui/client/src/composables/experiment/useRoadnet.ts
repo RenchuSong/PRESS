@@ -45,6 +45,17 @@ export default function useRoadnet(store: Store) {
     });
   }
 
+  const loadRoadnetFromBinary = async () => {
+    store.commit(MutationTypes.START_JOB, {
+      id: ActionTypes.LOAD_ROADNET_FROM_BINARY,
+      text: "Loading roadnet from binary"
+    });
+    await store.dispatch(ActionTypes.LOAD_ROADNET_FROM_BINARY);
+    store.commit(MutationTypes.FINISH_JOB, {
+      id: ActionTypes.LOAD_ROADNET_FROM_BINARY
+    });
+  };
+
   return {
     initRoadnet,
     loadRoadnetFromFile,
@@ -52,5 +63,6 @@ export default function useRoadnet(store: Store) {
     roadnetDataSources,
     currentRoadnetBinaries,
     dumpRoadnetToBinary,
+    loadRoadnetFromBinary,
   };
 }

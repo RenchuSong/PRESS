@@ -32,4 +32,11 @@ export class Roadnet {
       {}
     )).data;
   }
+
+  public static async genLoadRoadnetFromBinary(): Promise<ExperimentContext> {
+    return (await restClient.put<ExperimentContext>(
+      `${apiBaseURL}/loadfrombinary`,
+      {}
+    )).data;
+  }
 }

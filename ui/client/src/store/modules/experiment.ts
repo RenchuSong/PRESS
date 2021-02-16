@@ -119,6 +119,12 @@ const actions: ActionTree<ExperimentState, ExperimentState> &
       await Roadnet.genDumpRoadnetToBinary()
     );
   },
+  async [ExperimentActionTypes.LOAD_ROADNET_FROM_BINARY]({ commit }) {
+    commit(
+      ExperimentMutationTypes.SET_EXPERIMENT_CONTEXT,
+      await Roadnet.genLoadRoadnetFromBinary()
+    );
+  },
 };
 
 export default {

@@ -97,12 +97,7 @@
                 class="full-width"
                 type="primary"
                 :disabled="loadFromBinaryDisabled"
-                @click="
-                  handleLoadRoadnetFromFile(
-                    'WA_roadnetwork_and_single_trajectory',
-                    'SEATTLE_SAMPLE_ROADNET'
-                  )
-                "
+                @click="handleLoadRoadnetFromBinary"
               >
                 LOAD
               </a-button>
@@ -166,6 +161,7 @@ export default defineComponent({
       roadnetDataSources,
       currentRoadnetBinaries,
       dumpRoadnetToBinary,
+      loadRoadnetFromBinary,
     } = useRoadnet(store);
     const { currentExperimentContext, navigate } = useExperiment(store);
 
@@ -180,6 +176,13 @@ export default defineComponent({
       try {
         await loadRoadnetFromFile(filename, graphReaderType);
         await dumpRoadnetToBinary();
+      } catch (exception) {
+        message.error((exception as RESTError).message);
+      }
+    };
+    const handleLoadRoadnetFromBinary = async () => {
+      try {
+        await loadRoadnetFromBinary();
       } catch (exception) {
         message.error((exception as RESTError).message);
       }
@@ -244,6 +247,7 @@ export default defineComponent({
       navigate,
       confirmLoadRoadnetFromFile,
       preHandleLoadRoadnetFromFile,
+      handleLoadRoadnetFromBinary,
     };
   },
   methods: {

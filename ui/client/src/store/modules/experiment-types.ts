@@ -57,6 +57,7 @@ export enum ExperimentActionTypes {
   LOAD_ROADNET_FROM_FILE = "LOAD_ROADNET_FROM_FILE",
   GET_EXPERIMENT_AUXILIARIES = "GET_EXPERIMENT_AUXILIARIES",
   DUMP_ROADNET_TO_BINARY = "DUMP_ROADNET_TO_BINARY",
+  LOAD_ROADNET_FROM_BINARY = "LOAD_ROADNET_FROM_BINARY",
 }
 
 type AugmentedExperimentActionContext = {
@@ -88,6 +89,10 @@ export interface ExperimentActions {
     payload: {}
   ): Promise<void>;
   [ExperimentActionTypes.DUMP_ROADNET_TO_BINARY](
+    { commit }: AugmentedExperimentActionContext,
+    payload: {}
+  ): Promise<void>;
+  [ExperimentActionTypes.LOAD_ROADNET_FROM_BINARY](
     { commit }: AugmentedExperimentActionContext,
     payload: {}
   ): Promise<void>;

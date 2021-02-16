@@ -25,6 +25,9 @@ func RegisterRoadnet(r *gin.RouterGroup, cq *util.TaskQueue, oq *util.TaskQueue)
 	r.PUT("/roadnet/dumptobinary", func(c *gin.Context) {
 		cq.Add(c, DumpRoadnetToBinary)
 	})
+	r.PUT("/roadnet/loadfrombinary", func(c *gin.Context) {
+		cq.Add(c, LoadRoadnetFromBinary)
+	})
 }
 
 // LoadRoadnetFromFile loads roadnet from file.
@@ -187,4 +190,48 @@ func DumpRoadnetToBinary(c *gin.Context, b interface{}) *util.TaskResult {
 	}
 
 	return Auxiliaries(c, b)
+}
+
+// LoadRoadnetFromBinary loads roadnet from binary.
+func LoadRoadnetFromBinary(c *gin.Context, b interface{}) *util.TaskResult {
+	// Only load roadnet in an open experiment.
+	if !mod.ExpCtx.IsExpOpen() {
+		return &util.TaskResult{
+			Code:    500,
+			Message: "Please open an experiment first.",
+		}
+	}
+
+	// Send load roadnet request to core.
+	mod.ExpCtx.LockCtxLock()
+	defer mod.ExpCtx.UnlockCtxLock()
+	mod.ExpCtx.StartRefreshRoadnet()
+	util.Core.SendRequest(struct {
+		Cmd    string
+		Folder string
+	}{
+		Cmd:    "LoadRoadnetFromBinary",
+		Folder: "Experiment_" + strconv.Itoa(mod.ExpCtx.ID),
+	})
+
+	ret, err := util.Core.GetResponse()
+	if err != nil {
+		return &util.TaskResult{
+			Code:    500,
+			Message: "Failed to load roadnet: " + err.Error(),
+		}
+	}
+	if !ret.Success {
+		return &util.TaskResult{
+			Code:    500,
+			Message: ret.Message,
+		}
+	}
+	mod.ExpCtx.EndRefreshRoadnet()
+
+	return &util.TaskResult{
+		Code:    200,
+		Message: ret.Message,
+		Data:    mod.ExpCtx,
+	}
 }
