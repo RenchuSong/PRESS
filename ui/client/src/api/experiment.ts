@@ -18,9 +18,9 @@ export class Experiment {
     )).data;
   }
 
-  public static async genAuxiliaries(id: number): Promise<string[]> {
+  public static async genAuxiliaries(): Promise<string[]> {
     return (await restClient.get<string[]>(
-      `${apiBaseURL}/auxiliaries/${id}`,
+      `${apiBaseURL}/auxiliaries`,
       {}
     )).data;
   }

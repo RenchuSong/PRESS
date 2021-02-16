@@ -22,7 +22,7 @@ func RegisterRoadnet(r *gin.RouterGroup, cq *util.TaskQueue, oq *util.TaskQueue)
 	r.GET("/roadnet/datasources", func(c *gin.Context) {
 		oq.Add(c, GetFileSources)
 	})
-	r.PUT("/roadnet/dumptobinary/:id", func(c *gin.Context) {
+	r.PUT("/roadnet/dumptobinary", func(c *gin.Context) {
 		cq.Add(c, DumpRoadnetToBinary)
 	})
 }
@@ -66,6 +66,12 @@ func LoadRoadnetFromFile(c *gin.Context, b interface{}) *util.TaskResult {
 	}
 	mod.ExpCtx.EndRefreshRoadnet()
 
+	if err := resetRoadnet(mod.ExpCtx.ID); err != nil {
+		return &util.TaskResult{
+			Code:    500,
+			Message: err.Error(),
+		}
+	}
 	return &util.TaskResult{
 		Code:    200,
 		Message: ret.Message,
@@ -147,18 +153,10 @@ func GetFileSources(c *gin.Context, b interface{}) *util.TaskResult {
 // DumpRoadnetToBinary dumps roadnet to binary.
 func DumpRoadnetToBinary(c *gin.Context, b interface{}) *util.TaskResult {
 	// Cannot dump roadnet before it's been loaded.
-	if !mod.ExpCtx.RoadnetReady {
+	if !mod.ExpCtx.IsOpen || !mod.ExpCtx.RoadnetReady {
 		return &util.TaskResult{
 			Code:    500,
-			Message: "Please load roadnet first.",
-		}
-	}
-
-	_, err := strconv.Atoi(c.Param("id"))
-	if err != nil {
-		return &util.TaskResult{
-			Code:    500,
-			Message: "Invalid experiment ID: " + err.Error(),
+			Message: "Please open an experiment and load roadnet first.",
 		}
 	}
 
@@ -171,7 +169,7 @@ func DumpRoadnetToBinary(c *gin.Context, b interface{}) *util.TaskResult {
 		GraphReaderType string
 	}{
 		Cmd:    "DumpRoadnetToBinary",
-		Folder: "Experiment_" + c.Param("id"),
+		Folder: "Experiment_" + strconv.Itoa(mod.ExpCtx.ID),
 	})
 
 	ret, err := util.Core.GetResponse()

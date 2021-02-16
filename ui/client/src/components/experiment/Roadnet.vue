@@ -52,9 +52,7 @@
                 class="full-width"
                 type="primary"
                 :disabled="loadFromFileDisabled"
-                @click="
-                  handleLoadRoadnetFromFile(roadnetFileName, roadnetReaderType)
-                "
+                @click="preHandleLoadRoadnetFromFile"
               >
                 LOAD
               </a-button>
@@ -132,6 +130,21 @@
       </a-col>
     </a-row>
   </a-space>
+  <a-modal
+    centered
+    :closable="false"
+    :maskClosable="false"
+    v-model:visible="confirmLoadRoadnetFromFile"
+    title="ATTENTION"
+    @ok="
+      confirmLoadRoadnetFromFile = false;
+      handleLoadRoadnetFromFile(roadnetFileName, roadnetReaderType);
+    "
+  >
+    There are already some binaries in this experiment.<br />
+    Loading roadnet from a file will ERASE ALL the binaries.<br />
+    Do you want to continue?
+  </a-modal>
 </template>
 
 <script lang="ts">
@@ -152,6 +165,7 @@ export default defineComponent({
       roadnetReaderTypes,
       roadnetDataSources,
       currentRoadnetBinaries,
+      dumpRoadnetToBinary,
     } = useRoadnet(store);
     const { currentExperimentContext, navigate } = useExperiment(store);
 
@@ -165,6 +179,7 @@ export default defineComponent({
     ) => {
       try {
         await loadRoadnetFromFile(filename, graphReaderType);
+        await dumpRoadnetToBinary();
       } catch (exception) {
         message.error((exception as RESTError).message);
       }
@@ -199,6 +214,18 @@ export default defineComponent({
       }
     };
 
+    const confirmLoadRoadnetFromFile = ref<boolean>(false);
+    const preHandleLoadRoadnetFromFile = () => {
+      if (currentRoadnetBinaries.value.length > 0) {
+        confirmLoadRoadnetFromFile.value = true;
+      } else {
+        handleLoadRoadnetFromFile(
+          roadnetFileName.value,
+          roadnetReaderType.value
+        );
+      }
+    };
+
     return {
       handleLoadRoadnetFromFile,
       roadnetReaderTypes,
@@ -215,6 +242,8 @@ export default defineComponent({
         () => currentExperimentContext.value?.roadnetReady
       ),
       navigate,
+      confirmLoadRoadnetFromFile,
+      preHandleLoadRoadnetFromFile,
     };
   },
   methods: {

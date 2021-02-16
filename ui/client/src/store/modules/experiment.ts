@@ -110,7 +110,13 @@ const actions: ActionTree<ExperimentState, ExperimentState> &
   async [ExperimentActionTypes.GET_EXPERIMENT_AUXILIARIES]({ commit }, payload) {
     commit(
       ExperimentMutationTypes.SET_CURRENT_EXPERIMENT_AUXILIARIES,
-      await Experiment.genAuxiliaries(payload.id)
+      await Experiment.genAuxiliaries()
+    );
+  },
+  async [ExperimentActionTypes.DUMP_ROADNET_TO_BINARY]({ commit }) {
+    commit(
+      ExperimentMutationTypes.SET_CURRENT_EXPERIMENT_AUXILIARIES,
+      await Roadnet.genDumpRoadnetToBinary()
     );
   },
 };

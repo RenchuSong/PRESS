@@ -26,3 +26,15 @@ func FileExists(name string) (bool, error) {
 	}
 	return err == nil, err
 }
+
+// RemoveFile removes a file.
+func RemoveFile(name string) error {
+	e, err := FileExists(name)
+	if err != nil {
+		return err
+	}
+	if !e {
+		return nil
+	}
+	return os.Remove(name)
+}

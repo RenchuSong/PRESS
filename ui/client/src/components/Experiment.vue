@@ -29,7 +29,7 @@ export default defineComponent({
       if (props.id && Number.isInteger(+props.id)) {
         try {
           await openExperiment(+props.id);
-          await getExperimentAuxiliaries(+props.id);
+          await getExperimentAuxiliaries();
         } catch (exception) {
           message.error((exception as RESTError).message);
         }

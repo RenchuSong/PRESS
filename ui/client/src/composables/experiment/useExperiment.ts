@@ -31,12 +31,12 @@ export default function useExperiment(store: Store) {
     });
   };
 
-  const getExperimentAuxiliaries = async (id: number) => {
+  const getExperimentAuxiliaries = async () => {
     store.commit(MutationTypes.START_JOB, {
       id: ActionTypes.GET_EXPERIMENT_AUXILIARIES,
       text: "Getting experiment auxiliaries"
     });
-    await store.dispatch(ActionTypes.GET_EXPERIMENT_AUXILIARIES, { id });
+    await store.dispatch(ActionTypes.GET_EXPERIMENT_AUXILIARIES);
     store.commit(MutationTypes.FINISH_JOB, {
       id: ActionTypes.GET_EXPERIMENT_AUXILIARIES
     });

@@ -25,4 +25,11 @@ export class Roadnet {
       {}
     )).data;
   }
+
+  public static async genDumpRoadnetToBinary(): Promise<string[]> {
+    return (await restClient.put<string[]>(
+      `${apiBaseURL}/dumptobinary`,
+      {}
+    )).data;
+  }
 }

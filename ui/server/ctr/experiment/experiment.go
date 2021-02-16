@@ -19,7 +19,7 @@ func RegisterExperiment(r *gin.RouterGroup, cq *util.TaskQueue, oq *util.TaskQue
 	r.PUT("/experiment/close", func(c *gin.Context) {
 		oq.Add(c, Close)
 	})
-	r.GET("/experiment/auxiliaries/:id", func(c *gin.Context) {
+	r.GET("/experiment/auxiliaries", func(c *gin.Context) {
 		oq.Add(c, Auxiliaries)
 	})
 }
@@ -70,15 +70,14 @@ func Close(c *gin.Context, b interface{}) *util.TaskResult {
 
 // Auxiliaries of binary files in the experiment folder.
 func Auxiliaries(c *gin.Context, b interface{}) *util.TaskResult {
-	_, err := strconv.Atoi(c.Param("id"))
-	if err != nil {
+	if !mod.ExpCtx.IsOpen {
 		return &util.TaskResult{
 			Code:    500,
-			Message: "Invalid experiment ID: " + err.Error(),
+			Message: "Please open an experiment first.",
 		}
 	}
 	bfs, err := util.ListDir(
-		path.Join(ctr.Config.Experiments, "Experiment_"+c.Param("id")),
+		path.Join(ctr.Config.Experiments, "Experiment_"+strconv.Itoa(mod.ExpCtx.ID)),
 	)
 	if err != nil {
 		return &util.TaskResult{
