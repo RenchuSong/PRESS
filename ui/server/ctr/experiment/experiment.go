@@ -76,19 +76,30 @@ func Auxiliaries(c *gin.Context, b interface{}) *util.TaskResult {
 			Message: "Please open an experiment first.",
 		}
 	}
-	bfs, err := util.ListDir(
-		path.Join(ctr.Config.Experiments, "Experiment_"+strconv.Itoa(mod.ExpCtx.ID)),
+	ef := path.Join(
+		ctr.Config.Experiments, "Experiment_"+strconv.Itoa(mod.ExpCtx.ID),
 	)
+	bfs, err := util.ListDir(ef)
 	if err != nil {
 		return &util.TaskResult{
 			Code:    500,
 			Message: "Failed to list all auxiliary binary files: " + err.Error(),
 		}
 	}
-	ret := make([]string, 0, len(bfs))
+	ret := make([]*AuxiliaryInfo, 0, len(bfs))
 	for _, f := range bfs {
 		if strings.HasSuffix(f, ".bin") {
-			ret = append(ret, f)
+			s, err := util.FileSize(path.Join(ef, f))
+			if err != nil {
+				return &util.TaskResult{
+					Code:    500,
+					Message: "Failed to get file size: " + f,
+				}
+			}
+			ret = append(ret, &AuxiliaryInfo{
+				Filename: f,
+				Size:     s,
+			})
 		}
 	}
 	return &util.TaskResult{

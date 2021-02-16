@@ -1,3 +1,4 @@
+import { AuxiliaryInfo } from '@/model/auxiliary-info';
 import { ExperimentContext } from '@/model/experiment-context';
 import { RoadnetDataSource } from '@/model/roadnet-data-source';
 import { ActionContext } from "vuex";
@@ -8,7 +9,7 @@ export interface ExperimentState {
   currentExperimentContext: ExperimentContext | undefined;
   roadnetReaderTypes: string[];
   roadnetDataSources: RoadnetDataSource[];
-  currentExperimentAuxiliaries: string[];
+  currentExperimentAuxiliaries: AuxiliaryInfo[];
   currentExperimentStep: string;
 }
 
@@ -41,7 +42,7 @@ export type ExperimentMutations<S = ExperimentState> = {
   ): void;
   [ExperimentMutationTypes.SET_CURRENT_EXPERIMENT_AUXILIARIES](
     state: S,
-    payload: string[]
+    payload: AuxiliaryInfo[]
   ): void;
   [ExperimentMutationTypes.NAVIGATE_IN_EXPERIMENT](
     state: S,

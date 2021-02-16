@@ -1,7 +1,9 @@
 import { Experiment } from "@/api/experiment";
 import { Roadnet } from "@/api/roadnet";
+import { AuxiliaryInfo } from "@/model/auxiliary-info";
 import { ExperimentContext } from "@/model/experiment-context";
 import { RoadnetDataSource } from "@/model/roadnet-data-source";
+import { formatFileSize } from "@/utility/utility";
 import { ActionTree, GetterTree, MutationTree } from "vuex";
 import {
   ExperimentActions,
@@ -29,7 +31,9 @@ const getters: GetterTree<ExperimentState, ExperimentState> &
   roadnetDataSources: state => state.roadnetDataSources,
   currentExperimentRoadnetBinaries:
     state => state.currentExperimentAuxiliaries.filter(
-      value => value === 'road_network.bin'
+      value => value.filename === 'road_network.bin'
+    ).map(
+      value => `${value.filename} (${formatFileSize(value.size)})`
     ),
   currentExperimentStep: state => state.currentExperimentStep,
 };
@@ -63,7 +67,7 @@ const mutations: MutationTree<ExperimentState> & ExperimentMutations = {
   },
   [ExperimentMutationTypes.SET_CURRENT_EXPERIMENT_AUXILIARIES](
     state: ExperimentState,
-    payload: string[]
+    payload: AuxiliaryInfo[]
   ) {
     state.currentExperimentAuxiliaries = payload;
   },

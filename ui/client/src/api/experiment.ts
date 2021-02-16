@@ -1,3 +1,4 @@
+import { AuxiliaryInfo } from '@/model/auxiliary-info';
 import { ExperimentContext } from '@/model/experiment-context';
 import { baseURL, restClient } from "./base";
 
@@ -18,8 +19,8 @@ export class Experiment {
     )).data;
   }
 
-  public static async genAuxiliaries(): Promise<string[]> {
-    return (await restClient.get<string[]>(
+  public static async genAuxiliaries(): Promise<AuxiliaryInfo[]> {
+    return (await restClient.get<AuxiliaryInfo[]>(
       `${apiBaseURL}/auxiliaries`,
       {}
     )).data;

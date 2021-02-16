@@ -27,6 +27,15 @@ func FileExists(name string) (bool, error) {
 	return err == nil, err
 }
 
+// FileSize returns the size of the file.
+func FileSize(name string) (int64, error) {
+	s, err := os.Stat(name)
+	if err != nil {
+		return 0, err
+	}
+	return s.Size(), nil
+}
+
 // RemoveFile removes a file.
 func RemoveFile(name string) error {
 	e, err := FileExists(name)

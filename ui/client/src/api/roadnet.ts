@@ -1,3 +1,4 @@
+import { AuxiliaryInfo } from '@/model/auxiliary-info';
 import { ExperimentContext } from '@/model/experiment-context';
 import { RoadnetDataSource } from '@/model/roadnet-data-source';
 import { baseURL, restClient } from "./base";
@@ -26,8 +27,8 @@ export class Roadnet {
     )).data;
   }
 
-  public static async genDumpRoadnetToBinary(): Promise<string[]> {
-    return (await restClient.put<string[]>(
+  public static async genDumpRoadnetToBinary(): Promise<AuxiliaryInfo[]> {
+    return (await restClient.put<AuxiliaryInfo[]>(
       `${apiBaseURL}/dumptobinary`,
       {}
     )).data;

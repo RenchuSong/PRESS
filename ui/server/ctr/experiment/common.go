@@ -28,6 +28,12 @@ type RoadnetDataSource struct {
 	RoadnetReader *string `json:"roadnetReader,omitempty"`
 }
 
+// AuxiliaryInfo is the info of an auxiliary file.
+type AuxiliaryInfo struct {
+	Filename string `json:"filename"`
+	Size     int64  `json:"size"`
+}
+
 func getAllRoadnetDataSources() ([]*RoadnetDataSource, error) {
 	dfs, err := util.ListDir(ctr.Config.Data)
 	if err != nil {
