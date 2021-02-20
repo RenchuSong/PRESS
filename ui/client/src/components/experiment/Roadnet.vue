@@ -111,6 +111,9 @@
       title="Roadnet Preview"
       style="height: calc(100vh - 348px)"
     >
+      <div class="roadnet-preview-container">
+        <GeoChart />
+      </div>
     </a-page-header>
     <a-row type="flex" justify="end" :gutter="10">
       <a-col style="width: 250px">
@@ -149,6 +152,7 @@ import useRoadnet from "@/composables/experiment/useRoadnet";
 import { RESTError } from "@/api/base";
 import message from "ant-design-vue/lib/message";
 import useExperiment from "@/composables/experiment/useExperiment";
+import GeoChart from "@/components/charts/GeoChart.vue";
 
 export default defineComponent({
   name: "Roadnet",
@@ -255,8 +259,17 @@ export default defineComponent({
       this.navigate(this.$route, this.$router, "gindexsptable");
     },
   },
+  components: {
+    GeoChart,
+  },
 });
 </script>
 
 <style scoped lang="scss">
+.roadnet-preview-container {
+  position: absolute;
+  top: 60px;
+  bottom: 16px;
+  width: calc(100% - 48px);
+}
 </style>
