@@ -12,7 +12,7 @@
 <script lang="ts">
 import useExperiment from "@/composables/experiment/useExperiment";
 import { useStore } from "@/store";
-import { defineComponent, onMounted, onUpdated } from "vue";
+import { defineComponent, onMounted } from "vue";
 import message from "ant-design-vue/lib/message";
 import { RESTError } from "@/api/base";
 import NavBar from "./experiment/NavBar.vue";

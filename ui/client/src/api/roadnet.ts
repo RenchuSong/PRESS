@@ -1,5 +1,6 @@
 import { AuxiliaryInfo } from '@/model/auxiliary-info';
 import { ExperimentContext } from '@/model/experiment-context';
+import { RoadnetData } from '@/model/roadnet';
 import { RoadnetDataSource } from '@/model/roadnet-data-source';
 import { baseURL, restClient } from "./base";
 
@@ -37,6 +38,13 @@ export class Roadnet {
   public static async genLoadRoadnetFromBinary(): Promise<ExperimentContext> {
     return (await restClient.put<ExperimentContext>(
       `${apiBaseURL}/loadfrombinary`,
+      {}
+    )).data;
+  }
+
+  public static async genRoadnet(): Promise<RoadnetData> {
+    return (await restClient.get<RoadnetData>(
+      `${apiBaseURL}`,
       {}
     )).data;
   }

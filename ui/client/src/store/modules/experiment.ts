@@ -2,6 +2,7 @@ import { Experiment } from "@/api/experiment";
 import { Roadnet } from "@/api/roadnet";
 import { AuxiliaryInfo } from "@/model/auxiliary-info";
 import { ExperimentContext } from "@/model/experiment-context";
+import { createRoadnet, RoadnetWithBound } from "@/model/roadnet";
 import { RoadnetDataSource } from "@/model/roadnet-data-source";
 import { formatFileSize } from "@/utility/utility";
 import { ActionTree, GetterTree, MutationTree } from "vuex";
@@ -22,6 +23,7 @@ const state = () =>
   roadnetDataSources: [],
   currentExperimentAuxiliaries: [],
   currentExperimentStep: "roadnet",
+  currentRoadnet: undefined,
 } as ExperimentState);
 
 const getters: GetterTree<ExperimentState, ExperimentState> &
@@ -36,6 +38,7 @@ const getters: GetterTree<ExperimentState, ExperimentState> &
       value => `${value.filename} (${formatFileSize(value.size)})`
     ),
   currentExperimentStep: state => state.currentExperimentStep,
+  currentRoadnet: state => state.currentRoadnet,
 };
 
 const mutations: MutationTree<ExperimentState> & ExperimentMutations = {
@@ -76,7 +79,13 @@ const mutations: MutationTree<ExperimentState> & ExperimentMutations = {
     payload: string
   ) {
     state.currentExperimentStep = payload;
-  }
+  },
+  [ExperimentMutationTypes.UPDATE_ROADNET](
+    state: ExperimentState,
+    payload: RoadnetWithBound
+  ) {
+    state.currentRoadnet = payload;
+  },
 };
 
 const actions: ActionTree<ExperimentState, ExperimentState> &
@@ -127,6 +136,12 @@ const actions: ActionTree<ExperimentState, ExperimentState> &
     commit(
       ExperimentMutationTypes.SET_EXPERIMENT_CONTEXT,
       await Roadnet.genLoadRoadnetFromBinary()
+    );
+  },
+  async [ExperimentActionTypes.UPDATE_ROADNET]({ commit }) {
+    commit(
+      ExperimentMutationTypes.UPDATE_ROADNET,
+      createRoadnet(await Roadnet.genRoadnet())
     );
   },
 };

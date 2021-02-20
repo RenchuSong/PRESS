@@ -112,7 +112,7 @@
       style="height: calc(100vh - 348px)"
     >
       <div class="roadnet-preview-container">
-        <GeoChart />
+        <GeoChart ref="roadnetPreview" />
       </div>
     </a-page-header>
     <a-row type="flex" justify="end" :gutter="10">
@@ -166,6 +166,7 @@ export default defineComponent({
       currentRoadnetBinaries,
       dumpRoadnetToBinary,
       loadRoadnetFromBinary,
+      loadRoadnet,
     } = useRoadnet(store);
     const { currentExperimentContext, navigate } = useExperiment(store);
 
@@ -180,13 +181,6 @@ export default defineComponent({
       try {
         await loadRoadnetFromFile(filename, graphReaderType);
         await dumpRoadnetToBinary();
-      } catch (exception) {
-        message.error((exception as RESTError).message);
-      }
-    };
-    const handleLoadRoadnetFromBinary = async () => {
-      try {
-        await loadRoadnetFromBinary();
       } catch (exception) {
         message.error((exception as RESTError).message);
       }
@@ -251,12 +245,26 @@ export default defineComponent({
       navigate,
       confirmLoadRoadnetFromFile,
       preHandleLoadRoadnetFromFile,
-      handleLoadRoadnetFromBinary,
+      loadRoadnetFromBinary,
+      loadRoadnet,
+      getRoadnet: () => store.getters.currentRoadnet,
     };
   },
   methods: {
     gotoGridIndexAndSPTable() {
       this.navigate(this.$route, this.$router, "gindexsptable");
+    },
+    async refreshRoadnet() {
+      await this.loadRoadnet();
+      (this.$refs.roadnetPreview as any).refreshRoadnet(this.getRoadnet());
+    },
+    async handleLoadRoadnetFromBinary() {
+      try {
+        await this.loadRoadnetFromBinary();
+        await this.refreshRoadnet();
+      } catch (exception) {
+        message.error((exception as RESTError).message);
+      }
     },
   },
   components: {
