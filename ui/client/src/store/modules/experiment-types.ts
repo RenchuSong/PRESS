@@ -12,7 +12,6 @@ export interface ExperimentState {
   roadnetDataSources: RoadnetDataSource[];
   currentExperimentAuxiliaries: AuxiliaryInfo[];
   currentExperimentStep: string;
-  currentRoadnet: RoadnetWithBound | undefined;
 }
 
 // mutations
@@ -23,7 +22,6 @@ export enum ExperimentMutationTypes {
   SET_ROADNET_DATA_SOURCES = "SET_ROADNET_DATA_SOURCES",
   SET_CURRENT_EXPERIMENT_AUXILIARIES = "SET_CURRENT_EXPERIMENT_AUXILIARIES",
   NAVIGATE_IN_EXPERIMENT = "NAVIGATE_IN_EXPERIMENT",
-  UPDATE_ROADNET = "UPDATE_ROADNET",
 }
 
 export type ExperimentMutations<S = ExperimentState> = {
@@ -51,10 +49,6 @@ export type ExperimentMutations<S = ExperimentState> = {
     state: S,
     payload: string
   ): void;
-  [ExperimentMutationTypes.UPDATE_ROADNET](
-    state: S,
-    payload: RoadnetWithBound
-  ): void;
 };
 
 // actions
@@ -66,7 +60,7 @@ export enum ExperimentActionTypes {
   GET_EXPERIMENT_AUXILIARIES = "GET_EXPERIMENT_AUXILIARIES",
   DUMP_ROADNET_TO_BINARY = "DUMP_ROADNET_TO_BINARY",
   LOAD_ROADNET_FROM_BINARY = "LOAD_ROADNET_FROM_BINARY",
-  UPDATE_ROADNET = "UPDATE_ROADNET",
+  UPDATE_ROADNET = "UPDATE_ROADNET", // Dummy, store cannot bear large object.
 }
 
 type AugmentedExperimentActionContext = {
@@ -105,10 +99,6 @@ export interface ExperimentActions {
     { commit }: AugmentedExperimentActionContext,
     payload: {}
   ): Promise<void>;
-  [ExperimentActionTypes.UPDATE_ROADNET](
-    { commit }: AugmentedExperimentActionContext,
-    payload: {}
-  ): Promise<void>;
 }
 
 // getters
@@ -119,5 +109,4 @@ export type ExperimentGetters = {
   roadnetDataSources(state: ExperimentState): RoadnetDataSource[];
   currentExperimentRoadnetBinaries(state: ExperimentState): string[];
   currentExperimentStep(state: ExperimentState): string;
-  currentRoadnet(state: ExperimentState): RoadnetWithBound | undefined;
 };

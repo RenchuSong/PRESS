@@ -1,3 +1,5 @@
+import { Roadnet } from "@/api/roadnet";
+import { createRoadnet, RoadnetWithBound } from "@/model/roadnet";
 import { Store } from "@/store";
 import { ActionTypes, MutationTypes } from "@/store/store-types";
 import { computed } from "vue";
@@ -56,15 +58,16 @@ export default function useRoadnet(store: Store) {
     });
   };
 
-  const loadRoadnet = async () => {
+  const getRoadnet = async (): Promise<RoadnetWithBound> => {
     store.commit(MutationTypes.START_JOB, {
       id: ActionTypes.UPDATE_ROADNET,
       text: "Loading roadnet data to UI portal"
     });
-    await store.dispatch(ActionTypes.UPDATE_ROADNET);
+    const roadnet = await Roadnet.genRoadnet();
     store.commit(MutationTypes.FINISH_JOB, {
       id: ActionTypes.UPDATE_ROADNET
     });
+    return createRoadnet(roadnet);
   };
 
   return {
@@ -75,6 +78,6 @@ export default function useRoadnet(store: Store) {
     currentRoadnetBinaries,
     dumpRoadnetToBinary,
     loadRoadnetFromBinary,
-    loadRoadnet,
+    getRoadnet,
   };
 }

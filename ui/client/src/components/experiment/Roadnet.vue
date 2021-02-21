@@ -166,7 +166,7 @@ export default defineComponent({
       currentRoadnetBinaries,
       dumpRoadnetToBinary,
       loadRoadnetFromBinary,
-      loadRoadnet,
+      getRoadnet,
     } = useRoadnet(store);
     const { currentExperimentContext, navigate } = useExperiment(store);
 
@@ -246,8 +246,7 @@ export default defineComponent({
       confirmLoadRoadnetFromFile,
       preHandleLoadRoadnetFromFile,
       loadRoadnetFromBinary,
-      loadRoadnet,
-      getRoadnet: () => store.getters.currentRoadnet,
+      getRoadnet,
     };
   },
   methods: {
@@ -255,8 +254,9 @@ export default defineComponent({
       this.navigate(this.$route, this.$router, "gindexsptable");
     },
     async refreshRoadnet() {
-      await this.loadRoadnet();
-      (this.$refs.roadnetPreview as any).refreshRoadnet(this.getRoadnet());
+      (this.$refs.roadnetPreview as any).refreshRoadnet(
+        await this.getRoadnet()
+      );
     },
     async handleLoadRoadnetFromBinary() {
       try {
