@@ -19,7 +19,7 @@ export function createRoadnet(data: RoadnetData): RoadnetWithBound {
     const mbr = createMBR(data[0][0]);
     data.forEach(shape => shape.forEach(p => extendMBR(mbr, p)));
     return {
-      data: data.map(shape => ({ path: shape.map(p => [p.Long, p.Lat]) })).filter(_ => Math.random() > 0.95) as { path: GeoPath }[],
+      data: data.map(shape => ({ path: shape.map(p => [p.Long, p.Lat]) })),
       mbr
     }
   }

@@ -174,18 +174,6 @@ export default defineComponent({
       await initRoadnet();
     });
 
-    const handleLoadRoadnetFromFile = async (
-      filename: string,
-      graphReaderType: string
-    ) => {
-      try {
-        await loadRoadnetFromFile(filename, graphReaderType);
-        await dumpRoadnetToBinary();
-      } catch (exception) {
-        message.error((exception as RESTError).message);
-      }
-    };
-
     const roadnetReaderType = ref("tooltip");
     const roadnetFileName = ref("tooltip");
     const roadnetBinaryFileName = ref("tooltip");
@@ -216,19 +204,8 @@ export default defineComponent({
     };
 
     const confirmLoadRoadnetFromFile = ref<boolean>(false);
-    const preHandleLoadRoadnetFromFile = () => {
-      if (currentRoadnetBinaries.value.length > 0) {
-        confirmLoadRoadnetFromFile.value = true;
-      } else {
-        handleLoadRoadnetFromFile(
-          roadnetFileName.value,
-          roadnetReaderType.value
-        );
-      }
-    };
 
     return {
-      handleLoadRoadnetFromFile,
       roadnetReaderTypes,
       roadnetDataSources,
       roadnetReaderType,
@@ -244,9 +221,10 @@ export default defineComponent({
       ),
       navigate,
       confirmLoadRoadnetFromFile,
-      preHandleLoadRoadnetFromFile,
       loadRoadnetFromBinary,
       getRoadnet,
+      loadRoadnetFromFile,
+      dumpRoadnetToBinary,
     };
   },
   methods: {
@@ -266,6 +244,25 @@ export default defineComponent({
         message.error((exception as RESTError).message);
       }
     },
+    async handleLoadRoadnetFromFile(filename: string, graphReaderType: string) {
+      try {
+        await this.loadRoadnetFromFile(filename, graphReaderType);
+        await this.dumpRoadnetToBinary();
+        await this.refreshRoadnet();
+      } catch (exception) {
+        message.error((exception as RESTError).message);
+      }
+    },
+    preHandleLoadRoadnetFromFile() {
+      if (this.currentRoadnetBinaries.length > 0) {
+        this.confirmLoadRoadnetFromFile = true;
+      } else {
+        this.handleLoadRoadnetFromFile(
+          this.roadnetFileName,
+          this.roadnetReaderType
+        );
+      }
+    },
   },
   components: {
     GeoChart,
@@ -279,5 +276,6 @@ export default defineComponent({
   top: 60px;
   bottom: 16px;
   width: calc(100% - 48px);
+  overflow: hidden;
 }
 </style>
