@@ -128,7 +128,7 @@ int main(int argc, char** argv) {
   reqRespHelper.writeNext("{\"Cmd\":\"BuildGridIndex\", \"CellWidth\":50, \"CellHeight\":50}");
   reqRespHelper.explainResponse(reqRespHelper.readNext());
   // Dump grid index to binary.
-  reqRespHelper.writeNext("{\"Cmd\":\"DumpGridIndexToBinary\"}");
+  reqRespHelper.writeNext("{\"Cmd\":\"DumpGridIndexToBinary\", \"Folder\":\"WA_roadnetwork_and_single_trajectory\"}");
   reqRespHelper.explainResponse(reqRespHelper.readNext());
   // Build SP table.
   reqRespHelper.writeNext("{\"Cmd\":\"BuildSPTable\", \"MaxDist\":4000}");
@@ -192,7 +192,7 @@ int main(int argc, char** argv) {
   reqRespHelper.writeNext("{\"Cmd\":\"LoadRoadnetFromBinary\", \"Folder\":\"WA_roadnetwork_and_single_trajectory\"}");
   reqRespHelper.explainResponse(reqRespHelper.readNext());
   // Load grid index from binary.
-  reqRespHelper.writeNext("{\"Cmd\":\"LoadGridIndexFromBinary\"}");
+  reqRespHelper.writeNext("{\"Cmd\":\"LoadGridIndexFromBinary\", \"Folder\":\"WA_roadnetwork_and_single_trajectory\"}");
   reqRespHelper.explainResponse(reqRespHelper.readNext());
   // Load SP table from binary.
   reqRespHelper.writeNext("{\"Cmd\":\"LoadSPTableFromBinary\"}");

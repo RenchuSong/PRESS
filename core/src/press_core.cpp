@@ -307,13 +307,14 @@ void handleBuildGridIndex(picojson::value& requestJson, std::string& response) {
   response = successResponse("Built grid index from roadnet " + roadnetName + ".");
 }
 
-// Handle dump grid index to ${TMP_FOLDER}/[roadnetName]/grid_index.bin
+// Handle dump grid index to ${EXP_FOLDER}/[folder]/grid_index.bin
 void handleDumpGridIndexToBinary(picojson::value& requestJson, std::string& response) {
   if (!gridIndexReady) {
     response = errorResponse("Grid index is not ready.");
     return;
   }
-  auto folderName = config.tmpFolder + roadnetName + "/";
+  auto& folder = requestJson.get("Folder").get<std::string>();
+  auto folderName = config.expFolder + folder + "/";
   if (!fileExists(folderName.c_str()) && !createFolder(folderName)) {
     FILE_LOG(TLogLevel::lerror) << "Failed to create storage folder: " << folderName;
     response = errorResponse("Failed to create storage folder.");
@@ -325,14 +326,15 @@ void handleDumpGridIndexToBinary(picojson::value& requestJson, std::string& resp
   response = successResponse("Grid index is dumped to " + fileName + ".");
 }
 
-// Handle load grid index from ${TMP_FOLDER}/[folder]/grid_index.bin
+// Handle load grid index from ${EXP_FOLDER}/[folder]/grid_index.bin
 void handleLoadGridIndexFromBinary(picojson::value& requestJson, std::string& response) {
   clearComponent(Component::GRID_INDEX);
   if (!roadnetReady) {
     response = errorResponse("Roadnet is not ready.");
     return;
   }
-  auto fileName = config.tmpFolder + roadnetName + "/grid_index.bin";
+  auto folder = requestJson.get("Folder").get<std::string>();
+  auto fileName = config.expFolder + folder + "/grid_index.bin";
   if (!fileExists(fileName.c_str())) {
     FILE_LOG(TLogLevel::lerror) << "Grid index binary file does not exist: " << fileName;
     response = errorResponse("Failed to load grid index.");
