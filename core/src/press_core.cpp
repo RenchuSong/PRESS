@@ -304,7 +304,7 @@ void handleBuildGridIndex(picojson::value& requestJson, std::string& response) {
   auto gridHeight = requestJson.get("CellHeight").get<double>();
   gridIndex.build(roadnet, gridWidth, gridHeight);
   gridIndexReady = true;
-  response = successResponse("Built grid index from roadnet " + roadnetName + ".");
+  response = successResponse("Built grid index from roadnet.");
 }
 
 // Handle dump grid index to ${EXP_FOLDER}/[folder]/grid_index.bin
