@@ -9,18 +9,20 @@ var expCtxLock sync.RWMutex
 
 // ExperimentContext holds the state of doing an experiment.
 type ExperimentContext struct {
-	IsOpen       bool   `json:"isOpen"`
-	ID           int    `json:"id"`
-	Name         string `json:"name"`
-	RoadnetReady bool   `json:"roadnetReady"`
+	IsOpen         bool   `json:"isOpen"`
+	ID             int    `json:"id"`
+	Name           string `json:"name"`
+	RoadnetReady   bool   `json:"roadnetReady"`
+	GridIndexReady bool   `json:"gridIndexReady"`
 }
 
 // ExpCtx is the experiment state.
 var ExpCtx = ExperimentContext{
-	IsOpen:       false,
-	ID:           -1,
-	Name:         "",
-	RoadnetReady: false,
+	IsOpen:         false,
+	ID:             -1,
+	Name:           "",
+	RoadnetReady:   false,
+	GridIndexReady: false,
 }
 
 // IsExpOpen is experiment open.
@@ -35,6 +37,13 @@ func (es *ExperimentContext) IsRoadnetReady() bool {
 	expCtxLock.RLock()
 	defer expCtxLock.RUnlock()
 	return es.RoadnetReady
+}
+
+// IsGridIndexReady is roadnet ready.
+func (es *ExperimentContext) IsGridIndexReady() bool {
+	expCtxLock.RLock()
+	defer expCtxLock.RUnlock()
+	return es.GridIndexReady
 }
 
 // Open an experiment.
@@ -60,6 +69,7 @@ func (es *ExperimentContext) Close() {
 	ExpCtx.ID = -1
 	ExpCtx.Name = ""
 	ExpCtx.RoadnetReady = false
+	ExpCtx.GridIndexReady = false
 }
 
 // StartRefreshRoadnet start fresh roadnet.
@@ -70,6 +80,16 @@ func (es *ExperimentContext) StartRefreshRoadnet() {
 // EndRefreshRoadnet end fresh roadnet.
 func (es *ExperimentContext) EndRefreshRoadnet() {
 	ExpCtx.RoadnetReady = true
+}
+
+// StartBuildGridIndex start fresh roadnet.
+func (es *ExperimentContext) StartBuildGridIndex() {
+	ExpCtx.GridIndexReady = false
+}
+
+// EndBuildGridIndex end fresh roadnet.
+func (es *ExperimentContext) EndBuildGridIndex() {
+	ExpCtx.GridIndexReady = true
 }
 
 // LockCtxLock locks the ctx lock.

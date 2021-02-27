@@ -167,9 +167,8 @@ func DumpRoadnetToBinary(c *gin.Context, b interface{}) *util.TaskResult {
 	mod.ExpCtx.LockCtxLock()
 	defer mod.ExpCtx.UnlockCtxLock()
 	util.Core.SendRequest(struct {
-		Cmd             string
-		Folder          string
-		GraphReaderType string
+		Cmd    string
+		Folder string
 	}{
 		Cmd:    "DumpRoadnetToBinary",
 		Folder: "Experiment_" + strconv.Itoa(mod.ExpCtx.ID),

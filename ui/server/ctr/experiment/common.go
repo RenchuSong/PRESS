@@ -180,13 +180,41 @@ func deleteExperiment(id string) error {
 func resetRoadnet(id int) error {
 	em := ""
 
-	// Remove roadnet.
 	exp := path.Join(ctr.Config.Experiments, "Experiment_"+strconv.Itoa(id))
-	if err := util.RemoveFile(path.Join(exp, "road_network.bin")); err != nil {
-		em += err.Error() + ";"
+
+	// Remove binaries.
+	// TODO: remove other binaries.
+	bins := [2]string{
+		"road_network.bin",
+		"grid_index.bin",
+	}
+	for _, bin := range bins {
+		if err := util.RemoveFile(path.Join(exp, bin)); err != nil {
+			em += err.Error() + ";"
+		}
 	}
 
+	if em == "" {
+		return nil
+	}
+	return fmt.Errorf(em)
+}
+
+func resetGridIndex(id int) error {
+	em := ""
+
+	exp := path.Join(ctr.Config.Experiments, "Experiment_"+strconv.Itoa(id))
+
+	// Remove binaries.
 	// TODO: remove other binaries.
+	bins := [1]string{
+		"grid_index.bin",
+	}
+	for _, bin := range bins {
+		if err := util.RemoveFile(path.Join(exp, bin)); err != nil {
+			em += err.Error() + ";"
+		}
+	}
 
 	if em == "" {
 		return nil

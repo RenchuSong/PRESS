@@ -59,6 +59,9 @@ func BuildGridIndex(c *gin.Context, b interface{}) *util.TaskResult {
 	}
 
 	// Send build grid index request to core.
+	mod.ExpCtx.LockCtxLock()
+	defer mod.ExpCtx.UnlockCtxLock()
+	mod.ExpCtx.StartBuildGridIndex()
 	util.Core.SendRequest(struct {
 		Cmd        string
 		CellWidth  int
@@ -76,6 +79,20 @@ func BuildGridIndex(c *gin.Context, b interface{}) *util.TaskResult {
 			Message: "Failed to build grid index: " + err.Error(),
 		}
 	}
+	if !ret.Success {
+		return &util.TaskResult{
+			Code:    500,
+			Message: ret.Message,
+		}
+	}
+	mod.ExpCtx.EndBuildGridIndex()
+
+	if err := resetGridIndex(mod.ExpCtx.ID); err != nil {
+		return &util.TaskResult{
+			Code:    500,
+			Message: err.Error(),
+		}
+	}
 
 	return &util.TaskResult{
 		Code:    200,
@@ -85,10 +102,82 @@ func BuildGridIndex(c *gin.Context, b interface{}) *util.TaskResult {
 
 // DumpGridIndexToBinary dumps grid index to binary.
 func DumpGridIndexToBinary(c *gin.Context, b interface{}) *util.TaskResult {
-	return nil
+	// Cannot dump grid index before it's been loaded.
+	if !mod.ExpCtx.IsOpen || !mod.ExpCtx.GridIndexReady {
+		return &util.TaskResult{
+			Code:    500,
+			Message: "Please open an experiment and build grid index first.",
+		}
+	}
+
+	// Send load grid index request to core.
+	mod.ExpCtx.LockCtxLock()
+	defer mod.ExpCtx.UnlockCtxLock()
+	util.Core.SendRequest(struct {
+		Cmd    string
+		Folder string
+	}{
+		Cmd:    "DumpGridIndexToBinary",
+		Folder: "Experiment_" + strconv.Itoa(mod.ExpCtx.ID),
+	})
+
+	ret, err := util.Core.GetResponse()
+	if err != nil {
+		return &util.TaskResult{
+			Code:    500,
+			Message: "Failed to dump grid index: " + err.Error(),
+		}
+	}
+	if !ret.Success {
+		return &util.TaskResult{
+			Code:    500,
+			Message: ret.Message,
+		}
+	}
+
+	return Auxiliaries(c, b)
 }
 
 // LoadGridIndexFromBinary loads grid index from binary.
 func LoadGridIndexFromBinary(c *gin.Context, b interface{}) *util.TaskResult {
-	return nil
+	// Only load grid index in an open experiment with roadnet loaded.
+	if !mod.ExpCtx.IsExpOpen() || !mod.ExpCtx.IsRoadnetReady() {
+		return &util.TaskResult{
+			Code:    500,
+			Message: "Please open an experiment and load roadnet first.",
+		}
+	}
+
+	// Send load grid index request to core.
+	mod.ExpCtx.LockCtxLock()
+	defer mod.ExpCtx.UnlockCtxLock()
+	mod.ExpCtx.StartBuildGridIndex()
+	util.Core.SendRequest(struct {
+		Cmd    string
+		Folder string
+	}{
+		Cmd:    "LoadGridIndexFromBinary",
+		Folder: "Experiment_" + strconv.Itoa(mod.ExpCtx.ID),
+	})
+
+	ret, err := util.Core.GetResponse()
+	if err != nil {
+		return &util.TaskResult{
+			Code:    500,
+			Message: "Failed to load grid index: " + err.Error(),
+		}
+	}
+	if !ret.Success {
+		return &util.TaskResult{
+			Code:    500,
+			Message: ret.Message,
+		}
+	}
+	mod.ExpCtx.EndBuildGridIndex()
+
+	return &util.TaskResult{
+		Code:    200,
+		Message: ret.Message,
+		Data:    mod.ExpCtx,
+	}
 }
