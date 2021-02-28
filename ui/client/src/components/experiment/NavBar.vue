@@ -17,6 +17,12 @@
         Grid Index & SP Table
       </span>
     </a-menu-item>
+    <a-menu-item key="gindexsptable">
+      <span>
+        <global-outlined />
+        GPS Traj to PRESS Traj
+      </span>
+    </a-menu-item>
     <a-sub-menu key="sub2">
       <template #title>
         <span><laptop-outlined />subnav 2</span>

@@ -25,6 +25,7 @@ import Steps from "ant-design-vue/lib/steps";
 import PageHeader from "ant-design-vue/lib/page-header";
 import Descriptions from "ant-design-vue/lib/descriptions";
 import Select from "ant-design-vue/lib/select";
+import Slider from "ant-design-vue/lib/slider";
 
 import "ant-design-vue/dist/antd.css";
 
@@ -53,4 +54,5 @@ createApp(App)
   .use(PageHeader)
   .use(Descriptions)
   .use(Select)
+  .use(Slider)
   .mount("#app");
