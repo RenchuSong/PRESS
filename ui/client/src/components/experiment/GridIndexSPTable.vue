@@ -1,6 +1,6 @@
 <template>
   <a-space direction="vertical" class="full-width">
-    <a-page-header class="section" title="Build Grid Index">
+    <a-page-header class="section grid-index" title="Build Grid Index">
       <a-row type="flex" align="middle">
         <a-col style="width: calc(60% - 20px)">
           <a-row type="flex" justify="space-between" :gutter="10">
@@ -29,8 +29,7 @@
                 style="margin-top: 24px"
                 class="full-width"
                 type="primary"
-                :disabled="loadFromFileDisabled"
-                @click="preHandleLoadRoadnetFromFile"
+                @click="preHandleBuildGridIndex"
               >
                 BUILD
               </a-button>
@@ -49,7 +48,7 @@
             <a-col :span="18">
               <a-select
                 class="full-width"
-                v-model:value="roadnetBinaryFileName"
+                v-model:value="gridIndexBinaryFileName"
               >
                 <a-select-option value="tooltip" disabled>
                   From Binary
@@ -75,7 +74,7 @@
                 class="full-width"
                 type="primary"
                 :disabled="loadFromBinaryDisabled"
-                @click="handleLoadRoadnetFromBinary"
+                @click="handleLoadGridIndexFromBinary"
               >
                 LOAD
               </a-button>
@@ -89,31 +88,106 @@
         <a-button
           class="full-width"
           type="primary"
-          @click="gotoGridIndexAndSPTable()"
+          :disabled="!gridIndexReady || !spTableReady"
+          @click="gotoGPSTrajToPRESSTraj()"
         >
           Next: GPS Traj. to PRESS Traj.
         </a-button>
       </a-col>
     </a-row>
   </a-space>
+  <a-modal
+    centered
+    :closable="false"
+    :maskClosable="false"
+    v-model:visible="confirmBuildGridIndex"
+    title="ATTENTION"
+    @ok="
+      confirmBuildGridIndex = false;
+      handleBuildGridIndex(gridIndexWidth, gridIndexHeight);
+    "
+  >
+    There is already grid index in this experiment.<br />
+    Do you want to replace it?
+  </a-modal>
 </template>
 
 <script lang="ts">
-import { defineComponent, ref } from "vue";
+import { computed, defineComponent, ref } from "vue";
 import { useStore } from "@/store";
+import message from "ant-design-vue/lib/message";
+import useGridIndex from "@/composables/experiment/useGridIndex";
+import useExperiment from "@/composables/experiment/useExperiment";
+import { RESTError } from "@/api/base";
 
 export default defineComponent({
   name: "GridIndexSPTable",
   setup(_props, _context) {
     const store = useStore();
+    const gridIndexWidth = ref<number>(200);
+    const gridIndexHeight = ref<number>(200);
+
+    const {
+      currentGridIndexBinaries,
+      buildGridIndex,
+      dumpGridIndexToBinary,
+      loadGridIndexFromBinary,
+    } = useGridIndex(store);
+
+    const gridIndexBinaryFileName = ref("tooltip");
+    const loadFromBinaryDisabled = computed(
+      () => gridIndexBinaryFileName.value === "tooltip"
+    );
+
+    const confirmBuildGridIndex = ref<boolean>(false);
+
+    const handleBuildGridIndex = async (width: number, height: number) => {
+      try {
+        await buildGridIndex(width, height);
+        await dumpGridIndexToBinary();
+      } catch (exception) {
+        message.error((exception as RESTError).message);
+      }
+    };
+    const preHandleBuildGridIndex = () => {
+      if (currentGridIndexBinaries.value.length > 0) {
+        confirmBuildGridIndex.value = true;
+      } else {
+        handleBuildGridIndex(gridIndexWidth.value, gridIndexHeight.value);
+      }
+    };
+    const { currentExperimentContext, navigate } = useExperiment(store);
+
     return {
-      currentGridIndexBinaries: [],
-      loadFromBinaryDisabled: false,
-      gridIndexWidth: ref<number>(200),
-      gridIndexHeight: ref<number>(200),
+      currentGridIndexBinaries,
+      loadFromBinaryDisabled,
+      gridIndexWidth,
+      gridIndexHeight,
+      buildGridIndex,
+      dumpGridIndexToBinary,
+      gridIndexBinaryFileName,
+      handleLoadGridIndexFromBinary: async () => {
+        try {
+          await loadGridIndexFromBinary();
+        } catch (exception) {
+          message.error((exception as RESTError).message);
+        }
+      },
+      handleBuildGridIndex,
+      preHandleBuildGridIndex,
+      confirmBuildGridIndex,
+      gridIndexReady: computed(
+        () => currentExperimentContext.value?.gridIndexReady
+      ),
+      spTableReady: true,
+      navigate,
     };
   },
-  methods: {},
+  methods: {
+    gotoGPSTrajToPRESSTraj() {
+      this.navigate(this.$route, this.$router, "gpstopress");
+    },
+  },
 });
 </script>
 

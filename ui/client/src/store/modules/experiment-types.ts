@@ -1,6 +1,5 @@
 import { AuxiliaryInfo } from '@/model/auxiliary-info';
 import { ExperimentContext } from '@/model/experiment-context';
-import { RoadnetWithBound } from '@/model/roadnet';
 import { RoadnetDataSource } from '@/model/roadnet-data-source';
 import { ActionContext } from "vuex";
 
@@ -61,6 +60,9 @@ export enum ExperimentActionTypes {
   DUMP_ROADNET_TO_BINARY = "DUMP_ROADNET_TO_BINARY",
   LOAD_ROADNET_FROM_BINARY = "LOAD_ROADNET_FROM_BINARY",
   UPDATE_ROADNET = "UPDATE_ROADNET", // Dummy, store cannot bear large object.
+  BUILD_GRID_INDEX = "BUILD_GRID_INDEX",
+  DUMP_GRID_INDEX_TO_BINARY = "DUMP_GRID_INDEX_TO_BINARY",
+  LOAD_GRID_INDEX_FROM_BINARY = "LOAD_GRID_INDEX_FROM_BINARY",
 }
 
 type AugmentedExperimentActionContext = {
@@ -99,6 +101,18 @@ export interface ExperimentActions {
     { commit }: AugmentedExperimentActionContext,
     payload: {}
   ): Promise<void>;
+  [ExperimentActionTypes.BUILD_GRID_INDEX](
+    { commit }: AugmentedExperimentActionContext,
+    payload: { width: number, height: number }
+  ): Promise<void>;
+  [ExperimentActionTypes.DUMP_GRID_INDEX_TO_BINARY](
+    { commit }: AugmentedExperimentActionContext,
+    payload: {}
+  ): Promise<void>;
+  [ExperimentActionTypes.LOAD_GRID_INDEX_FROM_BINARY](
+    { commit }: AugmentedExperimentActionContext,
+    payload: {}
+  ): Promise<void>;
 }
 
 // getters
@@ -108,5 +122,6 @@ export type ExperimentGetters = {
   roadnetReaderTypes(state: ExperimentState): string[];
   roadnetDataSources(state: ExperimentState): RoadnetDataSource[];
   currentExperimentRoadnetBinaries(state: ExperimentState): string[];
+  currentExperimentGridIndexBinaries(state: ExperimentState): string[];
   currentExperimentStep(state: ExperimentState): string;
 };

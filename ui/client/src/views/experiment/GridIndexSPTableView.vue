@@ -11,3 +11,9 @@ import GridIndexSPTable from "@/components/experiment/GridIndexSPTable.vue";
 })
 export default class GridIndexSPTableView extends Vue {}
 </script>
+
+<style lang="scss">
+.ant-tooltip {
+  z-index: 0 !important;
+}
+</style>

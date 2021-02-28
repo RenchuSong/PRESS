@@ -17,9 +17,9 @@
         Grid Index & SP Table
       </span>
     </a-menu-item>
-    <a-menu-item key="gindexsptable">
+    <a-menu-item key="gpstopress" :disabled="!gridIndexReady || !spTableReady">
       <span>
-        <global-outlined />
+        <dash-outlined />
         GPS Traj to PRESS Traj
       </span>
     </a-menu-item>
@@ -51,6 +51,7 @@ import {
   LaptopOutlined,
   NotificationOutlined,
   RadarChartOutlined,
+  DashOutlined,
 } from "@ant-design/icons-vue";
 import { computed, defineComponent } from "vue";
 import { useStore } from "@/store";
@@ -62,6 +63,7 @@ export default defineComponent({
     LaptopOutlined,
     NotificationOutlined,
     RadarChartOutlined,
+    DashOutlined,
   },
   setup(_props, _context) {
     const store = useStore();
@@ -70,6 +72,10 @@ export default defineComponent({
       roadnetReady: computed(
         () => currentExperimentContext.value?.roadnetReady
       ),
+      gridIndexReady: computed(
+        () => currentExperimentContext.value?.gridIndexReady
+      ),
+      spTableReady: true,
       navigate,
       currentExperimentStep: computed(() => [
         store.getters.currentExperimentStep,

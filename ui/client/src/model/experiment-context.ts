@@ -5,4 +5,5 @@ export interface ExperimentContext extends ExperimentMeta {
   id: number;
   name: string;
   roadnetReady: boolean;
+  gridIndexReady: boolean;
 };

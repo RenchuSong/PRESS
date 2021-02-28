@@ -27,6 +27,11 @@ const routes: Array<RouteRecordRaw> = [
         path: "gindexsptable",
         component: () => import("../views/experiment/GridIndexSPTableView.vue")
       },
+      {
+        path: "gpstopress",
+        component: () => import("../views/experiment/GPSTrajToPRESSTraj.vue")
+      },
+
     ]
   },
   {

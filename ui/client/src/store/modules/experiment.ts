@@ -1,4 +1,5 @@
 import { Experiment } from "@/api/experiment";
+import { GridIndex } from "@/api/grid-index";
 import { Roadnet } from "@/api/roadnet";
 import { AuxiliaryInfo } from "@/model/auxiliary-info";
 import { ExperimentContext } from "@/model/experiment-context";
@@ -33,6 +34,12 @@ const getters: GetterTree<ExperimentState, ExperimentState> &
   currentExperimentRoadnetBinaries:
     state => state.currentExperimentAuxiliaries.filter(
       value => value.filename === 'road_network.bin'
+    ).map(
+      value => `${value.filename} (${formatFileSize(value.size)})`
+    ),
+  currentExperimentGridIndexBinaries:
+    state => state.currentExperimentAuxiliaries.filter(
+      value => value.filename === 'grid_index.bin'
     ).map(
       value => `${value.filename} (${formatFileSize(value.size)})`
     ),
@@ -128,6 +135,24 @@ const actions: ActionTree<ExperimentState, ExperimentState> &
     commit(
       ExperimentMutationTypes.SET_EXPERIMENT_CONTEXT,
       await Roadnet.genLoadRoadnetFromBinary()
+    );
+  },
+  async [ExperimentActionTypes.BUILD_GRID_INDEX]({ commit }, payload) {
+    commit(
+      ExperimentMutationTypes.SET_EXPERIMENT_CONTEXT,
+      await GridIndex.genBuildGridIndex(payload.width, payload.height)
+    );
+  },
+  async [ExperimentActionTypes.DUMP_GRID_INDEX_TO_BINARY]({ commit }) {
+    commit(
+      ExperimentMutationTypes.SET_CURRENT_EXPERIMENT_AUXILIARIES,
+      await GridIndex.genDumpGridIndexToBinary()
+    );
+  },
+  async [ExperimentActionTypes.LOAD_GRID_INDEX_FROM_BINARY]({ commit }) {
+    commit(
+      ExperimentMutationTypes.SET_EXPERIMENT_CONTEXT,
+      await GridIndex.genLoadGridIndexFromBinary()
     );
   },
 };
