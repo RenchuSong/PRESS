@@ -1,6 +1,6 @@
 <template>
   <a-space direction="vertical" class="full-width">
-    <a-page-header class="section grid-index" title="Build Grid Index">
+    <a-page-header class="section grid-index" title="Load Grid Index">
       <a-row type="flex" align="middle">
         <a-col style="width: calc(60% - 20px)">
           <a-row type="flex" justify="space-between" :gutter="10">
@@ -83,6 +83,81 @@
         </a-col>
       </a-row>
     </a-page-header>
+
+    <a-page-header class="section grid-index" title="Load Shortest Path Table">
+      <a-row type="flex" align="middle">
+        <a-col style="width: calc(60% - 20px)">
+          <a-row type="flex" justify="space-between" :gutter="10">
+            <a-col :span="20">
+              <br />
+              <a-slider
+                v-model:value="spTableRange"
+                :tooltip-visible="true"
+                :min="2000"
+                :max="10000"
+              />
+              Single source shortest path range (m)
+            </a-col>
+            <a-col :span="4">
+              <a-button
+                style="margin-top: 24px"
+                class="full-width"
+                type="primary"
+                @click="preHandleBuildSPTable"
+              >
+                BUILD
+              </a-button>
+            </a-col>
+          </a-row>
+        </a-col>
+        <a-col style="width: 40px">
+          <a-row type="flex" justify="center">
+            <a-divider type="vertical" style="height: 30px" />
+            <span style="color: rgba(0, 0, 0, 0.25)">OR</span>
+            <a-divider type="vertical" style="height: 30px" />
+          </a-row>
+        </a-col>
+        <a-col style="width: calc(40% - 20px)">
+          <a-row type="flex" justify="space-between" :gutter="10">
+            <a-col :span="18">
+              <a-select
+                class="full-width"
+                v-model:value="gridIndexBinaryFileName"
+              >
+                <a-select-option value="tooltip" disabled>
+                  From Binary
+                </a-select-option>
+                <a-select-option
+                  value="noBinary"
+                  v-if="currentGridIndexBinaries.length === 0"
+                  disabled
+                >
+                  No Binary Available
+                </a-select-option>
+                <a-select-option
+                  v-for="currentGridIndexBinary in currentGridIndexBinaries"
+                  :key="currentGridIndexBinary"
+                  :value="currentGridIndexBinary"
+                >
+                  {{ currentGridIndexBinary }}
+                </a-select-option>
+              </a-select>
+            </a-col>
+            <a-col :span="6">
+              <a-button
+                class="full-width"
+                type="primary"
+                :disabled="loadFromBinaryDisabled"
+                @click="handleLoadGridIndexFromBinary"
+              >
+                LOAD
+              </a-button>
+            </a-col>
+          </a-row>
+        </a-col>
+      </a-row>
+    </a-page-header>
+
     <a-row type="flex" justify="end" :gutter="10">
       <a-col style="width: 250px">
         <a-button
@@ -126,6 +201,7 @@ export default defineComponent({
     const store = useStore();
     const gridIndexWidth = ref<number>(200);
     const gridIndexHeight = ref<number>(200);
+    const spTableRange = ref<number>(4000);
 
     const {
       currentGridIndexBinaries,
@@ -181,6 +257,7 @@ export default defineComponent({
       ),
       spTableReady: true,
       navigate,
+      spTableRange,
     };
   },
   methods: {
