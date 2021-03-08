@@ -359,13 +359,14 @@ void handleBuildSPTable(picojson::value& requestJson, std::string& response) {
   response = successResponse("Built SP table from roadnet " + roadnetName + ".");
 }
 
-// Handle dump SP table to ${TMP_FOLDER}/[roadnetName]/sp_table.bin
+// Handle dump SP table to ${EXP_FOLDER}/[folder]/sp_table.bin
 void handleDumpSPTableToBinary(picojson::value& requestJson, std::string& response) {
   if (!spTableReady) {
     response = errorResponse("SP table is not ready.");
     return;
   }
-  auto folderName = config.tmpFolder + roadnetName + "/";
+  auto& folder = requestJson.get("Folder").get<std::string>();
+  auto folderName = config.expFolder + folder + "/";
   if (!fileExists(folderName.c_str()) && !createFolder(folderName)) {
     FILE_LOG(TLogLevel::lerror) << "Failed to create storage folder: " << folderName;
     response = errorResponse("Failed to create storage folder.");
@@ -377,14 +378,15 @@ void handleDumpSPTableToBinary(picojson::value& requestJson, std::string& respon
   response = successResponse("SP table is dumped to " + fileName + ".");
 }
 
-// Handle load SP table from ${TMP_FOLDER}/[folder]/sp_table.bin
+// Handle load SP table from ${EXP_FOLDER}/[folder]/sp_table.bin
 void handleLoadSPTableFromBinary(picojson::value& requestJson, std::string& response) {
   clearComponent(Component::SP_TABLE);
   if (!roadnetReady) {
     response = errorResponse("Roadnet is not ready.");
     return;
   }
-  auto fileName = config.tmpFolder + roadnetName + "/sp_table.bin";
+  auto folder = requestJson.get("Folder").get<std::string>();
+  auto fileName = config.expFolder + folder + "/sp_table.bin";
   if (!fileExists(fileName.c_str())) {
     FILE_LOG(TLogLevel::lerror) << "SP table binary file does not exist: " << fileName;
     response = errorResponse("Failed to load SP table.");

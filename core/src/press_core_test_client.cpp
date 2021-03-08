@@ -134,7 +134,7 @@ int main(int argc, char** argv) {
   reqRespHelper.writeNext("{\"Cmd\":\"BuildSPTable\", \"MaxDist\":4000}");
   reqRespHelper.explainResponse(reqRespHelper.readNext());
   // Dump SP table to binary.
-  reqRespHelper.writeNext("{\"Cmd\":\"DumpSPTableToBinary\"}");
+  reqRespHelper.writeNext("{\"Cmd\":\"DumpSPTableToBinary\", \"Folder\":\"WA_roadnetwork_and_single_trajectory\"}");
   reqRespHelper.explainResponse(reqRespHelper.readNext());
   // Add GPS trajectory and map match.
   reqRespHelper.writeNext("{\"Cmd\":\"AddGPSTrajectoryAndMapMatch\", \"FileName\":\"WA_roadnetwork_and_single_trajectory/gps_data.txt\", \"SigmaZ\":4.07, \"MaxGPSBias\":50, \"MaxDistDifference\":2000, \"GPSTrajectoryReaderType\":\"SEATTLE_SAMPLE_GPS\"}");
@@ -195,7 +195,7 @@ int main(int argc, char** argv) {
   reqRespHelper.writeNext("{\"Cmd\":\"LoadGridIndexFromBinary\", \"Folder\":\"WA_roadnetwork_and_single_trajectory\"}");
   reqRespHelper.explainResponse(reqRespHelper.readNext());
   // Load SP table from binary.
-  reqRespHelper.writeNext("{\"Cmd\":\"LoadSPTableFromBinary\"}");
+  reqRespHelper.writeNext("{\"Cmd\":\"LoadSPTableFromBinary\", \"Folder\":\"WA_roadnetwork_and_single_trajectory\"}");
   reqRespHelper.explainResponse(reqRespHelper.readNext());
   // Load GPS trajectories from binary.
   reqRespHelper.writeNext("{\"Cmd\":\"LoadGPSTrajectoriesFromBinary\"}");
