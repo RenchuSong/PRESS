@@ -25,6 +25,7 @@ var routes = []func(r *gin.RouterGroup, cq *util.TaskQueue, oq *util.TaskQueue){
 	experiment.RegisterExperiment,
 	experiment.RegisterRoadnet,
 	experiment.RegisterGridIndex,
+	experiment.RegisterSPTable,
 }
 
 // NewHTTP creates a new HTTP service.

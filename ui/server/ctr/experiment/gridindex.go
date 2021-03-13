@@ -110,7 +110,7 @@ func DumpGridIndexToBinary(c *gin.Context, b interface{}) *util.TaskResult {
 		}
 	}
 
-	// Send load grid index request to core.
+	// Send dump grid index request to core.
 	mod.ExpCtx.LockCtxLock()
 	defer mod.ExpCtx.UnlockCtxLock()
 	util.Core.SendRequest(struct {
