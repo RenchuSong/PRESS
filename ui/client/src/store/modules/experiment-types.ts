@@ -63,6 +63,9 @@ export enum ExperimentActionTypes {
   BUILD_GRID_INDEX = "BUILD_GRID_INDEX",
   DUMP_GRID_INDEX_TO_BINARY = "DUMP_GRID_INDEX_TO_BINARY",
   LOAD_GRID_INDEX_FROM_BINARY = "LOAD_GRID_INDEX_FROM_BINARY",
+  BUILD_SP_TABLE = "BUILD_SP_TABLE",
+  DUMP_SP_TABLE_TO_BINARY = "DUMP_SP_TABLE_TO_BINARY",
+  LOAD_SP_TABLE_FROM_BINARY = "LOAD_SP_TABLE_FROM_BINARY",
 }
 
 type AugmentedExperimentActionContext = {
@@ -113,6 +116,18 @@ export interface ExperimentActions {
     { commit }: AugmentedExperimentActionContext,
     payload: {}
   ): Promise<void>;
+  [ExperimentActionTypes.BUILD_SP_TABLE](
+    { commit }: AugmentedExperimentActionContext,
+    payload: { distance: number }
+  ): Promise<void>;
+  [ExperimentActionTypes.DUMP_SP_TABLE_TO_BINARY](
+    { commit }: AugmentedExperimentActionContext,
+    payload: {}
+  ): Promise<void>;
+  [ExperimentActionTypes.LOAD_SP_TABLE_FROM_BINARY](
+    { commit }: AugmentedExperimentActionContext,
+    payload: {}
+  ): Promise<void>;
 }
 
 // getters
@@ -123,5 +138,6 @@ export type ExperimentGetters = {
   roadnetDataSources(state: ExperimentState): RoadnetDataSource[];
   currentExperimentRoadnetBinaries(state: ExperimentState): string[];
   currentExperimentGridIndexBinaries(state: ExperimentState): string[];
+  currentExperimentSPTableBinaries(state: ExperimentState): string[];
   currentExperimentStep(state: ExperimentState): string;
 };

@@ -1,6 +1,7 @@
 import { Experiment } from "@/api/experiment";
 import { GridIndex } from "@/api/grid-index";
 import { Roadnet } from "@/api/roadnet";
+import { SPTable } from "@/api/sptable";
 import { AuxiliaryInfo } from "@/model/auxiliary-info";
 import { ExperimentContext } from "@/model/experiment-context";
 import { createRoadnet, RoadnetWithBound } from "@/model/roadnet";
@@ -40,6 +41,12 @@ const getters: GetterTree<ExperimentState, ExperimentState> &
   currentExperimentGridIndexBinaries:
     state => state.currentExperimentAuxiliaries.filter(
       value => value.filename === 'grid_index.bin'
+    ).map(
+      value => `${value.filename} (${formatFileSize(value.size)})`
+    ),
+  currentExperimentSPTableBinaries:
+    state => state.currentExperimentAuxiliaries.filter(
+      value => value.filename === 'sp_table.bin'
     ).map(
       value => `${value.filename} (${formatFileSize(value.size)})`
     ),
@@ -153,6 +160,24 @@ const actions: ActionTree<ExperimentState, ExperimentState> &
     commit(
       ExperimentMutationTypes.SET_EXPERIMENT_CONTEXT,
       await GridIndex.genLoadGridIndexFromBinary()
+    );
+  },
+  async [ExperimentActionTypes.BUILD_SP_TABLE]({ commit }, payload) {
+    commit(
+      ExperimentMutationTypes.SET_EXPERIMENT_CONTEXT,
+      await SPTable.genBuildSPTable(payload.distance)
+    );
+  },
+  async [ExperimentActionTypes.DUMP_SP_TABLE_TO_BINARY]({ commit }) {
+    commit(
+      ExperimentMutationTypes.SET_CURRENT_EXPERIMENT_AUXILIARIES,
+      await SPTable.genDumpSPTableToBinary()
+    );
+  },
+  async [ExperimentActionTypes.LOAD_SP_TABLE_FROM_BINARY]({ commit }) {
+    commit(
+      ExperimentMutationTypes.SET_EXPERIMENT_CONTEXT,
+      await SPTable.genLoadSPTableFromBinary()
     );
   },
 };

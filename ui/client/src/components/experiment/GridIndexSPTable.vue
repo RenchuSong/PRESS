@@ -73,7 +73,7 @@
               <a-button
                 class="full-width"
                 type="primary"
-                :disabled="loadFromBinaryDisabled"
+                :disabled="loadGridIndexFromBinaryDisabled"
                 @click="handleLoadGridIndexFromBinary"
               >
                 LOAD
@@ -122,24 +122,24 @@
             <a-col :span="18">
               <a-select
                 class="full-width"
-                v-model:value="gridIndexBinaryFileName"
+                v-model:value="spTableBinaryFileName"
               >
                 <a-select-option value="tooltip" disabled>
                   From Binary
                 </a-select-option>
                 <a-select-option
                   value="noBinary"
-                  v-if="currentGridIndexBinaries.length === 0"
+                  v-if="currentSPTableBinaries.length === 0"
                   disabled
                 >
                   No Binary Available
                 </a-select-option>
                 <a-select-option
-                  v-for="currentGridIndexBinary in currentGridIndexBinaries"
-                  :key="currentGridIndexBinary"
-                  :value="currentGridIndexBinary"
+                  v-for="currentSPTableBinary in currentSPTableBinaries"
+                  :key="currentSPTableBinary"
+                  :value="currentSPTableBinary"
                 >
-                  {{ currentGridIndexBinary }}
+                  {{ currentSPTableBinary }}
                 </a-select-option>
               </a-select>
             </a-col>
@@ -147,8 +147,8 @@
               <a-button
                 class="full-width"
                 type="primary"
-                :disabled="loadFromBinaryDisabled"
-                @click="handleLoadGridIndexFromBinary"
+                :disabled="loadSPTableFromBinaryDisabled"
+                @click="handleLoadSPTableFromBinary"
               >
                 LOAD
               </a-button>
@@ -185,6 +185,20 @@
     There is already grid index in this experiment.<br />
     Do you want to replace it?
   </a-modal>
+  <a-modal
+    centered
+    :closable="false"
+    :maskClosable="false"
+    v-model:visible="confirmBuildSPTable"
+    title="ATTENTION"
+    @ok="
+      confirmBuildSPTable = false;
+      handleBuildSPTable(spTableRange);
+    "
+  >
+    There is already shortest path table in this experiment.<br />
+    Do you want to replace it?
+  </a-modal>
 </template>
 
 <script lang="ts">
@@ -192,6 +206,7 @@ import { computed, defineComponent, ref } from "vue";
 import { useStore } from "@/store";
 import message from "ant-design-vue/lib/message";
 import useGridIndex from "@/composables/experiment/useGridIndex";
+import useSPTable from "@/composables/experiment/useSPTable";
 import useExperiment from "@/composables/experiment/useExperiment";
 import { RESTError } from "@/api/base";
 
@@ -211,7 +226,7 @@ export default defineComponent({
     } = useGridIndex(store);
 
     const gridIndexBinaryFileName = ref("tooltip");
-    const loadFromBinaryDisabled = computed(
+    const loadGridIndexFromBinaryDisabled = computed(
       () => gridIndexBinaryFileName.value === "tooltip"
     );
 
@@ -232,11 +247,42 @@ export default defineComponent({
         handleBuildGridIndex(gridIndexWidth.value, gridIndexHeight.value);
       }
     };
+
+    const {
+      currentSPTableBinaries,
+      buildSPTable,
+      dumpSPTableToBinary,
+      loadSPTableFromBinary,
+    } = useSPTable(store);
+
+    const spTableBinaryFileName = ref("tooltip");
+    const loadSPTableFromBinaryDisabled = computed(
+      () => spTableBinaryFileName.value === "tooltip"
+    );
+
+    const confirmBuildSPTable = ref<boolean>(false);
+
+    const handleBuildSPTable = async (distance: number) => {
+      try {
+        await buildSPTable(distance);
+        await dumpSPTableToBinary();
+      } catch (exception) {
+        message.error((exception as RESTError).message);
+      }
+    };
+    const preHandleBuildSPTable = () => {
+      if (currentSPTableBinaries.value.length > 0) {
+        confirmBuildSPTable.value = true;
+      } else {
+        handleBuildSPTable(spTableRange.value);
+      }
+    };
+
     const { currentExperimentContext, navigate } = useExperiment(store);
 
     return {
       currentGridIndexBinaries,
-      loadFromBinaryDisabled,
+      loadGridIndexFromBinaryDisabled,
       gridIndexWidth,
       gridIndexHeight,
       buildGridIndex,
@@ -255,9 +301,26 @@ export default defineComponent({
       gridIndexReady: computed(
         () => currentExperimentContext.value?.gridIndexReady
       ),
-      spTableReady: true,
-      navigate,
+      currentSPTableBinaries,
+      loadSPTableFromBinaryDisabled,
       spTableRange,
+      buildSPTable,
+      dumpSPTableToBinary,
+      spTableBinaryFileName,
+      handleLoadSPTableFromBinary: async () => {
+        try {
+          await loadSPTableFromBinary();
+        } catch (exception) {
+          message.error((exception as RESTError).message);
+        }
+      },
+      handleBuildSPTable,
+      preHandleBuildSPTable,
+      confirmBuildSPTable,
+      spTableReady: computed(
+        () => currentExperimentContext.value?.spTableReady
+      ),
+      navigate,
     };
   },
   methods: {
