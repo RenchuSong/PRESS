@@ -1,6 +1,10 @@
 <template>
   <a-space direction="vertical" class="full-width">
     <a-page-header class="section grid-index" title="Load Grid Index">
+      <template #tags>
+        <a-tag v-if="gridIndexReady" color="green">Ready</a-tag>
+        <a-tag v-else color="red">Not ready</a-tag>
+      </template>
       <a-row type="flex" align="middle">
         <a-col style="width: calc(60% - 20px)">
           <a-row type="flex" justify="space-between" :gutter="10">
@@ -85,6 +89,10 @@
     </a-page-header>
 
     <a-page-header class="section grid-index" title="Load Shortest Path Table">
+      <template #tags>
+        <a-tag v-if="spTableReady" color="green">Ready</a-tag>
+        <a-tag v-else color="red">Not ready</a-tag>
+      </template>
       <a-row type="flex" align="middle">
         <a-col style="width: calc(60% - 20px)">
           <a-row type="flex" justify="space-between" :gutter="10">

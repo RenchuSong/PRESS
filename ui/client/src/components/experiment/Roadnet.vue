@@ -1,6 +1,10 @@
 <template>
   <a-space direction="vertical" class="full-width">
     <a-page-header class="section" title="Load Roadnet">
+      <template #tags>
+        <a-tag v-if="roadnetReady" color="green">Ready</a-tag>
+        <a-tag v-else color="red">Not ready</a-tag>
+      </template>
       <a-row type="flex">
         <a-col style="width: calc(60% - 20px)">
           <a-row type="flex" justify="space-between" :gutter="10">
