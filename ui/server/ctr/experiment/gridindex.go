@@ -97,6 +97,7 @@ func BuildGridIndex(c *gin.Context, b interface{}) *util.TaskResult {
 	return &util.TaskResult{
 		Code:    200,
 		Message: ret.Message,
+		Data:    mod.ExpCtx,
 	}
 }
 
