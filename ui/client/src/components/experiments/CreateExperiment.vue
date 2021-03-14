@@ -83,8 +83,7 @@ export default defineComponent({
             const newExperimentMeta = await this.createExperiment();
             this.createExperimentModalVisible = false;
             router.push({
-              name: "Experiment",
-              params: { id: newExperimentMeta.id },
+              path: `/experiment/${newExperimentMeta.id}`,
             });
           } catch (exception) {
             message.error((exception as RESTError).message);
