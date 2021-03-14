@@ -75,7 +75,9 @@ export default defineComponent({
       gridIndexReady: computed(
         () => currentExperimentContext.value?.gridIndexReady
       ),
-      spTableReady: true,
+      spTableReady: computed(
+        () => currentExperimentContext.value?.spTableReady
+      ),
       navigate,
       currentExperimentStep: computed(() => [
         store.getters.currentExperimentStep,
