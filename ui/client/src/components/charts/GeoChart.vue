@@ -5,7 +5,7 @@
 </template>
 <script lang="ts">
 import { defineComponent, onMounted } from "vue";
-import { Scene, PointLayer, LineLayer, ILayer } from "@antv/l7";
+import { Scene, LineLayer, ILayer } from "@antv/l7";
 import { Mapbox } from "@antv/l7-maps";
 import { RoadnetWithBound } from "@/model/roadnet";
 import { Position } from "@/model/position";
@@ -72,16 +72,6 @@ export default defineComponent({
 });
 </script>
 <style>
-::-webkit-scrollbar {
-  display: none;
-}
-
-html,
-body {
-  overflow: hidden;
-  margin: 0;
-}
-
 #map {
   position: absolute;
   top: 0;
