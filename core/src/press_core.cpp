@@ -448,7 +448,7 @@ void handleClearGPSAndMapMatchedTrajectories(picojson::value& requestJson, std::
   response = successResponse("Cleared original and map matched GPS trajectories.");
 }
 
-// Handle dump GPS trajectories to ${TMP_FOLDER}/[roadnetName]/gps_trajectories/[0 .. (n - 1)].bin
+// Handle dump GPS trajectories to ${EXP_FOLDER}/[folder]/gps_trajectories/[0 .. (n - 1)].bin
 void handleDumpGPSTrajectoriesToBinary(
   picojson::value& requestJson,
   std::string& response
@@ -457,7 +457,8 @@ void handleDumpGPSTrajectoriesToBinary(
     response = errorResponse("Roadnet is not ready.");
     return;
   }
-  auto gpsFolderName = config.tmpFolder + roadnetName + "/gps_trajectories/";
+  auto& folder = requestJson.get("Folder").get<std::string>();
+  auto gpsFolderName = config.expFolder + folder + "/gps_trajectories/";
   if (!fileExists(gpsFolderName.c_str()) && !createFolder(gpsFolderName)) {
     FILE_LOG(TLogLevel::lerror) << "Failed to create storage folder: " << gpsFolderName;
     response = errorResponse("Failed to create storage folder.");
@@ -477,7 +478,7 @@ void handleDumpGPSTrajectoriesToBinary(
 }
 
 // Handle dump map matched trajectories to
-// ${TMP_FOLDER}/[roadnetName]/map_matched_trajectories/[0 .. (n - 1)].bin
+// ${EXP_FOLDER}/[folder]/map_matched_trajectories/[0 .. (n - 1)].bin
 void handleDumpMapMatchedTrajectoriesToBinary(
   picojson::value& requestJson,
   std::string& response
@@ -486,7 +487,8 @@ void handleDumpMapMatchedTrajectoriesToBinary(
     response = errorResponse("Roadnet is not ready.");
     return;
   }
-  auto mmFolderName = config.tmpFolder + roadnetName + "/map_matched_trajectories/";
+  auto& folder = requestJson.get("Folder").get<std::string>();
+  auto mmFolderName = config.expFolder + folder + "/map_matched_trajectories/";
   if (!fileExists(mmFolderName.c_str()) && !createFolder(mmFolderName)) {
     FILE_LOG(TLogLevel::lerror) << "Failed to create storage folder: " << mmFolderName;
     response = errorResponse("Failed to create storage folder.");
@@ -505,7 +507,7 @@ void handleDumpMapMatchedTrajectoriesToBinary(
   response = successResponse("Map matched trajectories are dumped to " + mmFolderName + ".");
 }
 
-// Handle load GPS trajectories from ${TMP_FOLDER}/[folder]/gps_trajectories/[0 .. (n - 1)].bin
+// Handle load GPS trajectories from ${EXP_FOLDER}/[folder]/gps_trajectories/[0 .. (n - 1)].bin
 void handleLoadGPSTrajectoriesFromBinary(picojson::value& requestJson, std::string& response) {
   if (!roadnetReady) {
     response = errorResponse("Roadnet is not ready.");
@@ -515,7 +517,8 @@ void handleLoadGPSTrajectoriesFromBinary(picojson::value& requestJson, std::stri
     response = errorResponse("SP table is not ready.");
     return;
   }
-  auto folderName = config.tmpFolder + roadnetName + "/gps_trajectories/";
+  auto& folder = requestJson.get("Folder").get<std::string>();
+  auto folderName = config.expFolder + folder + "/gps_trajectories/";
   std::vector<std::string> files;
   if (!listDirectory(folderName, files)) {
     FILE_LOG(TLogLevel::lerror) << "Fail to list GPS trajectory folder: " << folderName;
@@ -531,7 +534,7 @@ void handleLoadGPSTrajectoriesFromBinary(picojson::value& requestJson, std::stri
 }
 
 // Handle load map matched trajectories from
-// ${TMP_FOLDER}/[folder]/map_matched_trajectories/[0 .. (n - 1)].bin
+// ${EXP_FOLDER}/[folder]/map_matched_trajectories/[0 .. (n - 1)].bin
 void handleLoadMapMatchedTrajectoriesFromBinary(
   picojson::value& requestJson,
   std::string& response
@@ -546,7 +549,8 @@ void handleLoadMapMatchedTrajectoriesFromBinary(
     response = errorResponse("SP table is not ready.");
     return;
   }
-  auto folderName = config.tmpFolder + roadnetName + "/map_matched_trajectories/";
+  auto& folder = requestJson.get("Folder").get<std::string>();
+  auto folderName = config.tmpFolder + folder + "/map_matched_trajectories/";
   std::vector<std::string> files;
   if (!listDirectory(folderName, files)) {
     FILE_LOG(TLogLevel::lerror) << "Fail to list map matched trajectory folder: " << folderName;
@@ -600,13 +604,14 @@ void handleClearPRESSTrajectories(picojson::value& requestJson, std::string& res
 }
 
 // Handle dump PRESS trajectories to
-// ${TMP_FOLDER}/[roadnetName]/press_trajectories/[0 .. (n - 1)].bin
+// ${EXP_FOLDER}/[folder]/press_trajectories/[0 .. (n - 1)].bin
 void handleDumpPRESSTrajectoriesToBinary(picojson::value& requestJson, std::string& response) {
   if (!roadnetReady) {
     response = errorResponse("Roadnet is not ready.");
     return;
   }
-  auto pressFolderName = config.tmpFolder + roadnetName + "/press_trajectories/";
+  auto& folder = requestJson.get("Folder").get<std::string>();
+  auto pressFolderName = config.expFolder + folder + "/press_trajectories/";
   if (!fileExists(pressFolderName.c_str()) && !createFolder(pressFolderName)) {
     FILE_LOG(TLogLevel::lerror) << "Failed to create storage folder: " << pressFolderName;
     response = errorResponse("Failed to create storage folder.");
@@ -633,7 +638,7 @@ void handleDumpPRESSTrajectoriesToBinary(picojson::value& requestJson, std::stri
   response = successResponse("PRESS trajectories are dumped to " + pressFolderName + ".");
 }
 
-// Handle load PRESS trajectories from ${TMP_FOLDER}/[folder]/press_trajectories/[0 .. (n - 1)].bin
+// Handle load PRESS trajectories from ${EXP_FOLDER}/[folder]/press_trajectories/[0 .. (n - 1)].bin
 void handleLoadPRESSTrajectoriesFromBinary(picojson::value& requestJson, std::string& response) {
   if (!roadnetReady) {
     response = errorResponse("Roadnet is not ready.");
@@ -643,7 +648,8 @@ void handleLoadPRESSTrajectoriesFromBinary(picojson::value& requestJson, std::st
     response = errorResponse("SP table is not ready.");
     return;
   }
-  auto folderName = config.tmpFolder + roadnetName + "/press_trajectories/";
+  auto& folder = requestJson.get("Folder").get<std::string>();
+  auto folderName = config.expFolder + folder + "/press_trajectories/";
   std::vector<std::string> files;
   if (!listDirectory(folderName, files)) {
     FILE_LOG(TLogLevel::lerror) << "Fail to list PRESS trajectory folder: " << folderName;
