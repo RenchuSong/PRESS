@@ -11,14 +11,37 @@ function download_files {
   declare -a fileLinks=("${!3}")
   for (( i=0; i<$1; i++ )); do 
     printf "${WHITE}Downloading ${fileNames[$i]}${NC}\n"
-    curl -L -o "${fileNames[$i]}.tar.gz" "https://drive.google.com/uc?export=download&id=${fileLinks[$i]}"
+    curl -L -c mycookie -o temp "https://drive.google.com/uc?export=download&id=${fileLinks[$i]}"
+    filesize=$(wc -c temp | awk '{print $1}')
+    if [ $filesize -gt 10000 ]; then
+      printf "Finish downloading\n"
+      mv temp "${fileNames[$i]}.tar.gz"
+    else
+      content=$(cat temp)
+      for (( j=0; j<$filesize-10; j++)); do
+        if [ "${content:$j:8}" == "confirm=" ]; then
+          for (( k=0; k<10; k++)); do
+            if [ "${content:$j+8+$k:1}" == "&" ]; then
+              token=${content:$j+8:$k}
+            fi
+          done
+        fi
+      done
+      printf "Confirm downloading with token ${token}\n"
+      curl -L -b mycookie -o "${fileNames[$i]}.tar.gz" "https://drive.google.com/uc?export=download&confirm=${token}&id=${fileLinks[$i]}"
+      rm mycookie
+      rm temp
+    fi
+    printf "${WHITE}Creating folder${NC}\n"
     mkdir -p "${fileNames[$i]}"
+    printf "${WHITE}Extracting files${NC}\n"
     tar -zxvf "${fileNames[$i]}.tar.gz" -C "${fileNames[$i]}"
+    printf "${WHITE}Removing tarball${NC}\n"
     rm "${fileNames[$i]}.tar.gz"
   done
 }
 
 FileNames=("WA_roadnetwork_and_single_trajectory")
-FileLinks=("1zOZPp4ztgjKXFCaxfWu4_50BFRFk3Ocd")
+FileLinks=("1_EqWRawavv2MiRp0d5jJwgtnsHQPsp5s")
 FileNumber=${#FileNames[@]}
 download_files FileNumber FileNames[@] FileLinks[@]
