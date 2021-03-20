@@ -11,14 +11,14 @@ function download_files {
   declare -a fileLinks=("${!3}")
   for (( i=0; i<$1; i++ )); do 
     printf "${WHITE}Downloading ${fileNames[$i]}${NC}\n"
-    curl -L -o "${fileNames[$i]}" "https://drive.google.com/uc?export=download&id=${fileLinks[$i]}"
+    curl -L -o "${fileNames[$i]}.tar.gz" "https://drive.google.com/uc?export=download&id=${fileLinks[$i]}"
+    mkdir -p "${fileNames[$i]}"
+    tar -zxvf "${fileNames[$i]}.tar.gz" -C "${fileNames[$i]}"
+    rm "${fileNames[$i]}.tar.gz"
   done
 }
 
-printf "${GREEN}Downloading Seattle, WA road network and single trajectory ...${NC}\n"
-mkdir -p WA_roadnetwork_and_single_trajectory
-cd WA_roadnetwork_and_single_trajectory
-WAFileNames=("README.md" "road_network.txt" "gps_data.txt" "ground_truth_route.txt" "config.json")
-WAFileLinks=("129PpnEkTxWmZpM0bVyBZXAC7MUSjSOg7" "1_eI6eRWowIHRsZkdd0cvX7fZZX8bAfX0" "1E7wrRffhrLqlXAgB6XOKo2keSdlOqtee" "1pVzMY_8puhpxN7_OlqAHT6Ti_dr5npGh" "16w_mTM-Q3JTo5XkOBx6ImebJ_2t5udFu")
-WAFileNumber=${#WAFileNames[@]}
-download_files WAFileNumber WAFileNames[@] WAFileLinks[@]
+FileNames=("WA_roadnetwork_and_single_trajectory")
+FileLinks=("1zOZPp4ztgjKXFCaxfWu4_50BFRFk3Ocd")
+FileNumber=${#FileNames[@]}
+download_files FileNumber FileNames[@] FileLinks[@]
