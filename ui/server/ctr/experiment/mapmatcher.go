@@ -22,6 +22,9 @@ func RegisterMapMatcher(r *gin.RouterGroup, cq *util.TaskQueue, oq *util.TaskQue
 	r.PUT("/mapmatcher/loadfrombinary", func(c *gin.Context) {
 		cq.Add(c, LoadMapMatchedFromBinary)
 	})
+	r.PUT("/mapmatcher/clear", func(c *gin.Context) {
+		cq.Add(c, ClearGPSAndMapMatched)
+	})
 }
 
 // AddGPSTrajectoryAndMapMatch adds GPS trajectory and map match to roadnet.
@@ -56,7 +59,15 @@ func LoadFromBinary(c *gin.Context, b interface{}) *util.TaskResult {
 	}
 }
 
-// LoadMapMatchedFromBinary loads map matched trajectory from binary.
+// ClearGPSAndMapMatched loads map matched trajectory from binary.
+func ClearGPSAndMapMatched(c *gin.Context, b interface{}) *util.TaskResult {
+	return &util.TaskResult{
+		Code:    500,
+		Message: "Not implemented.",
+	}
+}
+
+// LoadMapMatchedFromBinary clears GPS and map matched trajectories.
 func LoadMapMatchedFromBinary(c *gin.Context, b interface{}) *util.TaskResult {
 	return &util.TaskResult{
 		Code:    500,
