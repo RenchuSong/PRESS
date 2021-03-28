@@ -41,7 +41,7 @@ func BuildGridIndex(c *gin.Context, b interface{}) *util.TaskResult {
 	if width < 50 || width > 1000 {
 		return &util.TaskResult{
 			Code:    400,
-			Message: "Out of valid width range [50, 1000]: ",
+			Message: "Out of valid width range [50, 1000]: " + strconv.Itoa(width),
 		}
 	}
 	height, err := strconv.Atoi(c.Param("height"))
@@ -54,7 +54,7 @@ func BuildGridIndex(c *gin.Context, b interface{}) *util.TaskResult {
 	if height < 50 || height > 1000 {
 		return &util.TaskResult{
 			Code:    400,
-			Message: "Out of valid height range [50, 1000]: ",
+			Message: "Out of valid height range [50, 1000]: " + strconv.Itoa(height),
 		}
 	}
 

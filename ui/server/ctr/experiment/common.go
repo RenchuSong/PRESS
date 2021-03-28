@@ -28,6 +28,13 @@ type RoadnetDataSource struct {
 	RoadnetReader *string `json:"roadnetReader,omitempty"`
 }
 
+// GPSFolderSource is the GPS data source with folder name
+// and (optional) reader type.
+type GPSFolderSource struct {
+	FolderName string  `json:"folderName"`
+	GPSReader  *string `json:"gpsReader,omitempty"`
+}
+
 // AuxiliaryInfo is the info of an auxiliary file.
 type AuxiliaryInfo struct {
 	Filename string `json:"filename"`
@@ -63,6 +70,39 @@ func getAllRoadnetDataSources() ([]*RoadnetDataSource, error) {
 		}
 
 		ret = append(ret, rds)
+	}
+	return ret, nil
+}
+
+func getAllGPSFolderSources() ([]*GPSFolderSource, error) {
+	dfs, err := util.ListDir(ctr.Config.Data)
+	if err != nil {
+		return nil, err
+	}
+	ret := make([]*GPSFolderSource, 0, len(dfs))
+	for _, df := range dfs {
+		// Roadnet file must exist.
+		if fe, _ := util.FileExists(
+			path.Join(ctr.Config.Data, df, "gps_trajectories"),
+		); !fe {
+			continue
+		}
+		gfs := &GPSFolderSource{
+			FolderName: path.Join(df, "gps_trajectories"),
+		}
+
+		// GPS reader is optional.
+		cfgStr, err := ioutil.ReadFile(
+			path.Join(ctr.Config.Data, df, "config.json"),
+		)
+		if err == nil {
+			var cfg DataSourceConfig
+			if err := json.Unmarshal(cfgStr, &cfg); err == nil {
+				gfs.GPSReader = &cfg.GPSReader
+			}
+		}
+
+		ret = append(ret, gfs)
 	}
 	return ret, nil
 }
