@@ -7,8 +7,8 @@ import (
 
 // RegisterMapMatcher request handlers.
 func RegisterMapMatcher(r *gin.RouterGroup, cq *util.TaskQueue, oq *util.TaskQueue) {
-	r.POST("/mapmatcher/add", func(c *gin.Context) {
-		cq.Add(c, AddGPSTrajectoryAndMapMatch)
+	r.PUT("/mapmatcher/add", func(c *gin.Context) {
+		cq.Add(c, AddGPSAndMapMatch)
 	})
 	r.PUT("/mapmatcher/dumpgpstobinary", func(c *gin.Context) {
 		cq.Add(c, DumpGPSToBinary)
@@ -27,8 +27,8 @@ func RegisterMapMatcher(r *gin.RouterGroup, cq *util.TaskQueue, oq *util.TaskQue
 	})
 }
 
-// AddGPSTrajectoryAndMapMatch adds GPS trajectory and map match to roadnet.
-func AddGPSTrajectoryAndMapMatch(c *gin.Context, b interface{}) *util.TaskResult {
+// AddGPSAndMapMatch adds GPS trajectory and map match to roadnet.
+func AddGPSAndMapMatch(c *gin.Context, b interface{}) *util.TaskResult {
 	return &util.TaskResult{
 		Code:    500,
 		Message: "Not implemented.",
