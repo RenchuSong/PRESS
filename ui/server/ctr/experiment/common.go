@@ -8,6 +8,7 @@ import (
 	"path"
 	"sort"
 	"strconv"
+	"strings"
 	"time"
 
 	"github.com/RenchuSong/PRESS/tree/v3/ui/server/ctr"
@@ -31,6 +32,7 @@ type RoadnetDataSource struct {
 // GPSFolderSource is the GPS data source with folder name
 // and (optional) reader type.
 type GPSFolderSource struct {
+	SourceName string  `json:"sourceName"`
 	FolderName string  `json:"folderName"`
 	GPSReader  *string `json:"gpsReader,omitempty"`
 }
@@ -88,6 +90,7 @@ func getAllGPSFolderSources() ([]*GPSFolderSource, error) {
 			continue
 		}
 		gfs := &GPSFolderSource{
+			SourceName: df,
 			FolderName: path.Join(df, "gps_trajectories"),
 		}
 
@@ -103,6 +106,20 @@ func getAllGPSFolderSources() ([]*GPSFolderSource, error) {
 		}
 
 		ret = append(ret, gfs)
+	}
+	return ret, nil
+}
+
+func getAllGPSFileSources(folder string) ([]string, error) {
+	exp, err := util.ListDir(path.Join(ctr.Config.Data, folder, "gps_trajectories"))
+	if err != nil {
+		return nil, err
+	}
+	ret := make([]string, 0, len(exp))
+	for _, n := range exp {
+		if !strings.HasPrefix(n, ".") {
+			ret = append(ret, n)
+		}
 	}
 	return ret, nil
 }

@@ -22,6 +22,9 @@ func RegisterReformatter(r *gin.RouterGroup, cq *util.TaskQueue, oq *util.TaskQu
 	r.GET("/reformatter/list", func(c *gin.Context) {
 		cq.Add(c, ListTrajectories)
 	})
+	r.GET("/reformatter/press/:id", func(c *gin.Context) {
+		cq.Add(c, GetPRESSTrajectory)
+	})
 }
 
 // ReformatToPRESS reformts all map matched trajectories to PRESS trajectories.
@@ -58,6 +61,14 @@ func ClearPRESS(c *gin.Context, b interface{}) *util.TaskResult {
 
 // ListTrajectories lists all GPS/PRESS trajectories in binary folder.
 func ListTrajectories(c *gin.Context, b interface{}) *util.TaskResult {
+	return &util.TaskResult{
+		Code:    500,
+		Message: "Not implemented.",
+	}
+}
+
+// GetPRESSTrajectory gets one GPS trajectory.
+func GetPRESSTrajectory(c *gin.Context, b interface{}) *util.TaskResult {
 	return &util.TaskResult{
 		Code:    500,
 		Message: "Not implemented.",

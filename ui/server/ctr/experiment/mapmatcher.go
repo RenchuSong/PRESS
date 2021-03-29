@@ -11,7 +11,10 @@ import (
 
 // RegisterMapMatcher request handlers.
 func RegisterMapMatcher(r *gin.RouterGroup, cq *util.TaskQueue, oq *util.TaskQueue) {
-	r.GET("/mapmatcher/datasources", func(c *gin.Context) {
+	r.GET("/mapmatcher/foldersources", func(c *gin.Context) {
+		cq.Add(c, GetGPSFolderSources)
+	})
+	r.GET("/mapmatcher/filesources/:folder", func(c *gin.Context) {
 		cq.Add(c, GetGPSFileSources)
 	})
 	r.PUT("/mapmatcher/add", func(c *gin.Context) {
@@ -35,11 +38,31 @@ func RegisterMapMatcher(r *gin.RouterGroup, cq *util.TaskQueue, oq *util.TaskQue
 	r.GET("/mapmatcher/gpssamplerates", func(c *gin.Context) {
 		cq.Add(c, GetGPSSampleRates)
 	})
+	r.GET("/mapmatcher/gps/:id", func(c *gin.Context) {
+		cq.Add(c, GetGPSTrajectory)
+	})
 }
 
-// GetGPSFileSources gets all GPS folder sources.
-func GetGPSFileSources(c *gin.Context, b interface{}) *util.TaskResult {
+// GetGPSFolderSources gets all GPS folder sources.
+func GetGPSFolderSources(c *gin.Context, b interface{}) *util.TaskResult {
 	ret, err := getAllGPSFolderSources()
+
+	if err != nil {
+		return &util.TaskResult{
+			Code:    500,
+			Message: "Failed to get GPS folder sources: " + err.Error(),
+		}
+	}
+
+	return &util.TaskResult{
+		Code: 200,
+		Data: ret,
+	}
+}
+
+// GetGPSFileSources gets all GPS file sources.
+func GetGPSFileSources(c *gin.Context, b interface{}) *util.TaskResult {
+	ret, err := getAllGPSFileSources(c.Param("folder"))
 
 	if err != nil {
 		return &util.TaskResult{
@@ -335,6 +358,14 @@ func LoadMapMatchedFromBinary(c *gin.Context, b interface{}) *util.TaskResult {
 
 // GetGPSSampleRates gets GPS trajectories sample rates.
 func GetGPSSampleRates(c *gin.Context, b interface{}) *util.TaskResult {
+	return &util.TaskResult{
+		Code:    500,
+		Message: "Not implemented.",
+	}
+}
+
+// GetGPSTrajectory gets one GPS trajectory.
+func GetGPSTrajectory(c *gin.Context, b interface{}) *util.TaskResult {
 	return &util.TaskResult{
 		Code:    500,
 		Message: "Not implemented.",
