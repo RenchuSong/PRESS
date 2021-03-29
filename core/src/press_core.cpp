@@ -550,7 +550,7 @@ void handleLoadMapMatchedTrajectoriesFromBinary(
     return;
   }
   auto& folder = requestJson.get("Folder").get<std::string>();
-  auto folderName = config.tmpFolder + folder + "/map_matched_trajectories/";
+  auto folderName = config.expFolder + folder + "/map_matched_trajectories/";
   std::vector<std::string> files;
   if (!listDirectory(folderName, files)) {
     FILE_LOG(TLogLevel::lerror) << "Fail to list map matched trajectory folder: " << folderName;

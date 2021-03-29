@@ -211,25 +211,125 @@ func DumpMapMatchedToBinary(c *gin.Context, b interface{}) *util.TaskResult {
 
 // LoadGPSFromBinary loads GPS trajectory from binary.
 func LoadGPSFromBinary(c *gin.Context, b interface{}) *util.TaskResult {
+	// Only load GPS trajectories in an open experiment.
+	if !mod.ExpCtx.IsExpOpen() {
+		return &util.TaskResult{
+			Code:    500,
+			Message: "Please open an experiment first.",
+		}
+	}
+
+	// Send load GPS trajectory request to core.
+	mod.ExpCtx.LockCtxLock()
+	defer mod.ExpCtx.UnlockCtxLock()
+	util.Core.SendRequest(struct {
+		Cmd    string
+		Folder string
+	}{
+		Cmd:    "LoadGPSTrajectoriesFromBinary",
+		Folder: "Experiment_" + strconv.Itoa(mod.ExpCtx.ID),
+	})
+
+	ret, err := util.Core.GetResponse()
+	if err != nil {
+		return &util.TaskResult{
+			Code:    500,
+			Message: "Failed to load GPS trajectories: " + err.Error(),
+		}
+	}
+	if !ret.Success {
+		return &util.TaskResult{
+			Code:    500,
+			Message: ret.Message,
+		}
+	}
+
 	return &util.TaskResult{
-		Code:    500,
-		Message: "Not implemented.",
+		Code:    200,
+		Message: ret.Message,
+		Data:    mod.ExpCtx,
 	}
 }
 
-// ClearGPSAndMapMatched loads map matched trajectory from binary.
+// ClearGPSAndMapMatched clears GPS and map matched trajectories from core memory.
 func ClearGPSAndMapMatched(c *gin.Context, b interface{}) *util.TaskResult {
+	// Only clear GPS & map matched trajectories in an open experiment.
+	if !mod.ExpCtx.IsExpOpen() {
+		return &util.TaskResult{
+			Code:    500,
+			Message: "Please open an experiment first.",
+		}
+	}
+
+	// Send clear GPS & map matched trajectory request to core.
+	mod.ExpCtx.LockCtxLock()
+	defer mod.ExpCtx.UnlockCtxLock()
+	util.Core.SendRequest(struct {
+		Cmd string
+	}{
+		Cmd: "ClearGPSAndMapMatchedTrajectories",
+	})
+
+	ret, err := util.Core.GetResponse()
+	if err != nil {
+		return &util.TaskResult{
+			Code:    500,
+			Message: "Failed to clear GPS & map matched trajectories: " + err.Error(),
+		}
+	}
+	if !ret.Success {
+		return &util.TaskResult{
+			Code:    500,
+			Message: ret.Message,
+		}
+	}
+
 	return &util.TaskResult{
-		Code:    500,
-		Message: "Not implemented.",
+		Code:    200,
+		Message: ret.Message,
+		Data:    mod.ExpCtx,
 	}
 }
 
 // LoadMapMatchedFromBinary clears GPS and map matched trajectories.
 func LoadMapMatchedFromBinary(c *gin.Context, b interface{}) *util.TaskResult {
+	// Only load map matched trajectories in an open experiment.
+	if !mod.ExpCtx.IsExpOpen() {
+		return &util.TaskResult{
+			Code:    500,
+			Message: "Please open an experiment first.",
+		}
+	}
+
+	// Send load map matched trajectory request to core.
+	mod.ExpCtx.LockCtxLock()
+	defer mod.ExpCtx.UnlockCtxLock()
+	util.Core.SendRequest(struct {
+		Cmd    string
+		Folder string
+	}{
+		Cmd:    "LoadMapMatchedTrajectoriesFromBinary",
+		Folder: "Experiment_" + strconv.Itoa(mod.ExpCtx.ID),
+	})
+
+	ret, err := util.Core.GetResponse()
+	if err != nil {
+		return &util.TaskResult{
+			Code:    500,
+			Message: "Failed to load map matched trajectories: " + err.Error(),
+		}
+	}
+	if !ret.Success {
+		return &util.TaskResult{
+			Code:    500,
+			Message: ret.Message,
+		}
+	}
+
 	return &util.TaskResult{
-		Code:    500,
-		Message: "Not implemented.",
+		Code:    200,
+		Message: ret.Message,
+		Data:    mod.ExpCtx,
 	}
 }
 
