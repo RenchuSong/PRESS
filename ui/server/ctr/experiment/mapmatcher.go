@@ -2,6 +2,7 @@ package experiment
 
 import (
 	"fmt"
+	"strconv"
 
 	"github.com/RenchuSong/PRESS/tree/v3/ui/server/mod"
 	"github.com/RenchuSong/PRESS/tree/v3/ui/server/util"
@@ -23,7 +24,7 @@ func RegisterMapMatcher(r *gin.RouterGroup, cq *util.TaskQueue, oq *util.TaskQue
 		cq.Add(c, DumpMapMatchedToBinary)
 	})
 	r.PUT("/mapmatcher/loadgpsfrombinary", func(c *gin.Context) {
-		cq.Add(c, LoadFromBinary)
+		cq.Add(c, LoadGPSFromBinary)
 	})
 	r.PUT("/mapmatcher/loadfrombinary", func(c *gin.Context) {
 		cq.Add(c, LoadMapMatchedFromBinary)
@@ -123,28 +124,93 @@ func AddGPSAndMapMatch(c *gin.Context, b interface{}) *util.TaskResult {
 	return &util.TaskResult{
 		Code:    200,
 		Message: ret.Message,
-		Data:    mod.ExpCtx,
 	}
 }
 
 // DumpGPSToBinary dumps GPS trajectories to binary.
 func DumpGPSToBinary(c *gin.Context, b interface{}) *util.TaskResult {
+	// Cannot dump GPS trajectories before experiment is open.
+	if !mod.ExpCtx.IsOpen {
+		return &util.TaskResult{
+			Code:    500,
+			Message: "Please open an experiment first.",
+		}
+	}
+
+	// Send dump GPS request to core.
+	mod.ExpCtx.LockCtxLock()
+	defer mod.ExpCtx.UnlockCtxLock()
+	util.Core.SendRequest(struct {
+		Cmd    string
+		Folder string
+	}{
+		Cmd:    "DumpGPSTrajectoriesToBinary",
+		Folder: "Experiment_" + strconv.Itoa(mod.ExpCtx.ID),
+	})
+
+	ret, err := util.Core.GetResponse()
+	if err != nil {
+		return &util.TaskResult{
+			Code:    500,
+			Message: "Failed to dump GPS trajectories: " + err.Error(),
+		}
+	}
+	if !ret.Success {
+		return &util.TaskResult{
+			Code:    500,
+			Message: ret.Message,
+		}
+	}
+
 	return &util.TaskResult{
-		Code:    500,
-		Message: "Not implemented.",
+		Code:    200,
+		Message: ret.Message,
 	}
 }
 
 // DumpMapMatchedToBinary dumps map matched trajectories to binary.
 func DumpMapMatchedToBinary(c *gin.Context, b interface{}) *util.TaskResult {
+	// Cannot dump map matched trajectories before experiment is open.
+	if !mod.ExpCtx.IsOpen {
+		return &util.TaskResult{
+			Code:    500,
+			Message: "Please open an experiment first.",
+		}
+	}
+
+	// Send dump map matched request to core.
+	mod.ExpCtx.LockCtxLock()
+	defer mod.ExpCtx.UnlockCtxLock()
+	util.Core.SendRequest(struct {
+		Cmd    string
+		Folder string
+	}{
+		Cmd:    "DumpMapMatchedTrajectoriesToBinary",
+		Folder: "Experiment_" + strconv.Itoa(mod.ExpCtx.ID),
+	})
+
+	ret, err := util.Core.GetResponse()
+	if err != nil {
+		return &util.TaskResult{
+			Code:    500,
+			Message: "Failed to dump map matched trajectories: " + err.Error(),
+		}
+	}
+	if !ret.Success {
+		return &util.TaskResult{
+			Code:    500,
+			Message: ret.Message,
+		}
+	}
+
 	return &util.TaskResult{
-		Code:    500,
-		Message: "Not implemented.",
+		Code:    200,
+		Message: ret.Message,
 	}
 }
 
-// LoadFromBinary loads GPS trajectory from binary.
-func LoadFromBinary(c *gin.Context, b interface{}) *util.TaskResult {
+// LoadGPSFromBinary loads GPS trajectory from binary.
+func LoadGPSFromBinary(c *gin.Context, b interface{}) *util.TaskResult {
 	return &util.TaskResult{
 		Code:    500,
 		Message: "Not implemented.",

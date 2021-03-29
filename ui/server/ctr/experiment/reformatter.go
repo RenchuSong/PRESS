@@ -20,7 +20,7 @@ func RegisterReformatter(r *gin.RouterGroup, cq *util.TaskQueue, oq *util.TaskQu
 		cq.Add(c, ClearPRESS)
 	})
 	r.GET("/reformatter/list", func(c *gin.Context) {
-		cq.Add(c, ListPRESSTrajectories)
+		cq.Add(c, ListTrajectories)
 	})
 }
 
@@ -56,8 +56,8 @@ func ClearPRESS(c *gin.Context, b interface{}) *util.TaskResult {
 	}
 }
 
-// ListPRESSTrajectories lists all PRESS trajectories in binary folder.
-func ListPRESSTrajectories(c *gin.Context, b interface{}) *util.TaskResult {
+// ListTrajectories lists all GPS/PRESS trajectories in binary folder.
+func ListTrajectories(c *gin.Context, b interface{}) *util.TaskResult {
 	return &util.TaskResult{
 		Code:    500,
 		Message: "Not implemented.",
