@@ -152,11 +152,11 @@ func AddGPSAndMapMatch(c *gin.Context, b interface{}) *util.TaskResult {
 
 // DumpGPSToBinary dumps GPS trajectories to binary.
 func DumpGPSToBinary(c *gin.Context, b interface{}) *util.TaskResult {
-	// Cannot dump GPS trajectories before experiment is open.
-	if !mod.ExpCtx.IsOpen {
+	// Cannot dump GPS trajectories before roadnet is ready.
+	if !mod.ExpCtx.IsRoadnetReady() {
 		return &util.TaskResult{
 			Code:    500,
-			Message: "Please open an experiment first.",
+			Message: "Please load roadnet first.",
 		}
 	}
 
@@ -193,11 +193,11 @@ func DumpGPSToBinary(c *gin.Context, b interface{}) *util.TaskResult {
 
 // DumpMapMatchedToBinary dumps map matched trajectories to binary.
 func DumpMapMatchedToBinary(c *gin.Context, b interface{}) *util.TaskResult {
-	// Cannot dump map matched trajectories before experiment is open.
-	if !mod.ExpCtx.IsOpen {
+	// Cannot dump map matched trajectories before roadnet is ready.
+	if !mod.ExpCtx.IsRoadnetReady() {
 		return &util.TaskResult{
 			Code:    500,
-			Message: "Please open an experiment first.",
+			Message: "Please load roadnet first.",
 		}
 	}
 
@@ -234,11 +234,11 @@ func DumpMapMatchedToBinary(c *gin.Context, b interface{}) *util.TaskResult {
 
 // LoadGPSFromBinary loads GPS trajectory from binary.
 func LoadGPSFromBinary(c *gin.Context, b interface{}) *util.TaskResult {
-	// Only load GPS trajectories in an open experiment.
-	if !mod.ExpCtx.IsExpOpen() {
+	// Cannot load GPS trajectories before roadnet and SPTable is ready.
+	if !mod.ExpCtx.IsRoadnetReady() || !mod.ExpCtx.IsSPTableReady() {
 		return &util.TaskResult{
 			Code:    500,
-			Message: "Please open an experiment first.",
+			Message: "Please load roadnet and SPTable first.",
 		}
 	}
 
@@ -276,11 +276,11 @@ func LoadGPSFromBinary(c *gin.Context, b interface{}) *util.TaskResult {
 
 // ClearGPSAndMapMatched clears GPS and map matched trajectories from core memory.
 func ClearGPSAndMapMatched(c *gin.Context, b interface{}) *util.TaskResult {
-	// Only clear GPS & map matched trajectories in an open experiment.
-	if !mod.ExpCtx.IsExpOpen() {
+	// Cannot clear GPS & map matched trajectories before roadnet and SPTable is ready.
+	if !mod.ExpCtx.IsRoadnetReady() || !mod.ExpCtx.IsSPTableReady() {
 		return &util.TaskResult{
 			Code:    500,
-			Message: "Please open an experiment first.",
+			Message: "Please load roadnet and SPTable first.",
 		}
 	}
 
@@ -316,11 +316,11 @@ func ClearGPSAndMapMatched(c *gin.Context, b interface{}) *util.TaskResult {
 
 // LoadMapMatchedFromBinary clears GPS and map matched trajectories.
 func LoadMapMatchedFromBinary(c *gin.Context, b interface{}) *util.TaskResult {
-	// Only load map matched trajectories in an open experiment.
-	if !mod.ExpCtx.IsExpOpen() {
+	// Cannot load map matched trajectories before roadnet is ready.
+	if !mod.ExpCtx.IsRoadnetReady() {
 		return &util.TaskResult{
 			Code:    500,
-			Message: "Please open an experiment first.",
+			Message: "Please load roadnet first.",
 		}
 	}
 
