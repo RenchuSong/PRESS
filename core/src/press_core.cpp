@@ -533,6 +533,23 @@ void handleLoadGPSTrajectoriesFromBinary(picojson::value& requestJson, std::stri
   response = successResponse("GPS trajectories are loaded from " + folderName + ".");
 }
 
+// Handle show GPS trajectory from ${EXP_FOLDER}/[folder]/gps_trajectories/[ID].bin
+void handleShowGPSTrajectory(picojson::value& requestJson, std::string& response) {
+  auto& folder = requestJson.get("Folder").get<std::string>();
+  auto& id = requestJson.get("ID").get<std::string>();
+  auto fileName = config.expFolder + folder + "/gps_trajectories/" + id + ".bin";
+  if (!fileExists(fileName.c_str())) {
+    FILE_LOG(TLogLevel::lerror) << "GPS binary file doesn't exist: " << fileName;
+    response = errorResponse("GPS binary file doesn't exist.");
+    return;
+  }
+  FileReader gpsTrajectoryReader(fileName.c_str(), true);
+  std::stringstream ss;
+  GPSTrajectory(gpsTrajectoryReader).toJSON(ss);
+  std::string json = ss.str();
+  response = successResponseWithData(json);
+}
+
 // Handle load map matched trajectories from
 // ${EXP_FOLDER}/[folder]/map_matched_trajectories/[0 .. (n - 1)].bin
 void handleLoadMapMatchedTrajectoriesFromBinary(
@@ -638,7 +655,7 @@ void handleDumpPRESSTrajectoriesToBinary(picojson::value& requestJson, std::stri
   response = successResponse("PRESS trajectories are dumped to " + pressFolderName + ".");
 }
 
-// Handle load PRESS trajectories from ${EXP_FOLDER}/[folder]/press_trajectories/[0 .. (n - 1)].bin
+// Handle load PRESS trajectories from ${EXP_FOLDER}/[folder]/press_trajectories/[0 .. (n - 1)]/[spatial|temporal].bin
 void handleLoadPRESSTrajectoriesFromBinary(picojson::value& requestJson, std::string& response) {
   if (!roadnetReady) {
     response = errorResponse("Roadnet is not ready.");
@@ -663,6 +680,31 @@ void handleLoadPRESSTrajectoriesFromBinary(picojson::value& requestJson, std::st
     pressTrajectories.emplace_back(PRESSTrajectory(spatialReader, temporalReader));
   }
   response = successResponse("PRESS trajectories are loaded from " + folderName + ".");
+}
+
+// Handle show PRESS trajectory from ${EXP_FOLDER}/[folder]/press_trajectories/[ID]/[spatial|temporal].bin
+void handleShowPRESSTrajectory(picojson::value& requestJson, std::string& response) {
+  if (!roadnetReady) {
+    response = errorResponse("Roadnet is not ready.");
+    return;
+  }
+  auto& folder = requestJson.get("Folder").get<std::string>();
+  auto& id = requestJson.get("ID").get<std::string>();
+  auto folderName = config.expFolder + folder + "/press_trajectories/" + id;
+  if (
+    !fileExists((folderName + "/spatial.bin").c_str()) ||
+    !fileExists((folderName + "/temporal.bin").c_str())
+  ) {
+    FILE_LOG(TLogLevel::lerror) << "PRESS binary file doesn't exist: " << folderName;
+    response = errorResponse("PRESS binary file doesn't exist.");
+    return;
+  }
+  FileReader spatialReader((folderName + "/spatial.bin").c_str(), true);
+  FileReader temporalReader((folderName + "/temporal.bin").c_str(), true);
+  std::stringstream ss;
+  PRESSTrajectory(spatialReader, temporalReader).toJSON(roadnet, ss);
+  std::string json = ss.str();
+  response = successResponseWithData(json);
 }
 
 // Handle train AC automaton, huffman tree and build auxiliary.
@@ -1868,6 +1910,8 @@ struct ReqRespHelper {
         handleDumpMapMatchedTrajectoriesToBinary(requestJson, response);
       } else if (cmd == "LoadGPSTrajectoriesFromBinary") {
         handleLoadGPSTrajectoriesFromBinary(requestJson, response);
+      } else if (cmd == "ShowGPSTrajectory") {
+        handleShowGPSTrajectory(requestJson, response);
       } else if (cmd == "LoadMapMatchedTrajectoriesFromBinary") {
         handleLoadMapMatchedTrajectoriesFromBinary(requestJson, response);
       } else if (cmd == "ReformatTrajectories") {
@@ -1878,6 +1922,8 @@ struct ReqRespHelper {
         handleDumpPRESSTrajectoriesToBinary(requestJson, response);
       } else if (cmd == "LoadPRESSTrajectoriesFromBinary") {
         handleLoadPRESSTrajectoriesFromBinary(requestJson, response);
+      } else if (cmd == "ShowPRESSTrajectory") {
+        handleShowPRESSTrajectory(requestJson, response);
       } else if (cmd == "TrainACAutomatonHuffmanTreeAndBuildAuxiliary") {
         handleTrainACAutomatonHuffmanTreeAndBuildAuxiliary(requestJson, response);
       } else if (cmd == "DumpACAutomatonHuffmanTreeAndAuxiliaryToBinary") {

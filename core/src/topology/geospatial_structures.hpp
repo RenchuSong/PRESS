@@ -45,6 +45,9 @@ struct GPSPoint {
   void print() const {
     std::cout << "(" << t << ": " << latitude << ", " << longitude << ")";
   }
+  std::string toJSONString() const {
+    return std::string("{\"LAT\":") + std::to_string(latitude) + ",\"LONG\":" + std::to_string(longitude) + ",\"T\":" + std::to_string(t) + "}";
+  }
 };
 
 // A temporal pair (t, d).
@@ -55,6 +58,9 @@ struct TemporalPair {
   TemporalPair(double t, double dist): t(t), dist(dist) { }
   void print() const {
     std::cout << "(" << t << ": " << dist << ")";
+  }
+  std::string toJSONString() const {
+    return std::string("{\"D\":") + std::to_string(dist) + ",\"T\":" + std::to_string(t) + "}";
   }
 };
 

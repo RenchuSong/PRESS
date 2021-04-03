@@ -9,11 +9,13 @@
 #ifndef trajectory_hpp
 #define trajectory_hpp
 
+#include <sstream>
 #include <vector>
 
 #include "../io/file_reader.hpp"
 #include "../io/file_writer.hpp"
 #include "../io/binary.hpp"
+#include "./graph.hpp"
 #include "geospatial_structures.hpp"
 
 // GPS trajectory.
@@ -37,6 +39,7 @@ public:
   const std::vector<GPSPoint>& getTrajectory() const;
   void store(FileWriter& gpsWriter);
   void print() const;
+  void toJSON(std::stringstream& ss) const;
   ~GPSTrajectory();
 };
 
@@ -85,6 +88,7 @@ public:
   size_t getTemporalLength() const;
   const std::vector<TemporalPair>& getTemporalComponent() const;
   void print() const;
+  void toJSON(const Graph& graph, std::stringstream& ss) const;
   ~PRESSTrajectory();
 };
 

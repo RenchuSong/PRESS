@@ -79,6 +79,17 @@ void GPSTrajectory::print() const {
   }
 }
 
+void GPSTrajectory::toJSON(std::stringstream& ss) const {
+  ss << "[";
+  for (int i = 0; i < length; ++i) {
+    if (i > 0) {
+      ss << ",";
+    }
+    ss << trajectory.at(i).toJSONString();
+  }
+  ss << "]";
+}
+
 GPSTrajectory::~GPSTrajectory() { }
 
 MapMatchedTrajectory::MapMatchedTrajectory() { }
@@ -225,6 +236,28 @@ void PRESSTrajectory::print() const {
     temporalPair.print();
   }
   std::cout << std::endl;
+}
+
+void PRESSTrajectory::toJSON(const Graph& graph, std::stringstream& ss) const {
+  ss << "{\"spatial\":";
+  ss << "[";
+  for (int i = 0; i < spatialLength; ++i) {
+    if (i > 0) {
+      ss << ",";
+    }
+    graph.getEdge(spatialComponent.at(i)).toJSON(ss);
+  }
+  ss << "],";
+  ss << "\"temporal\":";
+  ss << "[";
+  for (int i = 0; i < temporalLength; ++i) {
+    if (i > 0) {
+      ss << ",";
+    }
+    ss << temporalComponent.at(i).toJSONString();
+  }
+  ss << "]";
+  ss << "}";
 }
 
 PRESSTrajectory::~PRESSTrajectory() { }
