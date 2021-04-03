@@ -366,8 +366,43 @@ func GetGPSSampleRates(c *gin.Context, b interface{}) *util.TaskResult {
 
 // GetGPSTrajectory gets one GPS trajectory.
 func GetGPSTrajectory(c *gin.Context, b interface{}) *util.TaskResult {
+	// Cannot show a GPS trajectory before experiment is open.
+	if !mod.ExpCtx.IsOpen {
+		return &util.TaskResult{
+			Code:    500,
+			Message: "Please open an experiment first.",
+		}
+	}
+
+	// Send show GPS trajectory request to core.
+	mod.ExpCtx.LockCtxLock()
+	defer mod.ExpCtx.UnlockCtxLock()
+	util.Core.SendRequest(struct {
+		Cmd    string
+		Folder string
+		ID     string
+	}{
+		Cmd:    "ShowGPSTrajectory",
+		Folder: "Experiment_" + strconv.Itoa(mod.ExpCtx.ID),
+		ID:     c.Param("id"),
+	})
+
+	ret, err := util.Core.GetResponse()
+	if err != nil {
+		return &util.TaskResult{
+			Code:    500,
+			Message: "Failed to show GPS trajectory: " + err.Error(),
+		}
+	}
+	if !ret.Success {
+		return &util.TaskResult{
+			Code:    500,
+			Message: ret.Message,
+		}
+	}
+
 	return &util.TaskResult{
-		Code:    500,
-		Message: "Not implemented.",
+		Code: 200,
+		Data: ret.Data,
 	}
 }

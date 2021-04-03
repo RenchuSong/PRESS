@@ -255,8 +255,43 @@ func ListTrajectories(c *gin.Context, b interface{}) *util.TaskResult {
 
 // GetPRESSTrajectory gets one GPS trajectory.
 func GetPRESSTrajectory(c *gin.Context, b interface{}) *util.TaskResult {
+	// Cannot show a PRESS trajectory before roadnet is ready.
+	if !mod.ExpCtx.IsRoadnetReady() {
+		return &util.TaskResult{
+			Code:    500,
+			Message: "Please load roadnet first.",
+		}
+	}
+
+	// Send show PRESS trajectory request to core.
+	mod.ExpCtx.LockCtxLock()
+	defer mod.ExpCtx.UnlockCtxLock()
+	util.Core.SendRequest(struct {
+		Cmd    string
+		Folder string
+		ID     string
+	}{
+		Cmd:    "ShowPRESSTrajectory",
+		Folder: "Experiment_" + strconv.Itoa(mod.ExpCtx.ID),
+		ID:     c.Param("id"),
+	})
+
+	ret, err := util.Core.GetResponse()
+	if err != nil {
+		return &util.TaskResult{
+			Code:    500,
+			Message: "Failed to show PRESS trajectory: " + err.Error(),
+		}
+	}
+	if !ret.Success {
+		return &util.TaskResult{
+			Code:    500,
+			Message: ret.Message,
+		}
+	}
+
 	return &util.TaskResult{
-		Code:    500,
-		Message: "Not implemented.",
+		Code: 200,
+		Data: ret.Data,
 	}
 }
