@@ -120,7 +120,11 @@
             <GeoChart ref="gpsAndSpatialPreview" />
           </div>
         </a-col>
-        <a-col :span="7"> Temporal </a-col>
+        <a-col :span="7">
+          <div class="temporal-preview-container">
+            <LineChart xAxis="T" yAxis="D" />
+          </div>
+        </a-col>
       </a-row>
     </a-page-header>
 
@@ -176,6 +180,7 @@ import useSPTable from "@/composables/experiment/useSPTable";
 import useExperiment from "@/composables/experiment/useExperiment";
 import { RESTError } from "@/api/base";
 import GeoChart from "@/components/charts/GeoChart.vue";
+import LineChart from "@/components/charts/LineChart.vue";
 
 export default defineComponent({
   name: "GPSToPRESS",
@@ -305,6 +310,7 @@ export default defineComponent({
   },
   components: {
     GeoChart,
+    LineChart,
   },
 });
 </script>
@@ -318,6 +324,14 @@ export default defineComponent({
 }
 
 .gps-and-spatial-preview-container {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: calc(100% - 10px);
+  overflow: hidden;
+}
+
+.temporal-preview-container {
   position: absolute;
   top: 0;
   bottom: 0;
