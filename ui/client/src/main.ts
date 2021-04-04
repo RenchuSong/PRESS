@@ -27,6 +27,8 @@ import Descriptions from "ant-design-vue/lib/descriptions";
 import Select from "ant-design-vue/lib/select";
 import Slider from "ant-design-vue/lib/slider";
 import Tag from "ant-design-vue/lib/tag";
+import Tree from "ant-design-vue/lib/tree";
+import TreeNode from "ant-design-vue/lib/tree";
 
 import "ant-design-vue/dist/antd.css";
 
@@ -57,4 +59,6 @@ createApp(App)
   .use(Select)
   .use(Slider)
   .use(Tag)
+  .use(Tree)
+  .use(TreeNode)
   .mount("#app");

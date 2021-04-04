@@ -172,7 +172,7 @@
           class="full-width"
           type="primary"
           :disabled="!gridIndexReady || !spTableReady"
-          @click="gotoGPSTrajToPRESSTraj()"
+          @click="gotoGPSToPRESS()"
         >
           Next: GPS Traj. to PRESS Traj.
         </a-button>
@@ -332,7 +332,7 @@ export default defineComponent({
     };
   },
   methods: {
-    gotoGPSTrajToPRESSTraj() {
+    gotoGPSToPRESS() {
       this.navigate(this.$route, this.$router, "gpstopress");
     },
   },

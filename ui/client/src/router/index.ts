@@ -29,7 +29,7 @@ const routes: Array<RouteRecordRaw> = [
       },
       {
         path: "gpstopress",
-        component: () => import("../views/experiment/GPSTrajToPRESSTraj.vue")
+        component: () => import("../views/experiment/GPSToPRESSView.vue")
       },
 
     ]
