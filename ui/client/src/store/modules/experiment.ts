@@ -1,9 +1,12 @@
 import { Experiment } from "@/api/experiment";
 import { GridIndex } from "@/api/grid-index";
+import { MapMatcher } from "@/api/mapmatcher";
+import { Reformatter } from "@/api/reformatter";
 import { Roadnet } from "@/api/roadnet";
 import { SPTable } from "@/api/sptable";
 import { AuxiliaryInfo } from "@/model/auxiliary-info";
 import { ExperimentContext } from "@/model/experiment-context";
+import { GPSFolderSource } from "@/model/gps-folder-source";
 import { createRoadnet, RoadnetWithBound } from "@/model/roadnet";
 import { RoadnetDataSource } from "@/model/roadnet-data-source";
 import { formatFileSize } from "@/utility/utility";
@@ -25,6 +28,8 @@ const state = () =>
   roadnetDataSources: [],
   currentExperimentAuxiliaries: [],
   currentExperimentStep: "roadnet",
+  gpsFolderSources: [],
+  trajectories: [],
 } as ExperimentState);
 
 const getters: GetterTree<ExperimentState, ExperimentState> &
@@ -51,6 +56,8 @@ const getters: GetterTree<ExperimentState, ExperimentState> &
       value => `${value.filename} (${formatFileSize(value.size)})`
     ),
   currentExperimentStep: state => state.currentExperimentStep,
+  gpsFolderSources: state => state.gpsFolderSources,
+  trajectories: state => state.trajectories,
 };
 
 const mutations: MutationTree<ExperimentState> & ExperimentMutations = {
@@ -91,6 +98,18 @@ const mutations: MutationTree<ExperimentState> & ExperimentMutations = {
     payload: string
   ) {
     state.currentExperimentStep = payload;
+  },
+  [ExperimentMutationTypes.SET_GPS_FOLDER_SOURCES](
+    state: ExperimentState,
+    payload: GPSFolderSource[]
+  ) {
+    state.gpsFolderSources = payload;
+  },
+  [ExperimentMutationTypes.SET_TRAJECTORIES](
+    state: ExperimentState,
+    payload: string[]
+  ) {
+    state.trajectories = payload;
   },
 };
 
@@ -178,6 +197,18 @@ const actions: ActionTree<ExperimentState, ExperimentState> &
     commit(
       ExperimentMutationTypes.SET_EXPERIMENT_CONTEXT,
       await SPTable.genLoadSPTableFromBinary()
+    );
+  },
+  async [ExperimentActionTypes.INIT_GPS_FOLDER_OPTIONS]({ commit }) {
+    commit(
+      ExperimentMutationTypes.SET_GPS_FOLDER_SOURCES,
+      await MapMatcher.genGPSFolderSources()
+    );
+  },
+  async [ExperimentActionTypes.LIST_TRAJECTORIES]({ commit }) {
+    commit(
+      ExperimentMutationTypes.SET_TRAJECTORIES,
+      await Reformatter.genListTrajectories()
     );
   },
 };

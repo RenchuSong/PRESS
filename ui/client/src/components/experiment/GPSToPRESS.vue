@@ -10,7 +10,7 @@
             <a-select-option value="tooltip" disabled>
               From Binary
             </a-select-option>
-            <a-select-option
+            <!-- <a-select-option
               value="noBinary"
               v-if="currentGridIndexBinaries.length === 0"
               disabled
@@ -23,7 +23,7 @@
               :value="currentGridIndexBinary"
             >
               {{ currentGridIndexBinary }}
-            </a-select-option>
+            </a-select-option> -->
           </a-select>
         </a-col>
         <a-col :span="5">
@@ -93,7 +93,7 @@
       style="height: calc(100vh - 396px)"
     >
       <template #tags>
-        <a-tag v-if="spTableReady" color="green">Ready</a-tag>
+        <a-tag v-if="trajectories.length > 0" color="green">Ready</a-tag>
         <a-tag v-else color="red">Not ready</a-tag>
       </template>
       <a-row type="flex" justify="space-between" :gutter="10">
@@ -101,16 +101,23 @@
           <div class="preview-traj-list">
             <a-tree
               showLine
-              v-model:expandedKeys="expandedKeys"
-              v-model:selectedKeys="selectedKeys"
+              v-model:expandedKeys="expandedTrajectoryKeys"
+              v-model:selectedKeys="selectedTrajectoryKeys"
             >
               <a-tree-node key="trajectories" title="Trajectories">
-                <a-tree-node key="0" title="0" is-leaf />
-                <a-tree-node key="1" title="1" is-leaf />
-                <a-tree-node key="2" title="2" is-leaf />
-                <a-tree-node key="3" title="3" is-leaf />
-                <a-tree-node key="4" title="4" is-leaf />
-                <a-tree-node key="5" title="5" is-leaf />
+                <a-tree-node
+                  v-for="trajectory in trajectories"
+                  :key="trajectory"
+                  :title="trajectory"
+                  is-leaf
+                />
+                <a-tree-node
+                  key="no-trajectory"
+                  title="No Trajectories"
+                  v-if="trajectories.length === 0"
+                  disabled
+                  is-leaf
+                />
               </a-tree-node>
             </a-tree>
           </div>
@@ -133,7 +140,7 @@
         <a-button
           class="full-width"
           type="primary"
-          :disabled="!gridIndexReady || !spTableReady"
+          :disabled="trajectories.length === 0"
           @click="gotoGPSToPRESS()"
         >
           Next: TBD
@@ -172,10 +179,10 @@
 </template>
 
 <script lang="ts">
-import { computed, defineComponent, ref } from "vue";
+import { computed, defineComponent, onMounted, ref } from "vue";
 import { useStore } from "@/store";
 import message from "ant-design-vue/lib/message";
-import useGridIndex from "@/composables/experiment/useGridIndex";
+import useTrajectories from "@/composables/experiment/useTrajectories";
 import useSPTable from "@/composables/experiment/useSPTable";
 import useExperiment from "@/composables/experiment/useExperiment";
 import { RESTError } from "@/api/base";
@@ -195,11 +202,17 @@ export default defineComponent({
     const spTableRange = ref<number>(4000);
 
     const {
-      currentGridIndexBinaries,
-      buildGridIndex,
-      dumpGridIndexToBinary,
-      loadGridIndexFromBinary,
-    } = useGridIndex(store);
+      gpsFolderSources,
+      trajectories,
+      initTrajectories,
+      loadTrajectories,
+    } = useTrajectories(store);
+    const expandedTrajectoryKeys = ref<string[]>(["trajectories"]);
+    const selectedTrajectoryKeys = ref<string[]>([]);
+
+    onMounted(async () => {
+      await initTrajectories();
+    });
 
     const gridIndexBinaryFileName = ref("tooltip");
     const loadGridIndexFromBinaryDisabled = computed(
@@ -207,22 +220,6 @@ export default defineComponent({
     );
 
     const confirmBuildGridIndex = ref<boolean>(false);
-
-    const handleBuildGridIndex = async (width: number, height: number) => {
-      try {
-        await buildGridIndex(width, height);
-        await dumpGridIndexToBinary();
-      } catch (exception) {
-        message.error((exception as RESTError).message);
-      }
-    };
-    const preHandleBuildGridIndex = () => {
-      if (currentGridIndexBinaries.value.length > 0) {
-        confirmBuildGridIndex.value = true;
-      } else {
-        handleBuildGridIndex(gridIndexWidth.value, gridIndexHeight.value);
-      }
-    };
 
     const {
       currentSPTableBinaries,
@@ -261,22 +258,17 @@ export default defineComponent({
       maxGPSBias,
       maxDistDifference,
 
-      currentGridIndexBinaries,
+      gpsFolderSources,
+      trajectories,
+      initTrajectories,
+      loadTrajectories,
+      expandedTrajectoryKeys,
+      selectedTrajectoryKeys,
+
       loadGridIndexFromBinaryDisabled,
       gridIndexWidth,
       gridIndexHeight,
-      buildGridIndex,
-      dumpGridIndexToBinary,
       gridIndexBinaryFileName,
-      handleLoadGridIndexFromBinary: async () => {
-        try {
-          await loadGridIndexFromBinary();
-        } catch (exception) {
-          message.error((exception as RESTError).message);
-        }
-      },
-      handleBuildGridIndex,
-      preHandleBuildGridIndex,
       confirmBuildGridIndex,
       gridIndexReady: computed(
         () => currentExperimentContext.value?.gridIndexReady

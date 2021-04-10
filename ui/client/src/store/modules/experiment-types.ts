@@ -1,5 +1,6 @@
 import { AuxiliaryInfo } from '@/model/auxiliary-info';
 import { ExperimentContext } from '@/model/experiment-context';
+import { GPSFolderSource } from '@/model/gps-folder-source';
 import { RoadnetDataSource } from '@/model/roadnet-data-source';
 import { ActionContext } from "vuex";
 
@@ -11,6 +12,8 @@ export interface ExperimentState {
   roadnetDataSources: RoadnetDataSource[];
   currentExperimentAuxiliaries: AuxiliaryInfo[];
   currentExperimentStep: string;
+  gpsFolderSources: GPSFolderSource[];
+  trajectories: string[];
 }
 
 // mutations
@@ -21,6 +24,8 @@ export enum ExperimentMutationTypes {
   SET_ROADNET_DATA_SOURCES = "SET_ROADNET_DATA_SOURCES",
   SET_CURRENT_EXPERIMENT_AUXILIARIES = "SET_CURRENT_EXPERIMENT_AUXILIARIES",
   NAVIGATE_IN_EXPERIMENT = "NAVIGATE_IN_EXPERIMENT",
+  SET_GPS_FOLDER_SOURCES = "SET_GPS_FOLDER_SOURCES",
+  SET_TRAJECTORIES = "SET_TRAJECTORIES",
 }
 
 export type ExperimentMutations<S = ExperimentState> = {
@@ -48,6 +53,14 @@ export type ExperimentMutations<S = ExperimentState> = {
     state: S,
     payload: string
   ): void;
+  [ExperimentMutationTypes.SET_GPS_FOLDER_SOURCES](
+    state: S,
+    payload: GPSFolderSource[]
+  ): void;
+  [ExperimentMutationTypes.SET_TRAJECTORIES](
+    state: S,
+    payload: string[]
+  ): void;
 };
 
 // actions
@@ -66,6 +79,8 @@ export enum ExperimentActionTypes {
   BUILD_SP_TABLE = "BUILD_SP_TABLE",
   DUMP_SP_TABLE_TO_BINARY = "DUMP_SP_TABLE_TO_BINARY",
   LOAD_SP_TABLE_FROM_BINARY = "LOAD_SP_TABLE_FROM_BINARY",
+  INIT_GPS_FOLDER_OPTIONS = "INIT_GPS_FOLDER_OPTIONS",
+  LIST_TRAJECTORIES = "LIST_TRAJECTORIES",
 }
 
 type AugmentedExperimentActionContext = {
@@ -128,6 +143,14 @@ export interface ExperimentActions {
     { commit }: AugmentedExperimentActionContext,
     payload: {}
   ): Promise<void>;
+  [ExperimentActionTypes.INIT_GPS_FOLDER_OPTIONS](
+    { commit }: AugmentedExperimentActionContext,
+    payload: {}
+  ): Promise<void>;
+  [ExperimentActionTypes.LIST_TRAJECTORIES](
+    { commit }: AugmentedExperimentActionContext,
+    payload: {}
+  ): Promise<void>;
 }
 
 // getters
@@ -140,4 +163,6 @@ export type ExperimentGetters = {
   currentExperimentGridIndexBinaries(state: ExperimentState): string[];
   currentExperimentSPTableBinaries(state: ExperimentState): string[];
   currentExperimentStep(state: ExperimentState): string;
+  gpsFolderSources(state: ExperimentState): GPSFolderSource[];
+  trajectories(state: ExperimentState): string[];
 };
