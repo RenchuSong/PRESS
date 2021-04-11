@@ -17,6 +17,9 @@ func RegisterMapMatcher(r *gin.RouterGroup, cq *util.TaskQueue, oq *util.TaskQue
 	r.GET("/mapmatcher/filesources/:folder", func(c *gin.Context) {
 		cq.Add(c, GetGPSFileSources)
 	})
+	r.GET("/mapmatcher/readertypes", func(c *gin.Context) {
+		cq.Add(c, GetGPSReaderTypes)
+	})
 	r.PUT("/mapmatcher/add", func(c *gin.Context) {
 		cq.Add(c, AddGPSAndMapMatch)
 	})
@@ -74,6 +77,29 @@ func GetGPSFileSources(c *gin.Context, b interface{}) *util.TaskResult {
 	return &util.TaskResult{
 		Code: 200,
 		Data: ret,
+	}
+}
+
+// GetGPSReaderTypes gets all roadnet reader types.
+func GetGPSReaderTypes(c *gin.Context, b interface{}) *util.TaskResult {
+	// Send get roadnet reader types request to core.
+	util.Core.SendRequest(struct {
+		Cmd string
+	}{
+		Cmd: "GetGPSReaderTypes",
+	})
+	ret, err := util.Core.GetResponse()
+
+	if err != nil {
+		return &util.TaskResult{
+			Code:    500,
+			Message: "Failed to get GPS reader types: " + err.Error(),
+		}
+	}
+
+	return &util.TaskResult{
+		Code: 200,
+		Data: ret.Data,
 	}
 }
 

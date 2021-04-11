@@ -1,7 +1,7 @@
 <template>
   <a-space direction="vertical" class="full-width">
     <a-page-header
-      class="section grid-index"
+      class="section"
       title="Map match GPS trajectories and reformat to PRESS trajectories"
     >
       <a-row type="flex" align="middle" justify="space-between" :gutter="10">
@@ -9,6 +9,7 @@
           <a-select
             class="full-width"
             v-model:value="gpsTrajectoriesFolderName"
+            @change="handleChangeGPSFolderName"
           >
             <a-select-option value="tooltip" disabled>
               From Folder
@@ -32,18 +33,18 @@
         <a-col :span="5">
           <a-select
             class="full-width"
-            v-model:value="roadnetReaderType"
-            :disabled="graphReaderChoiceDisabled"
+            v-model:value="gpsReaderType"
+            :disabled="gpsReaderChoiceDisabled"
           >
             <a-select-option value="tooltip" disabled>
               With GPS Reader
             </a-select-option>
             <a-select-option
-              v-for="roadnetReaderType in roadnetReaderTypes"
-              :key="roadnetReaderType"
-              :value="roadnetReaderType"
+              v-for="gpsReaderType in gpsReaderTypes"
+              :key="gpsReaderType"
+              :value="gpsReaderType"
             >
-              {{ roadnetReaderType }}
+              {{ gpsReaderType }}
             </a-select-option>
           </a-select>
         </a-col>
@@ -82,6 +83,7 @@
           <a-button
             class="full-width"
             type="primary"
+            :disabled="addTrajectoryDisabled"
             @click="preHandleAddTrajectory"
           >
             START
@@ -172,8 +174,8 @@
         sigmaZ,
         maxGPSBias,
         maxDistDifference,
-        '', // TODO: change
-        [] // TODO: change
+        gpsReaderType,
+        gpsTrajectoriesFolderName
       );
     "
   >
@@ -203,6 +205,7 @@ export default defineComponent({
     const maxDistDifference = ref<number>(2000);
 
     const {
+      gpsReaderTypes,
       gpsFolderSources,
       trajectories,
       loadTrajectories,
@@ -221,7 +224,19 @@ export default defineComponent({
       }
     });
 
+    const gpsReaderType = ref("tooltip");
     const gpsTrajectoriesFolderName = ref("tooltip");
+    const addTrajectoryDisabled = computed(
+      () =>
+        gpsReaderType.value === "tooltip" ||
+        gpsTrajectoriesFolderName.value === "tooltip"
+    );
+    const gpsReaderChoiceDisabled = computed(
+      () =>
+        gpsFolderSources.value.find(
+          (source) => source.sourceName === gpsTrajectoriesFolderName.value
+        )?.gpsReader !== undefined
+    );
 
     const confirmAddTrajectories = ref<boolean>(false);
 
@@ -230,11 +245,18 @@ export default defineComponent({
       maxGPSBias: number,
       maxDistDifference: number,
       gpsTrajectoryReaderType: string,
-      fileNames: string[]
+      folderName: string
     ) => {
       try {
         // await buildSPTable(distance);
         // await dumpSPTableToBinary();
+        console.log(
+          sigmaZ,
+          maxGPSBias,
+          maxDistDifference,
+          gpsTrajectoryReaderType,
+          folderName
+        );
       } catch (exception) {
         message.error((exception as RESTError).message);
       }
@@ -247,24 +269,39 @@ export default defineComponent({
           sigmaZ.value,
           maxGPSBias.value,
           maxDistDifference.value,
-          "", // TODO: change
-          [] // TODO: change
+          gpsReaderType.value,
+          gpsTrajectoriesFolderName.value
         );
       }
     };
 
     const { navigate } = useExperiment(store);
 
+    const handleChangeGPSFolderName = (newGPSFolderName: string) => {
+      const dataSource = gpsFolderSources.value.find(
+        (source) => source.sourceName === newGPSFolderName
+      );
+      if (dataSource !== undefined && dataSource.gpsReader !== undefined) {
+        gpsReaderType.value = dataSource.gpsReader;
+      } else {
+        gpsReaderType.value = "tooltip";
+      }
+    };
+
     return {
       sigmaZ,
       maxGPSBias,
       maxDistDifference,
 
+      gpsReaderTypes,
+      gpsReaderType,
       gpsFolderSources,
       trajectories,
       loadTrajectories,
       expandedTrajectoryKeys,
       selectedTrajectoryKeys,
+      addTrajectoryDisabled,
+      gpsReaderChoiceDisabled,
 
       gpsTrajectoriesFolderName,
       confirmAddTrajectories,
@@ -273,6 +310,7 @@ export default defineComponent({
       navigate,
 
       getTrajectory,
+      handleChangeGPSFolderName,
     };
   },
   methods: {

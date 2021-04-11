@@ -1834,6 +1834,31 @@ void handleGetRoadnetReaderTypes(picojson::value& requestJson, std::string& resp
   std::string queryResult = vecStringToJSONString(result);
   response = successResponseWithData(queryResult);
 }
+/**
+ * Get all GPS reader types.
+ * Query payload:
+ * {
+ *   Cmd ...
+ * }
+ * Response:
+ * {
+ *   Success ...
+ *   Message ...
+ *   Data: [
+ *     SEATTLE_SAMPLE_GPS,
+ *     GraphReaderType2,
+ *     ...
+ *   ]
+ * }
+ */
+void handleGetGPSReaderTypes(picojson::value& requestJson, std::string& response) {
+  std::vector<std::string> result;
+  for (auto& gpsReaderType: GPSTrajectoryReaderTypeStrings) {
+    result.push_back(gpsReaderType);
+  }
+  std::string queryResult = vecStringToJSONString(result);
+  response = successResponseWithData(queryResult);
+}
 
 struct ReqRespHelper {
   std::string inPath;
@@ -1982,6 +2007,8 @@ struct ReqRespHelper {
         handleRangeOnPRESSCompressedTrajectory(requestJson, response);
       } else if (cmd == "GetRoadnetReaderTypes") {
         handleGetRoadnetReaderTypes(requestJson, response);
+      } else if (cmd == "GetGPSReaderTypes") {
+        handleGetGPSReaderTypes(requestJson, response);
       } else {
         FILE_LOG(TLogLevel::lerror) << "Unknown request: " << request;
         response = errorResponse("Unknown request.");

@@ -29,9 +29,9 @@ function download_files {
       done
       printf "Confirm downloading with token ${token}\n"
       curl -L -b mycookie -o "${fileNames[$i]}.tar.gz" "https://drive.google.com/uc?export=download&confirm=${token}&id=${fileLinks[$i]}"
-      rm mycookie
       rm temp
     fi
+    rm mycookie
     printf "${WHITE}Creating folder${NC}\n"
     mkdir -p "${fileNames[$i]}"
     printf "${WHITE}Extracting files${NC}\n"
@@ -41,7 +41,7 @@ function download_files {
   done
 }
 
-FileNames=("WA_roadnetwork_and_single_trajectory")
-FileLinks=("1_EqWRawavv2MiRp0d5jJwgtnsHQPsp5s")
+FileNames=("SeattleTest")
+FileLinks=("1Tekw-ZcqEcnf51tchIKekeHOX7zZw5lR")
 FileNumber=${#FileNames[@]}
 download_files FileNumber FileNames[@] FileLinks[@]

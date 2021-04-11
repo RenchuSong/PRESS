@@ -29,6 +29,7 @@ const state = () =>
   currentExperimentAuxiliaries: [],
   currentExperimentStep: "roadnet",
   gpsFolderSources: [],
+  gpsReaderTypes: [],
   trajectories: [],
 } as ExperimentState);
 
@@ -57,6 +58,7 @@ const getters: GetterTree<ExperimentState, ExperimentState> &
     ),
   currentExperimentStep: state => state.currentExperimentStep,
   gpsFolderSources: state => state.gpsFolderSources,
+  gpsReaderTypes: state => state.gpsReaderTypes,
   trajectories: state => state.trajectories,
 };
 
@@ -104,6 +106,12 @@ const mutations: MutationTree<ExperimentState> & ExperimentMutations = {
     payload: GPSFolderSource[]
   ) {
     state.gpsFolderSources = payload;
+  },
+  [ExperimentMutationTypes.SET_GPS_READER_TYPES](
+    state: ExperimentState,
+    payload: string[]
+  ) {
+    state.gpsReaderTypes = payload;
   },
   [ExperimentMutationTypes.SET_TRAJECTORIES](
     state: ExperimentState,
@@ -200,6 +208,10 @@ const actions: ActionTree<ExperimentState, ExperimentState> &
     );
   },
   async [ExperimentActionTypes.INIT_GPS_FOLDER_OPTIONS]({ commit }) {
+    commit(
+      ExperimentMutationTypes.SET_GPS_READER_TYPES,
+      await MapMatcher.genReaderTypes()
+    );
     commit(
       ExperimentMutationTypes.SET_GPS_FOLDER_SOURCES,
       await MapMatcher.genGPSFolderSources()

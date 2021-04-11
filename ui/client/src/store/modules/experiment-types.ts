@@ -13,6 +13,7 @@ export interface ExperimentState {
   currentExperimentAuxiliaries: AuxiliaryInfo[];
   currentExperimentStep: string;
   gpsFolderSources: GPSFolderSource[];
+  gpsReaderTypes: string[];
   trajectories: string[];
 }
 
@@ -25,6 +26,7 @@ export enum ExperimentMutationTypes {
   SET_CURRENT_EXPERIMENT_AUXILIARIES = "SET_CURRENT_EXPERIMENT_AUXILIARIES",
   NAVIGATE_IN_EXPERIMENT = "NAVIGATE_IN_EXPERIMENT",
   SET_GPS_FOLDER_SOURCES = "SET_GPS_FOLDER_SOURCES",
+  SET_GPS_READER_TYPES = "SET_GPS_READER_TYPES",
   SET_TRAJECTORIES = "SET_TRAJECTORIES",
 }
 
@@ -56,6 +58,10 @@ export type ExperimentMutations<S = ExperimentState> = {
   [ExperimentMutationTypes.SET_GPS_FOLDER_SOURCES](
     state: S,
     payload: GPSFolderSource[]
+  ): void;
+  [ExperimentMutationTypes.SET_GPS_READER_TYPES](
+    state: S,
+    payload: string[]
   ): void;
   [ExperimentMutationTypes.SET_TRAJECTORIES](
     state: S,
@@ -165,5 +171,6 @@ export type ExperimentGetters = {
   currentExperimentSPTableBinaries(state: ExperimentState): string[];
   currentExperimentStep(state: ExperimentState): string;
   gpsFolderSources(state: ExperimentState): GPSFolderSource[];
+  gpsReaderTypes(state: ExperimentState): string[];
   trajectories(state: ExperimentState): string[];
 };

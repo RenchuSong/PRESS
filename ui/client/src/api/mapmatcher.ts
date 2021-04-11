@@ -20,6 +20,13 @@ export class MapMatcher {
     )).data;
   }
 
+  public static async genReaderTypes(): Promise<string[]> {
+    return (await restClient.get<string[]>(
+      `${apiBaseURL}/readertypes`,
+      {}
+    )).data;
+  }
+
   public static async genAddGPSAndMapMatch(
     sigmaZ: number,
     maxGPSBias: number,

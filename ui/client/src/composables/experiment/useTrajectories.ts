@@ -7,6 +7,7 @@ import { MutationTypes, ActionTypes } from "@/store/store-types";
 import { computed } from "vue";
 
 export default function useTrajectories(store: Store) {
+  const gpsReaderTypes = computed(() => store.getters.gpsReaderTypes);
   const gpsFolderSources = computed(() => store.getters.gpsFolderSources);
   const trajectories = computed(() => store.getters.trajectories);
 
@@ -58,6 +59,7 @@ export default function useTrajectories(store: Store) {
   };
 
   return {
+    gpsReaderTypes,
     gpsFolderSources,
     trajectories,
     loadTrajectories,
