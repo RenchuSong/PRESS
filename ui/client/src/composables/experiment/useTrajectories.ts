@@ -58,6 +58,76 @@ export default function useTrajectories(store: Store) {
     };
   };
 
+  const getGPSFilesInFolder = async (folder: string): Promise<string[]> => {
+    store.commit(MutationTypes.START_JOB, {
+      id: ActionTypes.LIST_GPS_FILES,
+      text: "Get all GPS files"
+    });
+    const gpsFiles = await MapMatcher.genGPSFileSources(folder);
+    store.commit(MutationTypes.FINISH_JOB, {
+      id: ActionTypes.LIST_GPS_FILES
+    });
+    return gpsFiles;
+  };
+
+  const clearGPSTrajectoriesInMemory = async (): Promise<void> => {
+    store.commit(MutationTypes.START_JOB, {
+      id: ActionTypes.CLEAR_GPS_FILES,
+      text: "Clear GPS trajectories in memory"
+    });
+    await MapMatcher.genClearGPSTrajectories();
+    store.commit(MutationTypes.FINISH_JOB, {
+      id: ActionTypes.CLEAR_GPS_FILES
+    });
+  };
+
+  const dumpTrajectories = async (): Promise<void> => {
+    store.commit(MutationTypes.START_JOB, {
+      id: ActionTypes.DUMP_TRAJECTORIES,
+      text: "Dump GPS, Map Matched, and PRESS trajectories to binary"
+    });
+    await MapMatcher.genDumpGPSTrajectories();
+    await MapMatcher.genDumpMapMatchedTrajectories();
+    await Reformatter.genDumpTrajectories();
+    store.commit(MutationTypes.FINISH_JOB, {
+      id: ActionTypes.DUMP_TRAJECTORIES
+    });
+  };
+
+  const reformatTrajectories = async (): Promise<void> => {
+    store.commit(MutationTypes.START_JOB, {
+      id: ActionTypes.REFORMAT_GPS_FILES,
+      text: "Reformat GPS trajectories to PRESS trajectories"
+    });
+    await Reformatter.genReformatTrajectories();
+    store.commit(MutationTypes.FINISH_JOB, {
+      id: ActionTypes.REFORMAT_GPS_FILES
+    });
+  };
+
+  const mapMatch = async (
+    sigmaZ: number,
+    maxGPSBias: number,
+    maxDistDifference: number,
+    gpsTrajectoryReaderType: string,
+    fileName: string
+  ): Promise<void> => {
+    store.commit(MutationTypes.START_JOB, {
+      id: ActionTypes.MAPMATCH_GPS_FILES,
+      text: `Map matching GPS trajectory: ${fileName}`
+    });
+    await MapMatcher.genMapMatch(
+      sigmaZ,
+      maxGPSBias,
+      maxDistDifference,
+      gpsTrajectoryReaderType,
+      fileName
+    );
+    store.commit(MutationTypes.FINISH_JOB, {
+      id: ActionTypes.MAPMATCH_GPS_FILES
+    });
+  };
+
   return {
     gpsReaderTypes,
     gpsFolderSources,
@@ -65,5 +135,11 @@ export default function useTrajectories(store: Store) {
     loadTrajectories,
     initGPSFolderSources,
     getTrajectory,
+
+    getGPSFilesInFolder,
+    clearGPSTrajectoriesInMemory,
+    dumpTrajectories,
+    reformatTrajectories,
+    mapMatch,
   };
 }

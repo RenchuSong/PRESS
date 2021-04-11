@@ -175,7 +175,7 @@
         maxGPSBias,
         maxDistDifference,
         gpsReaderType,
-        gpsTrajectoriesFolderName
+        gpsFolderSource()
       );
     "
   >
@@ -195,6 +195,7 @@ import GeoChart from "@/components/charts/GeoChart.vue";
 import LineChart from "@/components/charts/LineChart.vue";
 import { SelectEvent } from "ant-design-vue/lib/tree/Tree";
 import moment from "moment";
+import { GPSFolderSource } from "@/model/gps-folder-source";
 
 export default defineComponent({
   name: "GPSToPRESS",
@@ -211,6 +212,12 @@ export default defineComponent({
       loadTrajectories,
       initGPSFolderSources,
       getTrajectory,
+
+      getGPSFilesInFolder,
+      clearGPSTrajectoriesInMemory,
+      dumpTrajectories,
+      reformatTrajectories,
+      mapMatch,
     } = useTrajectories(store);
     const expandedTrajectoryKeys = ref<string[]>(["trajectories"]);
     const selectedTrajectoryKeys = ref<string[]>([]);
@@ -245,18 +252,26 @@ export default defineComponent({
       maxGPSBias: number,
       maxDistDifference: number,
       gpsTrajectoryReaderType: string,
-      folderName: string
+      gpsFolderSource?: GPSFolderSource
     ) => {
       try {
-        // await buildSPTable(distance);
-        // await dumpSPTableToBinary();
-        console.log(
-          sigmaZ,
-          maxGPSBias,
-          maxDistDifference,
-          gpsTrajectoryReaderType,
-          folderName
-        );
+        if (!gpsFolderSource) {
+          return;
+        }
+        const gpsFiles = await getGPSFilesInFolder(gpsFolderSource.sourceName);
+        await clearGPSTrajectoriesInMemory();
+        for (const gpsFile of gpsFiles) {
+          await mapMatch(
+            sigmaZ,
+            maxGPSBias,
+            maxDistDifference,
+            gpsTrajectoryReaderType,
+            gpsFolderSource.folderName + "/" + gpsFile
+          );
+        }
+        await reformatTrajectories();
+        await dumpTrajectories();
+        await loadTrajectories();
       } catch (exception) {
         message.error((exception as RESTError).message);
       }
@@ -270,7 +285,9 @@ export default defineComponent({
           maxGPSBias.value,
           maxDistDifference.value,
           gpsReaderType.value,
-          gpsTrajectoriesFolderName.value
+          gpsFolderSources.value.find(
+            (source) => source.sourceName === gpsTrajectoriesFolderName.value
+          )
         );
       }
     };
@@ -311,6 +328,11 @@ export default defineComponent({
 
       getTrajectory,
       handleChangeGPSFolderName,
+
+      gpsFolderSource: () =>
+        gpsFolderSources.value.find(
+          (source) => source.sourceName === gpsTrajectoriesFolderName.value
+        ),
     };
   },
   methods: {

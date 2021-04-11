@@ -59,4 +59,44 @@ export class MapMatcher {
       {}
     )).data;
   }
+
+  public static async genClearGPSTrajectories(): Promise<string> {
+    return (await restClient.put<string>(
+      `${apiBaseURL}/clear`,
+      {}
+    )).message;
+  }
+
+  public static async genDumpGPSTrajectories(): Promise<string> {
+    return (await restClient.put<string>(
+      `${apiBaseURL}/dumpgpstobinary`,
+      {}
+    )).message;
+  }
+
+  public static async genDumpMapMatchedTrajectories(): Promise<string> {
+    return (await restClient.put<string>(
+      `${apiBaseURL}/dumptobinary`,
+      {}
+    )).message;
+  }
+
+  public static async genMapMatch(
+    sigmaZ: number,
+    maxGPSBias: number,
+    maxDistDifference: number,
+    gpsTrajectoryReaderType: string,
+    fileName: string
+  ): Promise<string> {
+    return (await restClient.put<string>(
+      `${apiBaseURL}/add`,
+      {
+        sigmaZ,
+        maxGPSBias,
+        maxDistDifference,
+        gpsTrajectoryReaderType,
+        fileName
+      }
+    )).message;
+  }
 }

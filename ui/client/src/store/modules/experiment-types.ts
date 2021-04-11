@@ -88,6 +88,11 @@ export enum ExperimentActionTypes {
   INIT_GPS_FOLDER_OPTIONS = "INIT_GPS_FOLDER_OPTIONS",
   LIST_TRAJECTORIES = "LIST_TRAJECTORIES",
   PREVIEW_TRAJECTORY = "PREVIEW_TRAJECTORY", // Dummy, store cannot bear large object.
+  LIST_GPS_FILES = "LIST_GPS_FILES", // Dummy
+  CLEAR_GPS_FILES = "CLEAR_GPS_FILES", // Dummy
+  MAPMATCH_GPS_FILES = "MAPMATCH_GPS_FILES", // Dummy
+  REFORMAT_GPS_FILES = "REFORMAT_GPS_FILES", // Dummy
+  DUMP_TRAJECTORIES = "DUMP_TRAJECTORIES", // Dummy
 }
 
 type AugmentedExperimentActionContext = {
