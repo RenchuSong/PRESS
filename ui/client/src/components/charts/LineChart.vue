@@ -1,6 +1,7 @@
 <template>
   <div>
     <div id="line"></div>
+    <div class="title">{{ title }}</div>
   </div>
 </template>
 <script lang="ts">
@@ -12,6 +13,7 @@ export default defineComponent({
   props: {
     xAxis: String,
     yAxis: String,
+    title: String,
   },
   setup(props, _context) {
     let chart: Chart | undefined = undefined;
@@ -81,11 +83,18 @@ export default defineComponent({
   },
 });
 </script>
-<style>
+<style scoped lang="scss">
 #line {
   position: absolute;
   top: 0;
   bottom: 0;
   width: 100%;
+}
+
+.title {
+  position: absolute;
+  width: 100%;
+  text-align: center;
+  font-size: 18px;
 }
 </style>

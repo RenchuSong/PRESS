@@ -128,12 +128,20 @@
         </a-col>
         <a-col :span="12">
           <div class="gps-and-spatial-preview-container">
-            <GeoChart ref="gpsAndSpatialPreview" />
+            <GeoChart
+              ref="gpsAndSpatialPreview"
+              title="GPS & PRESS spatial component"
+            />
           </div>
         </a-col>
         <a-col :span="7">
           <div class="temporal-preview-container">
-            <LineChart ref="temporalPreview" xAxis="T" yAxis="D" />
+            <LineChart
+              ref="temporalPreview"
+              xAxis="T"
+              yAxis="D"
+              title="PRESS temporal component"
+            />
           </div>
         </a-col>
       </a-row>

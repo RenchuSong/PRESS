@@ -1,11 +1,12 @@
 <template>
   <div>
     <div id="map"></div>
+    <div class="title">{{ title }}</div>
   </div>
 </template>
 <script lang="ts">
 import { defineComponent, onMounted } from "vue";
-import { Scene, LineLayer, ILayer } from "@antv/l7";
+import { Scene, LineLayer, ILayer, PointLayer } from "@antv/l7";
 import { Mapbox } from "@antv/l7-maps";
 import { RoadnetWithBound } from "@/model/roadnet";
 import { Position } from "@/model/position";
@@ -16,6 +17,7 @@ export default defineComponent({
   name: "GeoChartComponent",
   props: {
     id: String,
+    title: String,
   },
   setup(props, _context) {
     let scene: Scene | undefined = undefined;
@@ -72,6 +74,8 @@ export default defineComponent({
     ) => {
       const mbr = mergeMBR(gps.mbr, press.mbr);
       setCenter(center(mbr));
+
+      // PRESS spatial layer
       if (pressSpatialLayer !== undefined) {
         scene?.removeLayer(pressSpatialLayer);
       }
@@ -82,10 +86,28 @@ export default defineComponent({
             type: "json",
           },
         })
-        .size(0.5)
+        .size(1)
         .shape("line")
         .color("#52c41a");
       scene?.addLayer(pressSpatialLayer);
+
+      // GPS layer
+      if (gpsLayer !== undefined) {
+        scene?.removeLayer(gpsLayer);
+      }
+      gpsLayer = new PointLayer({})
+        .source(gps.data, {
+          parser: {
+            type: "json",
+            x: "long",
+            y: "lat",
+          },
+        })
+        .shape("circle")
+        .size(2)
+        .color("#1890ff");
+      scene?.addLayer(gpsLayer);
+
       scene?.fitBounds([
         [mbr.minPos.Long, mbr.minPos.Lat],
         [mbr.maxPos.Long, mbr.maxPos.Lat],
@@ -102,11 +124,19 @@ export default defineComponent({
   },
 });
 </script>
-<style>
+<style scoped lang="scss">
 #map {
   position: absolute;
   top: 0;
   bottom: 0;
   width: 100%;
+}
+
+.title {
+  position: absolute;
+  top: 4px;
+  width: 100%;
+  text-align: center;
+  font-size: 18px;
 }
 </style>
