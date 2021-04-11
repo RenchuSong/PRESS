@@ -37,6 +37,7 @@ export default defineComponent({
         chart?.axis(x, {
           label: {
             formatter: xFormatter,
+            autoRotate: true,
           },
         });
       }

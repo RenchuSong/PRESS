@@ -184,6 +184,7 @@ import { RESTError } from "@/api/base";
 import GeoChart from "@/components/charts/GeoChart.vue";
 import LineChart from "@/components/charts/LineChart.vue";
 import { SelectEvent } from "ant-design-vue/lib/tree/Tree";
+import moment from "moment";
 
 export default defineComponent({
   name: "GPSToPRESS",
@@ -282,7 +283,7 @@ export default defineComponent({
           "T",
           "D",
           6,
-          (t: number) => `${t} sec`,
+          (t: number) => moment.unix(t).format("YY/MM/DD HH:mm:ss"),
           (d: number) => `${d} m`
         );
       } catch (exception) {
