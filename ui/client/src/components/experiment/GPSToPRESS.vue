@@ -6,24 +6,27 @@
     >
       <a-row type="flex" align="middle" justify="space-between" :gutter="10">
         <a-col :span="5">
-          <a-select class="full-width" v-model:value="gridIndexBinaryFileName">
+          <a-select
+            class="full-width"
+            v-model:value="gpsTrajectoriesFolderName"
+          >
             <a-select-option value="tooltip" disabled>
-              From Binary
-            </a-select-option>
-            <!-- <a-select-option
-              value="noBinary"
-              v-if="currentGridIndexBinaries.length === 0"
-              disabled
-            >
-              No Binary Available
+              From Folder
             </a-select-option>
             <a-select-option
-              v-for="currentGridIndexBinary in currentGridIndexBinaries"
-              :key="currentGridIndexBinary"
-              :value="currentGridIndexBinary"
+              value="noFolder"
+              v-if="gpsFolderSources.length === 0"
+              disabled
             >
-              {{ currentGridIndexBinary }}
-            </a-select-option> -->
+              No Folder Available
+            </a-select-option>
+            <a-select-option
+              v-for="gpsFolderSource in gpsFolderSources"
+              :key="gpsFolderSource.sourceName"
+              :value="gpsFolderSource.sourceName"
+            >
+              {{ gpsFolderSource.folderName }}
+            </a-select-option>
           </a-select>
         </a-col>
         <a-col :span="5">
@@ -152,29 +155,21 @@
     centered
     :closable="false"
     :maskClosable="false"
-    v-model:visible="confirmBuildGridIndex"
+    v-model:visible="confirmAddTrajectories"
     title="ATTENTION"
     @ok="
-      confirmBuildGridIndex = false;
-      handleBuildGridIndex(gridIndexWidth, gridIndexHeight);
+      confirmAddTrajectories = false;
+      handleAddTrajectory(
+        sigmaZ,
+        maxGPSBias,
+        maxDistDifference,
+        '', // TODO: change
+        [] // TODO: change
+      );
     "
   >
-    There is already grid index in this experiment.<br />
-    Do you want to replace it?
-  </a-modal>
-  <a-modal
-    centered
-    :closable="false"
-    :maskClosable="false"
-    v-model:visible="confirmBuildSPTable"
-    title="ATTENTION"
-    @ok="
-      confirmBuildSPTable = false;
-      handleBuildSPTable(spTableRange);
-    "
-  >
-    There is already shortest path table in this experiment.<br />
-    Do you want to replace it?
+    There are already trajectories in this experiment.<br />
+    Do you want to replace them?
   </a-modal>
 </template>
 
@@ -183,7 +178,6 @@ import { computed, defineComponent, onMounted, ref } from "vue";
 import { useStore } from "@/store";
 import message from "ant-design-vue/lib/message";
 import useTrajectories from "@/composables/experiment/useTrajectories";
-import useSPTable from "@/composables/experiment/useSPTable";
 import useExperiment from "@/composables/experiment/useExperiment";
 import { RESTError } from "@/api/base";
 import GeoChart from "@/components/charts/GeoChart.vue";
@@ -197,61 +191,57 @@ export default defineComponent({
     const maxGPSBias = ref<number>(50);
     const maxDistDifference = ref<number>(2000);
 
-    const gridIndexWidth = ref<number>(200);
-    const gridIndexHeight = ref<number>(200);
-    const spTableRange = ref<number>(4000);
-
     const {
       gpsFolderSources,
       trajectories,
-      initTrajectories,
       loadTrajectories,
+      initGPSFolderSources,
     } = useTrajectories(store);
     const expandedTrajectoryKeys = ref<string[]>(["trajectories"]);
     const selectedTrajectoryKeys = ref<string[]>([]);
 
     onMounted(async () => {
-      await initTrajectories();
+      try {
+        await initGPSFolderSources();
+        await loadTrajectories();
+      } catch (exception) {
+        message.error((exception as RESTError).message);
+      }
     });
 
-    const gridIndexBinaryFileName = ref("tooltip");
-    const loadGridIndexFromBinaryDisabled = computed(
-      () => gridIndexBinaryFileName.value === "tooltip"
-    );
+    const gpsTrajectoriesFolderName = ref("tooltip");
 
-    const confirmBuildGridIndex = ref<boolean>(false);
+    const confirmAddTrajectories = ref<boolean>(false);
 
-    const {
-      currentSPTableBinaries,
-      buildSPTable,
-      dumpSPTableToBinary,
-      loadSPTableFromBinary,
-    } = useSPTable(store);
-
-    const spTableBinaryFileName = ref("tooltip");
-    const loadSPTableFromBinaryDisabled = computed(
-      () => spTableBinaryFileName.value === "tooltip"
-    );
-
-    const confirmBuildSPTable = ref<boolean>(false);
-
-    const handleBuildSPTable = async (distance: number) => {
+    const handleAddTrajectory = async (
+      sigmaZ: number,
+      maxGPSBias: number,
+      maxDistDifference: number,
+      gpsTrajectoryReaderType: string,
+      fileNames: string[]
+    ) => {
       try {
-        await buildSPTable(distance);
-        await dumpSPTableToBinary();
+        // await buildSPTable(distance);
+        // await dumpSPTableToBinary();
       } catch (exception) {
         message.error((exception as RESTError).message);
       }
     };
-    const preHandleBuildSPTable = () => {
-      if (currentSPTableBinaries.value.length > 0) {
-        confirmBuildSPTable.value = true;
+    const preHandleAddTrajectory = () => {
+      if (trajectories.value.length > 0) {
+        confirmAddTrajectories.value = true;
       } else {
-        handleBuildSPTable(spTableRange.value);
+        handleAddTrajectory(
+          sigmaZ.value,
+          maxGPSBias.value,
+          maxDistDifference.value,
+          "", // TODO: change
+          [] // TODO: change
+        );
       }
     };
 
-    const { currentExperimentContext, navigate } = useExperiment(store);
+    const { navigate } = useExperiment(store);
 
     return {
       sigmaZ,
@@ -260,38 +250,14 @@ export default defineComponent({
 
       gpsFolderSources,
       trajectories,
-      initTrajectories,
       loadTrajectories,
       expandedTrajectoryKeys,
       selectedTrajectoryKeys,
 
-      loadGridIndexFromBinaryDisabled,
-      gridIndexWidth,
-      gridIndexHeight,
-      gridIndexBinaryFileName,
-      confirmBuildGridIndex,
-      gridIndexReady: computed(
-        () => currentExperimentContext.value?.gridIndexReady
-      ),
-      currentSPTableBinaries,
-      loadSPTableFromBinaryDisabled,
-      spTableRange,
-      buildSPTable,
-      dumpSPTableToBinary,
-      spTableBinaryFileName,
-      handleLoadSPTableFromBinary: async () => {
-        try {
-          await loadSPTableFromBinary();
-        } catch (exception) {
-          message.error((exception as RESTError).message);
-        }
-      },
-      handleBuildSPTable,
-      preHandleBuildSPTable,
-      confirmBuildSPTable,
-      spTableReady: computed(
-        () => currentExperimentContext.value?.spTableReady
-      ),
+      gpsTrajectoriesFolderName,
+      confirmAddTrajectories,
+      handleAddTrajectory,
+      preHandleAddTrajectory,
       navigate,
     };
   },

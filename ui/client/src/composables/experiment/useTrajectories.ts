@@ -20,14 +20,24 @@ export default function useTrajectories(store: Store) {
     });
   };
 
-  const initTrajectories = async () => {
-    await loadTrajectories();
-  }
+  const initGPSFolderSources = async () => {
+    store.commit(MutationTypes.START_JOB, {
+      id: ActionTypes.INIT_GPS_FOLDER_OPTIONS,
+      text: "Initializing GPS folder options"
+    });
+    await store.dispatch(
+      ActionTypes.INIT_GPS_FOLDER_OPTIONS,
+      {}
+    );
+    store.commit(MutationTypes.FINISH_JOB, {
+      id: ActionTypes.INIT_GPS_FOLDER_OPTIONS
+    });
+  };
 
   return {
     gpsFolderSources,
     trajectories,
-    initTrajectories,
     loadTrajectories,
+    initGPSFolderSources,
   };
 }
