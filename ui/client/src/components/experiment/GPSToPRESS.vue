@@ -82,7 +82,7 @@
           <a-button
             class="full-width"
             type="primary"
-            @click="preHandleBuildGridIndex"
+            @click="preHandleAddTrajectory"
           >
             START
           </a-button>
@@ -106,6 +106,7 @@
               showLine
               v-model:expandedKeys="expandedTrajectoryKeys"
               v-model:selectedKeys="selectedTrajectoryKeys"
+              @select="onChooseTrajectory"
             >
               <a-tree-node key="trajectories" title="Trajectories">
                 <a-tree-node
@@ -132,7 +133,7 @@
         </a-col>
         <a-col :span="7">
           <div class="temporal-preview-container">
-            <LineChart xAxis="T" yAxis="D" />
+            <LineChart ref="temporalPreview" xAxis="T" yAxis="D" />
           </div>
         </a-col>
       </a-row>
@@ -182,6 +183,7 @@ import useExperiment from "@/composables/experiment/useExperiment";
 import { RESTError } from "@/api/base";
 import GeoChart from "@/components/charts/GeoChart.vue";
 import LineChart from "@/components/charts/LineChart.vue";
+import { SelectEvent } from "ant-design-vue/lib/tree/Tree";
 
 export default defineComponent({
   name: "GPSToPRESS",
@@ -196,6 +198,7 @@ export default defineComponent({
       trajectories,
       loadTrajectories,
       initGPSFolderSources,
+      getTrajectory,
     } = useTrajectories(store);
     const expandedTrajectoryKeys = ref<string[]>(["trajectories"]);
     const selectedTrajectoryKeys = ref<string[]>([]);
@@ -259,11 +262,37 @@ export default defineComponent({
       handleAddTrajectory,
       preHandleAddTrajectory,
       navigate,
+
+      getTrajectory,
     };
   },
   methods: {
     gotoGPSToPRESS() {
       this.navigate(this.$route, this.$router, "gpstopress");
+    },
+    async previewTrajectory(id: string) {
+      try {
+        const trajData = await this.getTrajectory(id);
+        (this.$refs.gpsAndSpatialPreview as any).refreshGPSAndSpatial(
+          trajData.gps,
+          trajData.press
+        );
+        (this.$refs.temporalPreview as any).refreshData(
+          trajData.press.data.temporal,
+          "T",
+          "D",
+          6,
+          (t: number) => `${t} sec`,
+          (d: number) => `${d} m`
+        );
+      } catch (exception) {
+        message.error((exception as RESTError).message);
+      }
+    },
+    async onChooseTrajectory(selectedKeys: string[], info: SelectEvent) {
+      if (selectedKeys.length === 1) {
+        await this.previewTrajectory(selectedKeys[0]);
+      }
     },
   },
   components: {

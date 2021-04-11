@@ -81,6 +81,7 @@ export enum ExperimentActionTypes {
   LOAD_SP_TABLE_FROM_BINARY = "LOAD_SP_TABLE_FROM_BINARY",
   INIT_GPS_FOLDER_OPTIONS = "INIT_GPS_FOLDER_OPTIONS",
   LIST_TRAJECTORIES = "LIST_TRAJECTORIES",
+  PREVIEW_TRAJECTORY = "PREVIEW_TRAJECTORY", // Dummy, store cannot bear large object.
 }
 
 type AugmentedExperimentActionContext = {

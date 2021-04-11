@@ -48,7 +48,7 @@ export default defineComponent({
         });
       }
 
-      chart?.line().position(`${x}*${y}`).color("#1890ff");
+      chart?.line().position(`${x}*${y}`).color("#52c41a");
       chart?.render();
     };
 

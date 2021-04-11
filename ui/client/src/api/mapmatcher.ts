@@ -1,5 +1,6 @@
 import { ExperimentContext } from '@/model/experiment-context';
 import { GPSFolderSource } from '@/model/gps-folder-source';
+import { GPSTrajectoryData } from '@/model/gps-trajectory';
 import { baseURL, restClient } from "./base";
 
 const apiBaseURL = `${baseURL}/mapmatcher`;
@@ -41,6 +42,13 @@ export class MapMatcher {
   public static async genLoadGridIndexFromBinary(): Promise<ExperimentContext> {
     return (await restClient.put<ExperimentContext>(
       `${apiBaseURL}/loadfrombinary`,
+      {}
+    )).data;
+  }
+
+  public static async genGPSTrajectory(id: string): Promise<GPSTrajectoryData> {
+    return (await restClient.get<GPSTrajectoryData>(
+      `${apiBaseURL}/gps/${id}`,
       {}
     )).data;
   }

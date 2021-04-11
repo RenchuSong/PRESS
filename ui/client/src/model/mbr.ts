@@ -25,6 +25,14 @@ export function extendMBR(mbr: MBR, pos: Position) {
   mbr.maxPos.Long = Math.max(mbr.maxPos.Long, pos.Long);
 }
 
+export function mergeMBR(mbr1: MBR, mbr2: MBR): MBR {
+  const mbr = createMBR(mbr1.minPos);
+  extendMBR(mbr, mbr1.maxPos);
+  extendMBR(mbr, mbr2.minPos);
+  extendMBR(mbr, mbr2.maxPos);
+  return mbr;
+}
+
 export function center(mbr: MBR): Position {
   return {
     Lat: (mbr.minPos.Lat + mbr.maxPos.Lat) / 2,
