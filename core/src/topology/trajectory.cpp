@@ -6,7 +6,9 @@
 //  Copyright © 2019 Renc. All rights reserved.
 //
 
+#include <algorithm>
 #include <cassert>
+#include <cmath>
 
 #include "trajectory.hpp"
 
@@ -88,6 +90,18 @@ void GPSTrajectory::toJSON(std::stringstream& ss) const {
     ss << trajectory.at(i).toJSONString();
   }
   ss << "]";
+}
+
+int GPSTrajectory::getSampleRate() const {
+  if (length < 2) {
+    return 1;
+  }
+  std::vector<float> rates;
+  for (int i = 1; i < length; ++i) {
+    rates.emplace_back(fabs(trajectory.at(i).t - trajectory.at(i - 1).t));
+  }
+  std::sort(rates.begin(), rates.end());
+  return (int)roundf(rates.at((length - 1) / 2));
 }
 
 GPSTrajectory::~GPSTrajectory() { }

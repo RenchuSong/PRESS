@@ -40,6 +40,7 @@ public:
   void store(FileWriter& gpsWriter);
   void print() const;
   void toJSON(std::stringstream& ss) const;
+  int getSampleRate() const;
   ~GPSTrajectory();
 };
 

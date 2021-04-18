@@ -477,6 +477,28 @@ void handleDumpGPSTrajectoriesToBinary(
   response = successResponse("GPS trajectories are dumped to " + gpsFolderName + ".");
 }
 
+// Handle get GPS trajectories sample rates in an array.
+void handleGetGPSTrajectoriesSampleRate(
+  picojson::value& requestJson,
+  std::string& response
+) {
+  if (!roadnetReady) {
+    response = errorResponse("Roadnet is not ready.");
+    return;
+  }
+  std::stringstream ss;
+  ss << "[";
+  for (int i = 0; i < gpsTrajectories.size(); ++i) {
+    if (i > 0) {
+      ss << ",";
+    }
+    ss << gpsTrajectories.at(i).getSampleRate();
+  }
+  ss << "]";
+  std::string json = ss.str();
+  response = successResponseWithData(json);
+}
+
 // Handle dump map matched trajectories to
 // ${EXP_FOLDER}/[folder]/map_matched_trajectories/[0 .. (n - 1)].bin
 void handleDumpMapMatchedTrajectoriesToBinary(
@@ -1937,6 +1959,8 @@ struct ReqRespHelper {
         handleLoadGPSTrajectoriesFromBinary(requestJson, response);
       } else if (cmd == "ShowGPSTrajectory") {
         handleShowGPSTrajectory(requestJson, response);
+      } else if (cmd == "GetGPSTrajectoriesSampleRate") {
+        handleGetGPSTrajectoriesSampleRate(requestJson, response);
       } else if (cmd == "LoadMapMatchedTrajectoriesFromBinary") {
         handleLoadMapMatchedTrajectoriesFromBinary(requestJson, response);
       } else if (cmd == "ReformatTrajectories") {
