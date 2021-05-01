@@ -448,7 +448,7 @@ void handleClearGPSAndMapMatchedTrajectories(picojson::value& requestJson, std::
   response = successResponse("Cleared original and map matched GPS trajectories.");
 }
 
-// Handle dump GPS trajectories to ${EXP_FOLDER}/[folder]/gps_trajectories/[0 .. (n - 1)].bin
+// Handle dump GPS trajectories to ${EXP_FOLDER}/[folder:exp/gps_trajectories]/[0 .. (n - 1)].bin
 void handleDumpGPSTrajectoriesToBinary(
   picojson::value& requestJson,
   std::string& response
@@ -458,7 +458,7 @@ void handleDumpGPSTrajectoriesToBinary(
     return;
   }
   auto& folder = requestJson.get("Folder").get<std::string>();
-  auto gpsFolderName = config.expFolder + folder + "/gps_trajectories/";
+  auto gpsFolderName = config.expFolder + folder + "/";
   if (!fileExists(gpsFolderName.c_str()) && !createFolder(gpsFolderName)) {
     FILE_LOG(TLogLevel::lerror) << "Failed to create storage folder: " << gpsFolderName;
     response = errorResponse("Failed to create storage folder.");
@@ -529,7 +529,7 @@ void handleDumpMapMatchedTrajectoriesToBinary(
   response = successResponse("Map matched trajectories are dumped to " + mmFolderName + ".");
 }
 
-// Handle load GPS trajectories from ${EXP_FOLDER}/[folder]/gps_trajectories/[0 .. (n - 1)].bin
+// Handle load GPS trajectories from ${EXP_FOLDER}/[folder:exp/gps_trajectories]/[0 .. (n - 1)].bin
 void handleLoadGPSTrajectoriesFromBinary(picojson::value& requestJson, std::string& response) {
   if (!roadnetReady) {
     response = errorResponse("Roadnet is not ready.");
@@ -540,7 +540,7 @@ void handleLoadGPSTrajectoriesFromBinary(picojson::value& requestJson, std::stri
     return;
   }
   auto& folder = requestJson.get("Folder").get<std::string>();
-  auto folderName = config.expFolder + folder + "/gps_trajectories/";
+  auto folderName = config.expFolder + folder + "/";
   std::vector<std::string> files;
   if (!listDirectory(folderName, files)) {
     FILE_LOG(TLogLevel::lerror) << "Fail to list GPS trajectory folder: " << folderName;
@@ -555,11 +555,11 @@ void handleLoadGPSTrajectoriesFromBinary(picojson::value& requestJson, std::stri
   response = successResponse("GPS trajectories are loaded from " + folderName + ".");
 }
 
-// Handle show GPS trajectory from ${EXP_FOLDER}/[folder]/gps_trajectories/[ID].bin
+// Handle show GPS trajectory from ${EXP_FOLDER}/[folder:exp/gps_trajectories]/[ID].bin
 void handleShowGPSTrajectory(picojson::value& requestJson, std::string& response) {
   auto& folder = requestJson.get("Folder").get<std::string>();
   auto& id = requestJson.get("ID").get<std::string>();
-  auto fileName = config.expFolder + folder + "/gps_trajectories/" + id + ".bin";
+  auto fileName = config.expFolder + folder + "/" + id + ".bin";
   if (!fileExists(fileName.c_str())) {
     FILE_LOG(TLogLevel::lerror) << "GPS binary file doesn't exist: " << fileName;
     response = errorResponse("GPS binary file doesn't exist.");
@@ -621,6 +621,7 @@ void handleReformatTrajectories(picojson::value& requestJson, std::string& respo
   pressTrajectories.clear();
   TrajectoryReformatter refomatter;
   for (int i = 0; i < gpsTrajectories.size(); ++i) {
+    mapMatchedTrajectories.at(i).print();
     PRESSTrajectory pressTrajectory;
     refomatter.generateTrajectory(
       spTable,
@@ -2065,7 +2066,7 @@ int main(int argc, char** argv) {
   // Config logger.
   configLogger();
   // Daemonize.
-  daemonize();
+//  daemonize();
   // Register signal handlers.
   registerSignalHandler();
   // Open communication channel.

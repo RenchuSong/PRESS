@@ -197,6 +197,8 @@ import { SelectEvent } from "ant-design-vue/lib/tree/Tree";
 import moment from "moment";
 import { GPSFolderSource } from "@/model/gps-folder-source";
 
+const GPS_TRAJECTORIES_FOLDER = "gps_trajectories";
+
 export default defineComponent({
   name: "GPSToPRESS",
   setup(_props, _context) {
@@ -270,7 +272,7 @@ export default defineComponent({
           );
         }
         await reformatTrajectories();
-        await dumpTrajectories();
+        await dumpTrajectories(GPS_TRAJECTORIES_FOLDER);
         await loadTrajectories();
       } catch (exception) {
         message.error((exception as RESTError).message);
@@ -341,7 +343,7 @@ export default defineComponent({
     },
     async previewTrajectory(id: string) {
       try {
-        const trajData = await this.getTrajectory(id);
+        const trajData = await this.getTrajectory(GPS_TRAJECTORIES_FOLDER, id);
         (this.$refs.gpsAndSpatialPreview as any).refreshGPSAndSpatial(
           trajData.gps,
           trajData.press

@@ -46,16 +46,16 @@ export class MapMatcher {
     )).message;
   }
 
-  public static async genLoadGridIndexFromBinary(): Promise<ExperimentContext> {
+  public static async genLoadGridIndexFromBinary(folder: string): Promise<ExperimentContext> {
     return (await restClient.put<ExperimentContext>(
-      `${apiBaseURL}/loadfrombinary`,
+      `${apiBaseURL}/loadfrombinary/${folder}`,
       {}
     )).data;
   }
 
-  public static async genGPSTrajectory(id: string): Promise<GPSTrajectoryData> {
+  public static async genGPSTrajectory(folder: string, id: string): Promise<GPSTrajectoryData> {
     return (await restClient.get<GPSTrajectoryData>(
-      `${apiBaseURL}/gps/${id}`,
+      `${apiBaseURL}/gps/${folder}/${id}`,
       {}
     )).data;
   }
@@ -67,9 +67,9 @@ export class MapMatcher {
     )).message;
   }
 
-  public static async genDumpGPSTrajectories(): Promise<string> {
+  public static async genDumpGPSTrajectories(folder: string): Promise<string> {
     return (await restClient.put<string>(
-      `${apiBaseURL}/dumpgpstobinary`,
+      `${apiBaseURL}/dumpgpstobinary/${folder}`,
       {}
     )).message;
   }

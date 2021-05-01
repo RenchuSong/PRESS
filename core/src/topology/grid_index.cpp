@@ -52,13 +52,15 @@ void GridIndex::search(const Point2D& position, double dist, std::unordered_set<
       Point2D p2((c + 1) * gridWidth + minPoint.x, r * gridHeight + minPoint.y);
       Point2D p3(c * gridWidth + minPoint.x, (r + 1) * gridHeight + minPoint.y);
       Point2D p4((c + 1) * gridWidth + minPoint.x, (r + 1) * gridHeight + minPoint.y);
-      if (
-        distPoint2Interval(position, p1, p2) > dist &&
-        distPoint2Interval(position, p1, p3) > dist &&
-        distPoint2Interval(position, p2, p4) > dist &&
-        distPoint2Interval(position, p3, p4) > dist
-      ) {
-        continue;
+      if (position.x < p1.x || position.y < p1.y || position.x > p4.x || position.y > p4.y) {
+        if (
+          distPoint2Interval(position, p1, p2) > dist &&
+          distPoint2Interval(position, p1, p3) > dist &&
+          distPoint2Interval(position, p2, p4) > dist &&
+          distPoint2Interval(position, p3, p4) > dist
+        ) {
+          continue;
+        }
       }
 
       int cellIndex = getCellIndex(col, c, r);
