@@ -204,11 +204,18 @@ func ListTrajectories(c *gin.Context, b interface{}) *util.TaskResult {
 		}
 	}
 
-	gps, err := util.ListDir(path.Join(
+	fd := path.Join(
 		ctr.Config.Experiments,
 		"Experiment_"+strconv.Itoa(mod.ExpCtx.ID),
 		"gps_trajectories",
-	))
+	)
+	if fe, _ := util.FileExists(fd); !fe {
+		return &util.TaskResult{
+			Code: 200,
+			Data: make([]string, 0),
+		}
+	}
+	gps, err := util.ListDir(fd)
 	if err != nil {
 		return &util.TaskResult{
 			Code:    500,
