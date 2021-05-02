@@ -39,7 +39,11 @@ export default function useTrajectories(store: Store) {
     });
   };
 
-  const getTrajectory = async (folder: string, id: string): Promise<{
+  const getTrajectory = async (
+    gpsFolder: string,
+    pressFolder: string,
+    id: string
+  ): Promise<{
     gps: GPSTrajectoryWithBound,
     press: PRESSTrajectoryWithBound
   }> => {
@@ -47,8 +51,8 @@ export default function useTrajectories(store: Store) {
       id: ActionTypes.PREVIEW_TRAJECTORY,
       text: "Loading trajectory data to UI portal"
     });
-    const gps = await MapMatcher.genGPSTrajectory(folder, id);
-    const press = await Reformatter.genPRESSTrajectory(id);
+    const gps = await MapMatcher.genGPSTrajectory(gpsFolder, id);
+    const press = await Reformatter.genPRESSTrajectory(pressFolder, id);
     store.commit(MutationTypes.FINISH_JOB, {
       id: ActionTypes.PREVIEW_TRAJECTORY
     });
@@ -81,14 +85,18 @@ export default function useTrajectories(store: Store) {
     });
   };
 
-  const dumpTrajectories = async (folder: string): Promise<void> => {
+  const dumpTrajectories = async (
+    gpsFolder: string,
+    mmFolder: string,
+    pressFolder: string
+  ): Promise<void> => {
     store.commit(MutationTypes.START_JOB, {
       id: ActionTypes.DUMP_TRAJECTORIES,
       text: "Dump GPS, Map Matched, and PRESS trajectories to binary"
     });
-    await MapMatcher.genDumpGPSTrajectories(folder);
-    await MapMatcher.genDumpMapMatchedTrajectories();
-    await Reformatter.genDumpTrajectories();
+    await MapMatcher.genDumpGPSTrajectories(gpsFolder);
+    await MapMatcher.genDumpMapMatchedTrajectories(mmFolder);
+    await Reformatter.genDumpTrajectories(pressFolder);
     store.commit(MutationTypes.FINISH_JOB, {
       id: ActionTypes.DUMP_TRAJECTORIES
     });

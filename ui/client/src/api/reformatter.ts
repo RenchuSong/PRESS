@@ -13,16 +13,16 @@ export class Reformatter {
     )).data;
   }
 
-  public static async genPRESSTrajectory(id: string): Promise<PRESSTrajectoryData> {
+  public static async genPRESSTrajectory(folder: string, id: string): Promise<PRESSTrajectoryData> {
     return (await restClient.get<PRESSTrajectoryData>(
-      `${apiBaseURL}/press/${id}`,
+      `${apiBaseURL}/press/${folder}/${id}`,
       {}
     )).data;
   }
 
-  public static async genDumpTrajectories(): Promise<string> {
+  public static async genDumpTrajectories(folder: string): Promise<string> {
     return (await restClient.put<string>(
-      `${apiBaseURL}/dumptobinary`,
+      `${apiBaseURL}/dumptobinary/${folder}`,
       {}
     )).message;
   }

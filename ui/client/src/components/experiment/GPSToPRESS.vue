@@ -198,6 +198,8 @@ import moment from "moment";
 import { GPSFolderSource } from "@/model/gps-folder-source";
 
 const GPS_TRAJECTORIES_FOLDER = "gps_trajectories";
+const MAP_MATCHED_TRAJECTORIES_FOLDER = "map_matched_trajectories";
+const PRESS_TRAJECTORIES = "press_trajectories";
 
 export default defineComponent({
   name: "GPSToPRESS",
@@ -272,7 +274,11 @@ export default defineComponent({
           );
         }
         await reformatTrajectories();
-        await dumpTrajectories(GPS_TRAJECTORIES_FOLDER);
+        await dumpTrajectories(
+          GPS_TRAJECTORIES_FOLDER,
+          MAP_MATCHED_TRAJECTORIES_FOLDER,
+          PRESS_TRAJECTORIES
+        );
         await loadTrajectories();
       } catch (exception) {
         message.error((exception as RESTError).message);
@@ -343,7 +349,11 @@ export default defineComponent({
     },
     async previewTrajectory(id: string) {
       try {
-        const trajData = await this.getTrajectory(GPS_TRAJECTORIES_FOLDER, id);
+        const trajData = await this.getTrajectory(
+          GPS_TRAJECTORIES_FOLDER,
+          PRESS_TRAJECTORIES,
+          id
+        );
         (this.$refs.gpsAndSpatialPreview as any).refreshGPSAndSpatial(
           trajData.gps,
           trajData.press

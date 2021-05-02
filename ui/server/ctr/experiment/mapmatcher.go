@@ -26,13 +26,13 @@ func RegisterMapMatcher(r *gin.RouterGroup, cq *util.TaskQueue, oq *util.TaskQue
 	r.PUT("/mapmatcher/dumpgpstobinary/:folder", func(c *gin.Context) {
 		cq.Add(c, DumpGPSToBinary)
 	})
-	r.PUT("/mapmatcher/dumptobinary", func(c *gin.Context) {
+	r.PUT("/mapmatcher/dumptobinary/:folder", func(c *gin.Context) {
 		cq.Add(c, DumpMapMatchedToBinary)
 	})
 	r.PUT("/mapmatcher/loadgpsfrombinary/:folder", func(c *gin.Context) {
 		cq.Add(c, LoadGPSFromBinary)
 	})
-	r.PUT("/mapmatcher/loadfrombinary", func(c *gin.Context) {
+	r.PUT("/mapmatcher/loadfrombinary/:folder", func(c *gin.Context) {
 		cq.Add(c, LoadMapMatchedFromBinary)
 	})
 	r.PUT("/mapmatcher/clear", func(c *gin.Context) {
@@ -235,7 +235,7 @@ func DumpMapMatchedToBinary(c *gin.Context, b interface{}) *util.TaskResult {
 		Folder string
 	}{
 		Cmd:    "DumpMapMatchedTrajectoriesToBinary",
-		Folder: "Experiment_" + strconv.Itoa(mod.ExpCtx.ID),
+		Folder: "Experiment_" + strconv.Itoa(mod.ExpCtx.ID) + "/" + c.Param("folder"),
 	})
 
 	ret, err := util.Core.GetResponse()
@@ -358,7 +358,7 @@ func LoadMapMatchedFromBinary(c *gin.Context, b interface{}) *util.TaskResult {
 		Folder string
 	}{
 		Cmd:    "LoadMapMatchedTrajectoriesFromBinary",
-		Folder: "Experiment_" + strconv.Itoa(mod.ExpCtx.ID),
+		Folder: "Experiment_" + strconv.Itoa(mod.ExpCtx.ID) + "/" + c.Param("folder"),
 	})
 
 	ret, err := util.Core.GetResponse()

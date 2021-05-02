@@ -500,7 +500,7 @@ void handleGetGPSTrajectoriesSampleRate(
 }
 
 // Handle dump map matched trajectories to
-// ${EXP_FOLDER}/[folder]/map_matched_trajectories/[0 .. (n - 1)].bin
+// ${EXP_FOLDER}/[folder:exp/map_matched_trajectories]/[0 .. (n - 1)].bin
 void handleDumpMapMatchedTrajectoriesToBinary(
   picojson::value& requestJson,
   std::string& response
@@ -510,7 +510,7 @@ void handleDumpMapMatchedTrajectoriesToBinary(
     return;
   }
   auto& folder = requestJson.get("Folder").get<std::string>();
-  auto mmFolderName = config.expFolder + folder + "/map_matched_trajectories/";
+  auto mmFolderName = config.expFolder + folder + "/";
   if (!fileExists(mmFolderName.c_str()) && !createFolder(mmFolderName)) {
     FILE_LOG(TLogLevel::lerror) << "Failed to create storage folder: " << mmFolderName;
     response = errorResponse("Failed to create storage folder.");
@@ -573,7 +573,7 @@ void handleShowGPSTrajectory(picojson::value& requestJson, std::string& response
 }
 
 // Handle load map matched trajectories from
-// ${EXP_FOLDER}/[folder]/map_matched_trajectories/[0 .. (n - 1)].bin
+// ${EXP_FOLDER}/[folder:exp/map_matched_trajectories]/[0 .. (n - 1)].bin
 void handleLoadMapMatchedTrajectoriesFromBinary(
   picojson::value& requestJson,
   std::string& response
@@ -589,7 +589,7 @@ void handleLoadMapMatchedTrajectoriesFromBinary(
     return;
   }
   auto& folder = requestJson.get("Folder").get<std::string>();
-  auto folderName = config.expFolder + folder + "/map_matched_trajectories/";
+  auto folderName = config.expFolder + folder + "/";
   std::vector<std::string> files;
   if (!listDirectory(folderName, files)) {
     FILE_LOG(TLogLevel::lerror) << "Fail to list map matched trajectory folder: " << folderName;
@@ -621,7 +621,6 @@ void handleReformatTrajectories(picojson::value& requestJson, std::string& respo
   pressTrajectories.clear();
   TrajectoryReformatter refomatter;
   for (int i = 0; i < gpsTrajectories.size(); ++i) {
-    mapMatchedTrajectories.at(i).print();
     PRESSTrajectory pressTrajectory;
     refomatter.generateTrajectory(
       spTable,
@@ -644,14 +643,14 @@ void handleClearPRESSTrajectories(picojson::value& requestJson, std::string& res
 }
 
 // Handle dump PRESS trajectories to
-// ${EXP_FOLDER}/[folder]/press_trajectories/[0 .. (n - 1)].bin
+// ${EXP_FOLDER}/[folder:exp/press_trajectories]/[0 .. (n - 1)].bin
 void handleDumpPRESSTrajectoriesToBinary(picojson::value& requestJson, std::string& response) {
   if (!roadnetReady) {
     response = errorResponse("Roadnet is not ready.");
     return;
   }
   auto& folder = requestJson.get("Folder").get<std::string>();
-  auto pressFolderName = config.expFolder + folder + "/press_trajectories/";
+  auto pressFolderName = config.expFolder + folder + "/";
   if (!fileExists(pressFolderName.c_str()) && !createFolder(pressFolderName)) {
     FILE_LOG(TLogLevel::lerror) << "Failed to create storage folder: " << pressFolderName;
     response = errorResponse("Failed to create storage folder.");
@@ -678,7 +677,7 @@ void handleDumpPRESSTrajectoriesToBinary(picojson::value& requestJson, std::stri
   response = successResponse("PRESS trajectories are dumped to " + pressFolderName + ".");
 }
 
-// Handle load PRESS trajectories from ${EXP_FOLDER}/[folder]/press_trajectories/[0 .. (n - 1)]/[spatial|temporal].bin
+// Handle load PRESS trajectories from ${EXP_FOLDER}/[folder:exp/press_trajectories]/[0 .. (n - 1)]/[spatial|temporal].bin
 void handleLoadPRESSTrajectoriesFromBinary(picojson::value& requestJson, std::string& response) {
   if (!roadnetReady) {
     response = errorResponse("Roadnet is not ready.");
@@ -689,7 +688,7 @@ void handleLoadPRESSTrajectoriesFromBinary(picojson::value& requestJson, std::st
     return;
   }
   auto& folder = requestJson.get("Folder").get<std::string>();
-  auto folderName = config.expFolder + folder + "/press_trajectories/";
+  auto folderName = config.expFolder + folder + "/";
   std::vector<std::string> files;
   if (!listDirectory(folderName, files)) {
     FILE_LOG(TLogLevel::lerror) << "Fail to list PRESS trajectory folder: " << folderName;
@@ -705,7 +704,7 @@ void handleLoadPRESSTrajectoriesFromBinary(picojson::value& requestJson, std::st
   response = successResponse("PRESS trajectories are loaded from " + folderName + ".");
 }
 
-// Handle show PRESS trajectory from ${EXP_FOLDER}/[folder]/press_trajectories/[ID]/[spatial|temporal].bin
+// Handle show PRESS trajectory from ${EXP_FOLDER}/[folder:exp/press_trajectories]/[ID]/[spatial|temporal].bin
 void handleShowPRESSTrajectory(picojson::value& requestJson, std::string& response) {
   if (!roadnetReady) {
     response = errorResponse("Roadnet is not ready.");
@@ -713,7 +712,7 @@ void handleShowPRESSTrajectory(picojson::value& requestJson, std::string& respon
   }
   auto& folder = requestJson.get("Folder").get<std::string>();
   auto& id = requestJson.get("ID").get<std::string>();
-  auto folderName = config.expFolder + folder + "/press_trajectories/" + id;
+  auto folderName = config.expFolder + folder + "/" + id;
   if (
     !fileExists((folderName + "/spatial.bin").c_str()) ||
     !fileExists((folderName + "/temporal.bin").c_str())

@@ -143,13 +143,13 @@ int main(int argc, char** argv) {
   reqRespHelper.writeNext("{\"Cmd\":\"DumpGPSTrajectoriesToBinary\", \"Folder\":\"WA_roadnetwork_and_single_trajectory/gps_trajectories\"}");
   reqRespHelper.explainResponse(reqRespHelper.readNext());
   // Dump map matched trajectories to binary.
-  reqRespHelper.writeNext("{\"Cmd\":\"DumpMapMatchedTrajectoriesToBinary\", \"Folder\":\"WA_roadnetwork_and_single_trajectory\"}");
+  reqRespHelper.writeNext("{\"Cmd\":\"DumpMapMatchedTrajectoriesToBinary\", \"Folder\":\"WA_roadnetwork_and_single_trajectory/map_matched_trajectories\"}");
   reqRespHelper.explainResponse(reqRespHelper.readNext());
   // Reformat GPS trajectories and map matched trajectories as PRESS trajectories.
   reqRespHelper.writeNext("{\"Cmd\":\"ReformatTrajectories\"}");
   reqRespHelper.explainResponse(reqRespHelper.readNext());
   // Dump PRESS trajectories to binary.
-  reqRespHelper.writeNext("{\"Cmd\":\"DumpPRESSTrajectoriesToBinary\", \"Folder\":\"WA_roadnetwork_and_single_trajectory\"}");
+  reqRespHelper.writeNext("{\"Cmd\":\"DumpPRESSTrajectoriesToBinary\", \"Folder\":\"WA_roadnetwork_and_single_trajectory/press_trajectories\"}");
   reqRespHelper.explainResponse(reqRespHelper.readNext());
   // Train
   reqRespHelper.writeNext("{\"Cmd\":\"TrainACAutomatonHuffmanTreeAndBuildAuxiliary\", \"Theta\":3}");
@@ -201,10 +201,10 @@ int main(int argc, char** argv) {
   reqRespHelper.writeNext("{\"Cmd\":\"LoadGPSTrajectoriesFromBinary\", \"Folder\":\"WA_roadnetwork_and_single_trajectory/gps_trajectories\"}");
   reqRespHelper.explainResponse(reqRespHelper.readNext());
   // Load map matched trajectories from binary.
-  reqRespHelper.writeNext("{\"Cmd\":\"LoadMapMatchedTrajectoriesFromBinary\", \"Folder\":\"WA_roadnetwork_and_single_trajectory\"}");
+  reqRespHelper.writeNext("{\"Cmd\":\"LoadMapMatchedTrajectoriesFromBinary\", \"Folder\":\"WA_roadnetwork_and_single_trajectory/map_matched_trajectories\"}");
   reqRespHelper.explainResponse(reqRespHelper.readNext());
   // Load PRESS trajectories from binary.
-  reqRespHelper.writeNext("{\"Cmd\":\"LoadPRESSTrajectoriesFromBinary\", \"Folder\":\"WA_roadnetwork_and_single_trajectory\"}");
+  reqRespHelper.writeNext("{\"Cmd\":\"LoadPRESSTrajectoriesFromBinary\", \"Folder\":\"WA_roadnetwork_and_single_trajectory/press_trajectories\"}");
   auto response = reqRespHelper.explainResponse(reqRespHelper.readNext());
   std::string message = response.get("Message").get<std::string>();
   std::string pressPath = message.substr(message.find('/'));

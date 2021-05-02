@@ -16,10 +16,10 @@ func RegisterReformatter(r *gin.RouterGroup, cq *util.TaskQueue, oq *util.TaskQu
 	r.PUT("/reformatter/reformat", func(c *gin.Context) {
 		cq.Add(c, ReformatToPRESS)
 	})
-	r.PUT("/reformatter/dumptobinary", func(c *gin.Context) {
+	r.PUT("/reformatter/dumptobinary/:folder", func(c *gin.Context) {
 		cq.Add(c, DumpPRESSToBinary)
 	})
-	r.PUT("/reformatter/loadfrombinary", func(c *gin.Context) {
+	r.PUT("/reformatter/loadfrombinary/:folder", func(c *gin.Context) {
 		cq.Add(c, LoadPRESSFromBinary)
 	})
 	r.PUT("/reformatter/clear", func(c *gin.Context) {
@@ -28,7 +28,7 @@ func RegisterReformatter(r *gin.RouterGroup, cq *util.TaskQueue, oq *util.TaskQu
 	r.GET("/reformatter/list", func(c *gin.Context) {
 		cq.Add(c, ListTrajectories)
 	})
-	r.GET("/reformatter/press/:id", func(c *gin.Context) {
+	r.GET("/reformatter/press/:folder/:id", func(c *gin.Context) {
 		cq.Add(c, GetPRESSTrajectory)
 	})
 }
@@ -90,7 +90,7 @@ func DumpPRESSToBinary(c *gin.Context, b interface{}) *util.TaskResult {
 		Folder string
 	}{
 		Cmd:    "DumpPRESSTrajectoriesToBinary",
-		Folder: "Experiment_" + strconv.Itoa(mod.ExpCtx.ID),
+		Folder: "Experiment_" + strconv.Itoa(mod.ExpCtx.ID) + "/" + c.Param("folder"),
 	})
 
 	ret, err := util.Core.GetResponse()
@@ -131,7 +131,7 @@ func LoadPRESSFromBinary(c *gin.Context, b interface{}) *util.TaskResult {
 		Folder string
 	}{
 		Cmd:    "LoadPRESSTrajectoriesFromBinary",
-		Folder: "Experiment_" + strconv.Itoa(mod.ExpCtx.ID),
+		Folder: "Experiment_" + strconv.Itoa(mod.ExpCtx.ID) + "/" + c.Param("folder"),
 	})
 
 	ret, err := util.Core.GetResponse()
@@ -279,7 +279,7 @@ func GetPRESSTrajectory(c *gin.Context, b interface{}) *util.TaskResult {
 		ID     string
 	}{
 		Cmd:    "ShowPRESSTrajectory",
-		Folder: "Experiment_" + strconv.Itoa(mod.ExpCtx.ID),
+		Folder: "Experiment_" + strconv.Itoa(mod.ExpCtx.ID) + "/" + c.Param("folder"),
 		ID:     c.Param("id"),
 	})
 

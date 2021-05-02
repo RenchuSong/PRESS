@@ -74,9 +74,9 @@ export class MapMatcher {
     )).message;
   }
 
-  public static async genDumpMapMatchedTrajectories(): Promise<string> {
+  public static async genDumpMapMatchedTrajectories(folder: string): Promise<string> {
     return (await restClient.put<string>(
-      `${apiBaseURL}/dumptobinary`,
+      `${apiBaseURL}/dumptobinary/${folder}`,
       {}
     )).message;
   }
