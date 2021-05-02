@@ -98,8 +98,10 @@
       style="height: calc(100vh - 396px)"
     >
       <template #tags>
-        <a-tag v-if="trajectories.length > 0" color="green">Ready</a-tag>
-        <a-tag v-else color="red">Not ready</a-tag>
+        <a-tag v-if="trajectories.length > 1" color="green">Ready</a-tag>
+        <a-tag v-else color="red"
+          >Not ready (at least 2 trajectories needed)</a-tag
+        >
       </template>
       <a-row type="flex" justify="space-between" :gutter="10">
         <a-col :span="5">
@@ -154,7 +156,7 @@
         <a-button
           class="full-width"
           type="primary"
-          :disabled="trajectories.length === 0"
+          :disabled="trajectories.length < 2"
           @click="gotoGPSToPRESS()"
         >
           Next: TBD
